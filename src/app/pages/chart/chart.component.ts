@@ -18,7 +18,7 @@ import {
   TransactionService,
 } from '@services/transaction.service';
 import { FirebaseService } from '@services/firebase.service';
-
+import { Router } from '@angular/router';
 // Components
 import { ProgressBarComponent } from '@blocks/progress-bar/progress-bar.component';
 import { PageLayoutComponent } from '@layouts/page-layout/page-layout.component';
@@ -79,6 +79,7 @@ export class ChartComponent implements OnInit, AfterViewInit {
 
   constructor(
     public storeService: StoreService,
+    public router: Router,
     public stateService: TransactionService,
     public firebaseService: FirebaseService
   ) {
@@ -111,9 +112,9 @@ export class ChartComponent implements OnInit, AfterViewInit {
       let transactions = await this.firebaseService.getCollectionData('budget');
       const selectedOpts = option?.toLowerCase();
 
-      transactions?.sort((a, b) => a['id'] - b['id']);
+      transactions?.sort((a: any, b: any) => a['id'] - b['id']);
 
-      const payload = transactions?.filter((el) => el['type'] === selectedOpts);
+      const payload = transactions?.filter((el: any) => el['type'] === selectedOpts);
 
       this.allTransactions = option ? payload : transactions;
     } catch (error) {
@@ -145,22 +146,19 @@ export class ChartComponent implements OnInit, AfterViewInit {
     return formatMoney(amount);
   }
 
-  private createLineChart() {
+  private async createLineChart() {
     const option = this.selectedOptions;
-    const allTransactions = this.stateService.getStateTransactions();
-
+    const allTransactions = await this.stateService.getStateTransactions();
+  
     const filterTransactions = allTransactions?.filter(
       (el: any) => el?.type === option?.name?.toLowerCase()
     );
-
+  
     const countAmount = filterTransactions?.reduce(
       (acc: any, el: any) => acc + el?.amount,
       0
     );
-
-    console.log(allTransactions, option);
-    // console.log(countAmount, 'amount');
-
+  
     const labels = [
       'Jan',
       'Feb',
@@ -175,20 +173,31 @@ export class ChartComponent implements OnInit, AfterViewInit {
       'Nov',
       'Dec',
     ];
-
-    const currentMonthNumber = moment().month(); // Returns the current month as a number (1-12)
-
+  
+    const currentMonthNumber = moment().month();
     const subsetData = [65, 59, 80, 81, 56, 55, 40, 50, 75, 100, 35, 40];
-
+  
     const subsetFilteredData = subsetData?.map((el, index) => {
       if (index === currentMonthNumber) {
         return countAmount;
       }
-
       return el;
     });
-
+  
     if (this.lineCanvas && this.lineCanvas.nativeElement) {
+      // Create gradient
+      const ctx = this.lineCanvas.nativeElement.getContext('2d');
+      const gradient = ctx?.createLinearGradient(0, 0, 0, 400);
+      if (gradient) {
+        gradient.addColorStop(0, 'rgba(42, 157, 143, 0.1)');
+        gradient.addColorStop(1, 'rgba(42, 157, 143, 0)');
+      }
+  
+      // Destroy previous chart instance if it exists
+      if (this.lineChart) {
+        this.lineChart.destroy();
+      }
+  
       this.lineChart = new Chart(this.lineCanvas.nativeElement, {
         type: 'line',
         data: {
@@ -197,10 +206,14 @@ export class ChartComponent implements OnInit, AfterViewInit {
             {
               data: subsetFilteredData,
               borderColor: '#29756f',
-              backgroundColor: 'rgba(75,192,192,0.2)',
+              backgroundColor: gradient || 'rgba(75,192,192,0.1)',
               fill: true,
               tension: 0.4,
               borderCapStyle: 'round',
+              pointBackgroundColor: '#29756f',
+              pointBorderColor: 'white',
+              pointBorderWidth: 2,
+              pointRadius: 4,
             },
           ],
         },
@@ -214,9 +227,12 @@ export class ChartComponent implements OnInit, AfterViewInit {
               },
               ticks: {
                 padding: 10,
+                font: {
+                  size: 11
+                }
               },
               border: {
-                display: false, // Hide x-axis line
+                display: false,
               },
             },
             y: {
@@ -227,9 +243,9 @@ export class ChartComponent implements OnInit, AfterViewInit {
                 display: false,
               },
               border: {
-                display: false, // Hide y-axis line
+                display: false,
               },
-              beginAtZero: true, // Start y-axis from zero
+              beginAtZero: true,
             },
           },
           elements: {
@@ -242,11 +258,33 @@ export class ChartComponent implements OnInit, AfterViewInit {
             legend: {
               display: false,
             },
+            tooltip: {
+              backgroundColor: 'white',
+              titleColor: '#333',
+              bodyColor: '#666',
+              borderColor: '#ddd',
+              borderWidth: 1,
+              padding: 12,
+              displayColors: false,
+              callbacks: {
+                label: function(context: any) {
+                  return `Rp ${context.raw.toLocaleString()}`;
+                }
+              }
+            }
           },
+          interaction: {
+            intersect: false,
+            mode: 'index'
+          }
         },
       });
     } else {
       console.error('Failed to create chart, canvas not available');
     }
+  }
+
+  returnHome(): void {
+    this.router.navigate(['home']);
   }
 }

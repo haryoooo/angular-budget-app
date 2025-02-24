@@ -12,8 +12,8 @@
         />
         <div class="header__between">
           <div class="text-white">
-            <h6 class="font-weight-400">Good Afternon,</h6>
-            <h4>Haryo Novianto</h4>
+            <h6 class="font-weight-400">{{ getGreeting() }}</h6>
+            <h4>Guest</h4>
           </div>
         </div>
 
@@ -77,7 +77,7 @@
         <div
           *ngFor="let transaction of allTransactions"
           class="transactions-container"
-          (click)="navigateTo('home/transactions', transaction.id)"
+          (click)="navigateTo('home/transactions', transaction.identifier)"
         >
           <div class="transactions-all">
             <div class="transactions-text">

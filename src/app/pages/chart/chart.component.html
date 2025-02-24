@@ -5,7 +5,7 @@
     <ng-container *ngIf="!storeService.isLoading()">
       <!-- Header Container -->
       <div class="header-container">
-        <div class="header-between">
+        <div (click)="returnHome()" class="header-between">
           <div class="cursor-pointer text-black">
             <img src="../../../assets/img/project/chevron-left-dark.png" />
           </div>

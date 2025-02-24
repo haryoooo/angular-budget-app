@@ -28,6 +28,7 @@ export class HomeComponent implements OnInit {
   public transactions = this.stateService.getStateTransactions();
   public allTransactions: any[] = [];
   public moment = moment;
+  public greeting: string = '';
 
   constructor(
     public storeService: StoreService,
@@ -50,8 +51,11 @@ export class HomeComponent implements OnInit {
   async getAllTransactions() {
     try {
       let transactions = await this.firebaseService.getCollectionData('budget');
-
-      transactions.sort((a, b) => a['id'] - b['id']);
+      
+      transactions.sort((a: any, b: any) => 
+        moment(b.date, 'DD-MM-YYYY HH:mm:ss').valueOf() - 
+        moment(a.date, 'DD-MM-YYYY HH:mm:ss').valueOf()
+      );
 
       this.allTransactions = transactions;
     } catch (error) {
@@ -69,10 +73,15 @@ export class HomeComponent implements OnInit {
     return formatMoney(result);
   }
 
-  navigateTo(url: string, id: number): void {
+  navigateTo(url: string, id: string): void {
     this.router.navigate([url], {
       queryParams: { id: id },
     });
+  }
+
+  getGreeting(): string {
+    const hour = new Date().getHours();
+    return hour < 12 ? 'Good Morning,' : hour < 18 ? 'Good Afternoon,' : 'Good Evening,';
   }
 
   // -------------------------------------------------------------------------------

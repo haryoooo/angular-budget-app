@@ -56,7 +56,7 @@ canvas {
 }
 
 .transactions-wrapper {
-  height: 50vh;
+  height: 38vh;
   /* Set the height to 50% of the viewport height */
   overflow-y: auto;
   /* Enable vertical scrolling */
@@ -159,3 +159,26 @@ canvas {
     font-size: 1rem;
   }
 }
+
+::ng-deep .p-dropdown-panel .p-dropdown-items {
+  padding: 0 !important;
+}
+
+::ng-deep .p-dropdown-item {
+  // padding: 4px 8px !important; /* Adjust padding to remove extra space */
+  margin: 0 !important;
+  text-align: left !important;
+}
+
+::ng-deep .p-dropdown-item.p-highlight {
+  background-color: lightgray !important; /* Light green for selected */
+  color: #666666 !important;
+}
+
+::ng-deep .p-dropdown:hover {
+  box-shadow: #666666 !important; /* Green shadow */
+  border-color: #666666 !important; /* Optional: Green border */
+}
+
+
+

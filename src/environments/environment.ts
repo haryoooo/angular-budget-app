@@ -22,6 +22,12 @@ export const environment = {
   envName: EnvName.LOCAL,
   defaultLanguage: 'en',
   apiBaseUrl: baseUrl,
+  apiKey: "AIzaSyBDdtgW09XZBENsAThOP-QT0q6_DsicwNE",
+  authDomain: "budget-planner-app-fca65.firebaseapp.com",
+  projectId: "budget-planner-app-fca65",
+  storageBucket: "budget-planner-app-fca65.appspot.com",
+  messagingId: "597346873722",
+  appId: "1:597346873722:web:9cfb2ae08f66bce20266c3"
 };
 
 /*
