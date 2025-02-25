@@ -16,10 +16,20 @@
       <div (click)="$event.stopPropagation()">
         <h4>Delete Transaction</h4>
         <p class="my-4">Are you sure you want to delete this transaction?</p>
-        <button [disabled]="isSubmitted" class="btn-confirm" (click)="confirmTransaction()">
+        <button
+          [disabled]="isSubmitted"
+          class="btn-confirm"
+          (click)="confirmTransaction()"
+        >
           Delete
         </button>
-        <button [disabled]="isSubmitted" class="btn-cancel" (click)="closeModal()">Cancel</button>
+        <button
+          [disabled]="isSubmitted"
+          class="btn-cancel"
+          (click)="closeModal()"
+        >
+          Cancel
+        </button>
       </div>
     </div>
 
@@ -41,7 +51,12 @@
             {{ queryId ? "Edit Transaction" : "Add Transaction" }}
           </h4>
         </div>
-        <div class="cursor-pointer" (click)="openModal()">
+        <div
+          class="dot-button"
+          [ngClass]="{ clicked: isAnimating }"
+          (animationend)="isAnimating = false"
+          (click)="openModal()"
+        >
           <img *ngIf="queryId" src="../../../assets/img/project/more.png" />
         </div>
       </div>

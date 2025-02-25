@@ -42,8 +42,10 @@ export class TransactionsComponent implements OnInit {
   public moment = moment;
   public stateAdd: any;
   public queryId = this.route.snapshot.queryParams['id'];
+
   public isModalOpen = false;
   public isSubmitted = false;
+  public isAnimating = false;
 
   constructor(
     public storeService: StoreService,
@@ -88,6 +90,8 @@ export class TransactionsComponent implements OnInit {
     const id = this.queryId;
 
     this.stateService.deleteTransaction(id);
+
+    this.isAnimating = true;
   }
 
   ngOnInit(): void {

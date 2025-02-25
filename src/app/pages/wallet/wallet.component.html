@@ -1,13 +1,88 @@
 <app-page-layout>
-  <div class="container my-3">
+  <!-- <div class="container my-3"> -->
+  <app-progress-bar *ngIf="storeService.isLoading()"></app-progress-bar>
 
-    <app-progress-bar *ngIf="storeService.isLoading()"></app-progress-bar>
+  <ng-container *ngIf="!storeService.isLoading()">
+    <!-- <p-toast
+        position="top-center"
+        showTransformOptions="translateY(-50%)"
+        styleClass="custom-toast"
+      /> -->
 
-    <ng-container *ngIf="!storeService.isLoading()">
-      <div class="text-center">
-        this is wallet
+    <div class="header-container">
+      <div class="header__between">
+        <div>
+          <h4 class="text-white">Change Wallet</h4>
+        </div>
       </div>
-    </ng-container>
+    </div>
 
-  </div>
+    <div class="content-container">
+      <div class="tabs-container">
+        <div
+          class="tab"
+          [ngClass]="{ active: activeTab === 'cards' }"
+          (click)="setActiveTab('cards')"
+        >
+          Cards
+        </div>
+        <div
+          class="tab"
+          [ngClass]="{ active: activeTab === 'accounts' }"
+          (click)="setActiveTab('accounts')"
+        >
+          Accounts
+        </div>
+      </div>
+
+      <div class="connection-options">
+        <div class="option-item selected">
+          <div class="option-icon bank-icon">
+            <img src="../../../assets/img/project/bank-icon.png" alt="bank" />
+          </div>
+          <div class="option-details">
+            <div class="option-title">Bank Link</div>
+            <div class="option-description">
+              Connect your bank account to deposit & fund
+            </div>
+          </div>
+          <div class="option-checkmark">
+            <img
+              src="../../../assets/img/project/checkmark.png"
+              alt="selected"
+            />
+          </div>
+        </div>
+
+        <div class="option-item">
+          <div class="option-icon microdeposit-icon">
+            <img
+              src="../../../assets/img/project/dollar-icon.png"
+              alt="micro"
+            />
+          </div>
+          <div class="option-details">
+            <div class="option-title">Microdeposits</div>
+            <div class="option-description">Connect bank in 5-7 days</div>
+          </div>
+        </div>
+
+        <div class="option-item">
+          <div class="option-icon paypal-icon">
+            <img
+              src="../../../assets/img/project/paypal-icon.png"
+              alt="paypal"
+            />
+          </div>
+          <div class="option-details">
+            <div class="option-title">Paypal</div>
+            <div class="option-description">Connect your paypal account</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-next">Next</button>
+    </div>
+  </ng-container>
+  <!-- </div> -->
 </app-page-layout>

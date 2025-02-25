@@ -48,31 +48,18 @@ const initialStateOptions = [
   ],
 })
 export class ChartComponent implements OnInit, AfterViewInit {
-  lineChart: any;
-  options: OptionsDropdown[] | undefined;
-  // stateOptions: any[] = [
-  //   { value: 1, label: 'Jan' },
-  //   { value: 2, label: 'Feb' },
-  //   { value: 3, label: 'Mar' },
-  //   { value: 4, label: 'Apr' },
-  //   { value: 5, label: 'May' },
-  //   { value: 6, label: 'Jun' },
-  //   { value: 7, label: 'Jul' },
-  //   { value: 8, label: 'Aug' },
-  //   { value: 9, label: 'Sept' },
-  //   { value: 10, label: 'Oct' },
-  //   { value: 11, label: 'Nov' },
-  //   { value: 12, label: 'Dec' },
-  // ];
+  public lineChart: any;
+  public options: OptionsDropdown[] | undefined;
 
-  // value: string = 'off';
+  public selectedOptions = this.stateService.getStateDropdown();
+  public transactions = this.stateService.getStateTransactions();
+  public allTransactions: any[] = [];
+  public amountTransactions: number = 0;
 
-  selectedOptions = this.stateService.getStateDropdown();
-  transactions = this.stateService.getStateTransactions();
-  allTransactions: any[] = [];
-  amountTransactions: number = 0;
+  public isAscending = true;
+  public isAnimating = false;
 
-  moment = moment;
+  public moment = moment;
 
   // Use ViewChild to grab the canvas element
   @ViewChild('lineCanvas') private lineCanvas!: ElementRef<HTMLCanvasElement>;
@@ -112,9 +99,11 @@ export class ChartComponent implements OnInit, AfterViewInit {
       let transactions = await this.firebaseService.getCollectionData('budget');
       const selectedOpts = option?.toLowerCase();
 
-      transactions?.sort((a: any, b: any) => a['id'] - b['id']);
+      transactions?.sort((a: any, b: any) => b.amount - a.amount);
 
-      const payload = transactions?.filter((el: any) => el['type'] === selectedOpts);
+      const payload = transactions?.filter(
+        (el: any) => el['type'] === selectedOpts
+      );
 
       this.allTransactions = option ? payload : transactions;
     } catch (error) {
@@ -123,7 +112,7 @@ export class ChartComponent implements OnInit, AfterViewInit {
   }
 
   // This method waits until the canvas element is available
-  private waitForCanvas(): void {
+  waitForCanvas(): void {
     if (this.lineCanvas && this.lineCanvas.nativeElement) {
       this.createLineChart();
     } else {
@@ -134,31 +123,40 @@ export class ChartComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private listDropdown(): void {
+  listDropdown(): void {
     this.options = initialStateOptions;
   }
 
-  public handleSetOptions(updateValue: any) {
+  handleSetOptions(updateValue: any) {
     this.stateService.setStateDropdown(updateValue?.value);
   }
 
-  public getFormattedAmount(amount: number): string {
+  getFormattedAmount(amount: number): string {
     return formatMoney(amount);
   }
 
-  private async createLineChart() {
+  sortTransactions() {
+    this.allTransactions.sort((a, b) => {
+      return this.isAscending ? a.amount - b.amount : b.amount - a.amount;
+    });
+
+    this.isAscending = !this.isAscending; // Toggle the order
+    this.isAnimating = true;
+  }
+
+  async createLineChart() {
     const option = this.selectedOptions;
     const allTransactions = await this.stateService.getStateTransactions();
-  
+
     const filterTransactions = allTransactions?.filter(
       (el: any) => el?.type === option?.name?.toLowerCase()
     );
-  
+
     const countAmount = filterTransactions?.reduce(
       (acc: any, el: any) => acc + el?.amount,
       0
     );
-  
+
     const labels = [
       'Jan',
       'Feb',
@@ -173,17 +171,17 @@ export class ChartComponent implements OnInit, AfterViewInit {
       'Nov',
       'Dec',
     ];
-  
+
     const currentMonthNumber = moment().month();
     const subsetData = [65, 59, 80, 81, 56, 55, 40, 50, 75, 100, 35, 40];
-  
+
     const subsetFilteredData = subsetData?.map((el, index) => {
       if (index === currentMonthNumber) {
         return countAmount;
       }
       return el;
     });
-  
+
     if (this.lineCanvas && this.lineCanvas.nativeElement) {
       // Create gradient
       const ctx = this.lineCanvas.nativeElement.getContext('2d');
@@ -192,12 +190,12 @@ export class ChartComponent implements OnInit, AfterViewInit {
         gradient.addColorStop(0, 'rgba(42, 157, 143, 0.1)');
         gradient.addColorStop(1, 'rgba(42, 157, 143, 0)');
       }
-  
+
       // Destroy previous chart instance if it exists
       if (this.lineChart) {
         this.lineChart.destroy();
       }
-  
+
       this.lineChart = new Chart(this.lineCanvas.nativeElement, {
         type: 'line',
         data: {
@@ -228,8 +226,8 @@ export class ChartComponent implements OnInit, AfterViewInit {
               ticks: {
                 padding: 10,
                 font: {
-                  size: 11
-                }
+                  size: 11,
+                },
               },
               border: {
                 display: false,
@@ -267,16 +265,16 @@ export class ChartComponent implements OnInit, AfterViewInit {
               padding: 12,
               displayColors: false,
               callbacks: {
-                label: function(context: any) {
+                label: function (context: any) {
                   return `Rp ${context.raw.toLocaleString()}`;
-                }
-              }
-            }
+                },
+              },
+            },
           },
           interaction: {
             intersect: false,
-            mode: 'index'
-          }
+            mode: 'index',
+          },
         },
       });
     } else {

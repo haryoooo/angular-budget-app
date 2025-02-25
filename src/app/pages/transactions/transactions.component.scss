@@ -164,6 +164,15 @@
   border-radius: 8px !important; /* Add rounded corners */
 }
 
+.dot-button {
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.dot-button:active {
+  transform: scale(0.8); /* Button shrinks slightly when clicked */
+}
+
 .modal-overlay {
   position: fixed; /* Ensure it stays on top */
   top: 0;

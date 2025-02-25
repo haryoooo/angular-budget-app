@@ -104,12 +104,6 @@ canvas {
   }
 }
 
-.transactions-see-all {
-  font-size: 14px;
-  font-weight: 400;
-  cursor: pointer;
-}
-
 .text-danger {
   color: red;
   font-size: 18px;
@@ -126,6 +120,15 @@ canvas {
 
 .font-weight-400 {
   font-weight: 400;
+}
+
+.sort-button {
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.sort-button:active {
+  transform: scale(0.8); /* Button shrinks slightly when clicked */
 }
 
 @media (max-width: 768px) {

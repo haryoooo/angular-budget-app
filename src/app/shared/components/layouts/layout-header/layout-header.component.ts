@@ -49,10 +49,10 @@ export class LayoutHeaderComponent implements OnInit {
       src: '../../../../../assets/img/project/navigation/wallet.png',
       alt: 'wallet',
     },
-    {
-      src: '../../../../../assets/img/project/navigation/user.png',
-      alt: 'user',
-    },
+    // {
+    //   src: '../../../../../assets/img/project/navigation/user.png',
+    //   alt: 'user',
+    // },
   ];
 
   public ngOnInit(): void { }

@@ -45,7 +45,12 @@
 
       <div class="transactions-desc-container mt-20">
         <div class="transactions-all">Top Spending</div>
-        <div class="transactions-see-all">
+        <div
+          class="sort-button"
+          [ngClass]="{ clicked: isAnimating }"
+          (animationend)="isAnimating = false"
+          (click)="sortTransactions()"
+        >
           <img src="../../../assets/img/project/bx-sort.png" />
         </div>
       </div>
