@@ -8,26 +8,26 @@ import { EnvName } from '@enums/environment.enum';
 // Packages
 import packageInfo from '../../package.json';
 
-const scheme = 'http://';
-const host = 'localhost';
-const port = ':5000';
-const path = '/api/';
+const scheme = process.env['NG_APP_SCHEME'] || 'http://';
+const host = process.env['NG_APP_HOST'] || 'localhost';
+const port = process.env['NG_APP_PORT'] || ':5000';
+const path = process.env['NG_APP_PATH'] || '/api/';
 
 const baseUrl = scheme + host + port + path;
 
 export const environment = {
   production: false,
   version: packageInfo.version,
-  appName: 'Expense Tracker App',
-  envName: EnvName.LOCAL,
-  defaultLanguage: 'en',
+  appName: process.env['NG_APP_NAME'] || 'Expense Tracker App',
+  envName: process.env['NG_APP_ENV_NAME'] || EnvName.LOCAL,
+  defaultLanguage: process.env['NG_APP_DEFAULT_LANGUAGE'] || 'en',
   apiBaseUrl: baseUrl,
-  apiKey: "AIzaSyBDdtgW09XZBENsAThOP-QT0q6_DsicwNE",
-  authDomain: "budget-planner-app-fca65.firebaseapp.com",
-  projectId: "budget-planner-app-fca65",
-  storageBucket: "budget-planner-app-fca65.appspot.com",
-  messagingId: "597346873722",
-  appId: "1:597346873722:web:9cfb2ae08f66bce20266c3"
+  apiKey: process.env['NG_APP_API_KEY'] || '',
+  authDomain: process.env['NG_APP_AUTH_DOMAIN'] || '',
+  projectId: process.env['NG_APP_PROJECT_ID'] || '',
+  storageBucket: process.env['NG_APP_STORAGE_BUCKET'] || '',
+  messagingId: process.env['NG_APP_MESSAGING_ID'] || '',
+  appId: process.env['NG_APP_APP_ID'] || '',
 };
 
 /*
