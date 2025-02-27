@@ -1,133 +1,136 @@
 <app-page-layout>
-  <app-progress-bar *ngIf="storeService.isLoading()"></app-progress-bar>
+  <!-- <app-progress-bar *ngIf="storeService.isLoading()"></app-progress-bar>
 
-  <ng-container *ngIf="!storeService.isLoading()">
-    <p-toast
-      position="top-center"
-      showTransformOptions="translateY(-50%)"
-      styleClass="custom-toast"
-    />
+  <ng-container *ngIf="!storeService.isLoading()"> -->
+  <p-toast
+    position="top-center"
+    showTransformOptions="translateY(-50%)"
+    styleClass="custom-toast"
+  />
 
-    <div
-      *ngIf="isModalOpen && queryId"
-      (click)="closeModal()"
-      class="modal-overlay"
-    >
-      <div (click)="$event.stopPropagation()">
-        <h4>Delete Transaction</h4>
-        <p class="my-4">Are you sure you want to delete this transaction?</p>
-        <button
-          [disabled]="isSubmitted"
-          class="btn-confirm"
-          (click)="confirmTransaction()"
-        >
-          Delete
-        </button>
-        <button
-          [disabled]="isSubmitted"
-          class="btn-cancel"
-          (click)="closeModal()"
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-
-    <div class="header-container">
-      <img
-        class="header"
-        src="../../../assets/img/project/header-bg.png"
-        alt="bg-header"
-      />
-      <div class="header__between">
-        <div
-          class="cursor-pointer"
-          (click)="router.navigateByUrl('home', { replaceUrl: true })"
-        >
-          <img src="../../../assets/img/project/chevron-left.png" />
-        </div>
-        <div>
-          <h4 class="text-white">
-            {{ queryId ? "Edit Transaction" : "Add Transaction" }}
-          </h4>
-        </div>
-        <div
-          class="dot-button"
-          [ngClass]="{ clicked: isAnimating }"
-          (animationend)="isAnimating = false"
-          (click)="openModal()"
-        >
-          <img *ngIf="queryId" src="../../../assets/img/project/more.png" />
-        </div>
-      </div>
-    </div>
-
-    <div class="content-container">
-      <div>
-        <h5 class="text-label">NAME</h5>
-        <input
-          class="input-content"
-          type="text"
-          alt="desc"
-          [value]="stateAdd.desc"
-          (input)="updateName($event)"
-        />
-      </div>
-      <div>
-        <h5 class="text-label">TYPE</h5>
-        <label class="option-type">
-          <input
-            class="radio-input"
-            type="radio"
-            alt="radio-type-expense"
-            [checked]="stateAdd.type === 'expense'"
-            (change)="updateType('expense')"
-          />
-          Expense
-        </label>
-        <label class="ml-2 option-type">
-          <input
-            class="radio-input"
-            type="radio"
-            alt="radio-type-income"
-            [checked]="stateAdd.type === 'income'"
-            (change)="updateType('income')"
-          />
-          Income
-        </label>
-      </div>
-      <div class="amount-container">
-        <h5 class="text-label">AMOUNT</h5>
-        <div class="input-wrapper">
-          <span class="currency-symbol">Rp.</span>
-          <input
-            class="input-content-amount"
-            type="text"
-            alt="amount"
-            [value]="getFormattedAmount()"
-            (input)="updateAmount($event)"
-          />
-          <span class="clear-button" (click)="clearAmount()">Clear</span>
-        </div>
-      </div>
-      <div>
-        <h5 class="text-label">DATE</h5>
-        <input
-          class="input-content"
-          type="date"
-          alt="date"
-          [value]="stateAdd.date | date : 'yyyy-MM-dd'"
-          (input)="updateDate($event)"
-        />
-      </div>
-
+  <div
+    *ngIf="isModalOpen && queryId"
+    (click)="closeModal()"
+    class="modal-overlay"
+  >
+    <div (click)="$event.stopPropagation()">
+      <h4>Delete Transaction</h4>
+      <p class="my-4">Are you sure you want to delete this transaction?</p>
       <button
-        [disabled]="!isFormValid()"
-        class="btn-submit"
-        (click)="submitTransaction()"
+        [disabled]="isSubmitted"
+        class="btn-confirm"
+        (click)="confirmTransaction()"
       >
-        Submit
+        Delete
+      </button>
+      <button
+        [disabled]="isSubmitted"
+        class="btn-cancel"
+        (click)="closeModal()"
+      >
+        Cancel
       </button>
     </div>
-  </ng-container>
+  </div>
+
+  <div class="header-container">
+    <img
+      class="header"
+      src="../../../assets/img/project/header-bg.png"
+      alt="bg-header"
+    />
+    <div class="header__between">
+      <div
+        class="cursor-pointer"
+        (click)="router.navigateByUrl('home', { replaceUrl: true })"
+      >
+        <img src="../../../assets/img/project/chevron-left.png" />
+      </div>
+      <div>
+        <h4 class="text-white">
+          {{ queryId ? "Edit Transaction" : "Add Transaction" }}
+        </h4>
+      </div>
+      <div
+        class="dot-button"
+        [ngClass]="{ clicked: isAnimating }"
+        (animationend)="isAnimating = false"
+        (click)="openModal()"
+      >
+        <img *ngIf="queryId" src="../../../assets/img/project/more.png" />
+      </div>
+    </div>
+  </div>
+
+  <div class="content-container">
+    <div>
+      <h5 class="text-label">NAME</h5>
+      <input
+        class="input-content"
+        type="text"
+        alt="desc"
+        [value]="stateAdd.desc"
+        (input)="updateName($event)"
+      />
+    </div>
+    <div>
+      <h5 class="text-label">TYPE</h5>
+      <label class="option-type">
+        <input
+          class="radio-input"
+          type="radio"
+          alt="radio-type-expense"
+          [checked]="stateAdd.type === 'expense'"
+          (change)="updateType('expense')"
+        />
+        Expense
+      </label>
+      <label class="ml-2 option-type">
+        <input
+          class="radio-input"
+          type="radio"
+          alt="radio-type-income"
+          [checked]="stateAdd.type === 'income'"
+          (change)="updateType('income')"
+        />
+        Income
+      </label>
+    </div>
+    <div class="amount-container">
+      <h5 class="text-label">AMOUNT</h5>
+      <div class="input-wrapper">
+        <span class="currency-symbol">Rp.</span>
+        <input
+          class="input-content-amount"
+          type="text"
+          alt="amount"
+          [value]="getFormattedAmount()"
+          (input)="updateAmount($event)"
+        />
+        <span class="clear-button" (click)="clearAmount()">Clear</span>
+      </div>
+    </div>
+    <div>
+      <h5 class="text-label">DATE</h5>
+      <input
+        class="input-content"
+        type="date"
+        alt="date"
+        [value]="stateAdd.date | date : 'yyyy-MM-dd'"
+        (input)="updateDate($event)"
+      />
+    </div>
+
+    <button
+      [disabled]="!isFormValid()"
+      class="btn-submit"
+      (click)="submitTransaction()"
+    >
+      <span *ngIf="loading" class="h-10"
+        ><img src="../../../assets/img/favicon/beatloader.svg"
+      /></span>
+      <span *ngIf="!loading">Submit</span>
+    </button>
+  </div>
+  <!-- </ng-container> -->
 </app-page-layout>

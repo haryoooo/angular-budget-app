@@ -42,10 +42,12 @@ export class TransactionsComponent implements OnInit {
   public moment = moment;
   public stateAdd: any;
   public queryId = this.route.snapshot.queryParams['id'];
+  public wallet =  this.stateService._stateWallet.value;
 
   public isModalOpen = false;
   public isSubmitted = false;
   public isAnimating = false;
+  public loading = false;
 
   constructor(
     public storeService: StoreService,
@@ -95,7 +97,7 @@ export class TransactionsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getDataTransaction().then(() => {
+    this.getDataTransaction(this.wallet).then(() => {
       // Now that stateTransaction is available, we can safely update stateAdd
 
       // Subscribe to state changes
@@ -149,10 +151,10 @@ export class TransactionsComponent implements OnInit {
     this.updateStateAdd(this.stateAdd);
   }
 
-  async getDataTransaction() {
+  async getDataTransaction(collectionName: string) {
     try {
       this.stateTransaction = await this.firebaseService
-        .getCollectionData('budget')
+        .getCollectionData(collectionName)
         .then((el) => el);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -179,16 +181,15 @@ export class TransactionsComponent implements OnInit {
   }
 
   updateDate(event: Event): void {
-    console.log(event.target);
-
+    const inputDate = (event.target as HTMLInputElement).value; // Expected format: 'YYYY-MM-DD'
+  
     this.stateAdd = {
       ...this.stateAdd,
-      date: moment((event.target as HTMLInputElement).value).format(
-        'DD-MM-YYYY HH:mm:ss'
-      ),
+      date: moment(inputDate, 'YYYY-MM-DD').format('dddd, MMMM D, YYYY') // Store formatted date without time
     };
+  
     this.cdr.detectChanges();
-  }
+  }  
 
   clearAmount(): void {
     this.stateAdd = { ...this.stateAdd, amount: 0 };
@@ -209,6 +210,8 @@ export class TransactionsComponent implements OnInit {
   }
 
   submitTransaction(): void {
+    this.loading = true;
+
     const paramValueEdit = this.queryId;
     const messageSuccess = paramValueEdit
       ? 'Success edit transaction'
@@ -216,7 +219,7 @@ export class TransactionsComponent implements OnInit {
 
     const newTransaction = {
       type: this.stateAdd.type,
-      date: moment(this.stateAdd.date).format('DD-MM-YYYY HH:mm:ss'),
+      date: moment(this.stateAdd.date).format('dddd, MMMM D, YYYY'),
       desc: this.stateAdd.desc,
       amount: this.stateAdd.amount,
     };
@@ -234,6 +237,7 @@ export class TransactionsComponent implements OnInit {
       this.stateService.resetStateAdd();
       this.returnHome();
       this.isSubmitted = false;
+      this.loading = false;
     }, 1000);
   }
 }

@@ -1,24 +1,24 @@
 <app-page-layout>
   <!-- <div class="container my-3"> -->
-  <app-progress-bar *ngIf="storeService.isLoading()"></app-progress-bar>
+  <!-- <app-progress-bar *ngIf="storeService.isLoading()"></app-progress-bar>
 
-  <ng-container *ngIf="!storeService.isLoading()">
-    <!-- <p-toast
+  <ng-container *ngIf="!storeService.isLoading()"> -->
+  <!-- <p-toast
         position="top-center"
         showTransformOptions="translateY(-50%)"
         styleClass="custom-toast"
       /> -->
 
-    <div class="header-container">
-      <div class="header__between">
-        <div>
-          <h4 class="text-white">Change Wallet</h4>
-        </div>
+  <div class="header-container">
+    <div class="header__between">
+      <div>
+        <h4 class="text-white">Change Wallet</h4>
       </div>
     </div>
+  </div>
 
-    <div class="content-container">
-      <div class="tabs-container">
+  <div class="content-container">
+    <!-- <div class="tabs-container">
         <div
           class="tab"
           [ngClass]="{ active: activeTab === 'cards' }"
@@ -33,56 +33,42 @@
         >
           Accounts
         </div>
-      </div>
+      </div> -->
 
-      <div class="connection-options">
-        <div class="option-item selected">
-          <div class="option-icon bank-icon">
-            <img src="../../../assets/img/project/bank-icon.png" alt="bank" />
-          </div>
-          <div class="option-details">
-            <div class="option-title">Bank Link</div>
-            <div class="option-description">
-              Connect your bank account to deposit & fund
-            </div>
-          </div>
-          <div class="option-checkmark">
-            <img
-              src="../../../assets/img/project/checkmark.png"
-              alt="selected"
-            />
+    <div class="connection-options">
+      <div
+        *ngFor="let option of options"
+        class="option-item"
+        [class.selected]="selectedOption === option.id"
+        (click)="selectOption(option.id)"
+      >
+        <div class="option-icon {{ option.id }}-icon">
+          <img [src]="getIconSrc(option.id)" [alt]="option.id" />
+        </div>
+        <div class="option-details">
+          <div class="option-title">{{ option.title }}</div>
+          <div class="option-description">
+            {{ option.description }}
           </div>
         </div>
-
-        <div class="option-item">
-          <div class="option-icon microdeposit-icon">
-            <img
-              src="../../../assets/img/project/dollar-icon.png"
-              alt="micro"
-            />
-          </div>
-          <div class="option-details">
-            <div class="option-title">Microdeposits</div>
-            <div class="option-description">Connect bank in 5-7 days</div>
-          </div>
-        </div>
-
-        <div class="option-item">
-          <div class="option-icon paypal-icon">
-            <img
-              src="../../../assets/img/project/paypal-icon.png"
-              alt="paypal"
-            />
-          </div>
-          <div class="option-details">
-            <div class="option-title">Paypal</div>
-            <div class="option-description">Connect your paypal account</div>
-          </div>
+        <div class="option-checkmark" *ngIf="selectedOption === option.id">
+          <img
+            src="../../../assets/img/project/navigation/checkmark.png"
+            alt="selected"
+          />
         </div>
       </div>
-
-      <button class="btn-next">Next</button>
     </div>
-  </ng-container>
+
+    <button (click)="submitChangeWallet()" class="btn-next">
+      <span *ngIf="loading">
+        <span class="h-10"
+          ><img src="../../../assets/img/favicon/beatloader.svg"
+        /></span>
+      </span>
+      <span class="my-3" *ngIf="!loading">Change Wallet</span>
+    </button>
+  </div>
+  <!-- </ng-container> -->
   <!-- </div> -->
 </app-page-layout>

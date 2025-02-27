@@ -183,7 +183,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999; /* Ensure it stays on top */
+  z-index: 2200; /* Ensure it stays on top */
 }
 
 .modal-overlay div {
@@ -224,4 +224,10 @@
 
 .hidden {
   display: none !important;
+}
+
+.h-10 img {
+  height: 1.5em; /* Matches the size of the text */
+  width: auto; /* Keeps aspect ratio */
+  vertical-align: middle; /* Aligns with text */
 }

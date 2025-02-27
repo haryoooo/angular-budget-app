@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import * as moment from 'moment';
 // import { transactions } from 'src/app/example/transactions';
 import { FirebaseService } from './firebase.service';
 
@@ -34,6 +33,7 @@ export const initialState: AddState = {
   providedIn: 'root', // This makes the service available application-wide
 })
 export class TransactionService {
+  public wallet = localStorage.getItem("type") === null ? 'budget' : localStorage.getItem("type");
   public transactions = [];
   private initialState: AddState = {
     type: 'expense', // default value
@@ -47,11 +47,13 @@ export class TransactionService {
   private _stateOptions = new BehaviorSubject<OptionsDropdown>(initialStateDropdown);
   private _stateAdd = new BehaviorSubject<AddState>(initialState);
   private _stateTransactions = new BehaviorSubject<any>(this.transactions);
+  public _stateWallet = new BehaviorSubject<any>(this.wallet);
 
   // Expose observables to allow components to subscribe to state changes
   stateAdd$ = this._stateAdd.asObservable();
   stateTransactions$ = this._stateTransactions.asObservable();
   stateOptions$ = this._stateOptions.asObservable();
+  stateWallet$ = this._stateWallet.asObservable();
 
   constructor(private firebaseService: FirebaseService) {}
 
@@ -63,6 +65,10 @@ export class TransactionService {
 
   setStateDropdown(updatedValues: OptionsDropdown): void {
     this._stateOptions.next(updatedValues);
+  }
+  
+  setWallet(values: string): void {
+    this._stateWallet.next(values);
   }
 
   resetStateAdd(): void {
@@ -77,21 +83,21 @@ export class TransactionService {
     return this._stateAdd.value;
   }
 
-  async getStateTransactions() {
-    const transaction = await this.firebaseService.getCollectionData('budget');
+  async getStateTransactions(optionValues: string) {
+    const transaction = await this.firebaseService.getCollectionData(optionValues);
    
     return transaction
   }
 
   setLatestTransactions(updatedState: AddState): any {
-    this.firebaseService.addData('budget', updatedState);
+    this.firebaseService.addData(this._stateWallet.value, updatedState);
   }
 
   updateTransaction(id: string, newData: AddState){
-    this.firebaseService.updateData('budget', id, newData);
+    this.firebaseService.updateData(this._stateWallet.value, id, newData);
   }
 
   deleteTransaction(id: string){
-    this.firebaseService.deleteData('budget', id);
+    this.firebaseService.deleteData(this._stateWallet.value, id);
   }
 }

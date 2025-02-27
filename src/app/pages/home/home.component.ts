@@ -1,9 +1,8 @@
 // Angular modules
-import { NgFor, NgIf, NgClass, CurrencyPipe } from '@angular/common';
-import { Component } from '@angular/core';
+import { NgFor, NgIf, NgClass } from '@angular/common';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-
 // Services
 import { TransactionService } from '@services/transaction.service';
 import { StoreService } from '@services/store.service';
@@ -16,6 +15,7 @@ import * as moment from 'moment';
 import { formatMoney } from '@helpers/moneyFormatter.helper';
 import { FirebaseService } from '@services/firebase.service';
 import { calculateTransaction } from '@helpers/transactionSum.helper';
+import formatTransactionDate from '@helpers/formatTransactionDate.helper';
 
 @Component({
   selector: 'app-home',
@@ -25,41 +25,57 @@ import { calculateTransaction } from '@helpers/transactionSum.helper';
   imports: [PageLayoutComponent, NgIf, ProgressBarComponent, NgFor, NgClass],
 })
 export class HomeComponent implements OnInit {
-  public transactions = this.stateService.getStateTransactions();
   public allTransactions: any[] = [];
   public moment = moment;
   public greeting: string = '';
+  public wallet = this.stateService._stateWallet.value;
+  public transactions = this.stateService.getStateTransactions(this.wallet);
+  public loading = true;
 
   constructor(
     public storeService: StoreService,
     public stateService: TransactionService,
     public firebaseService: FirebaseService,
-    private router: Router
+    public router: Router,
+    public cdr: ChangeDetectorRef
   ) {}
   // -------------------------------------------------------------------------------
   // NOTE Init ---------------------------------------------------------------------
   // -------------------------------------------------------------------------------
 
   public ngOnInit(): void {
-    this.getAllTransactions();
+    this.stateService.stateWallet$.subscribe((state) => {
+      this.getAllTransactions(state);
+    });
 
-    setTimeout((_) => {
-      this.storeService.isLoading.set(false);
-    }, 2000);
+    // setTimeout((_) => {
+    //   this.storeService.isLoading.set(false);
+    // }, 2000);
   }
 
-  async getAllTransactions() {
+  async getAllTransactions(walletId: string) {
     try {
-      let transactions = await this.firebaseService.getCollectionData('budget');
-      
-      transactions.sort((a: any, b: any) => 
-        moment(b.date, 'DD-MM-YYYY HH:mm:ss').valueOf() - 
-        moment(a.date, 'DD-MM-YYYY HH:mm:ss').valueOf()
+      let transactions = await this.firebaseService.getCollectionData(walletId);
+
+      transactions.forEach((transaction: any) => {
+        transaction.formattedDate = formatTransactionDate(transaction.date);
+      });
+
+      // Sort transactions by date (newest first)
+      transactions.sort(
+        (a: any, b: any) =>
+          moment(b.formattedDate, 'YYYY-MM-DD HH:mm:ss').valueOf() -
+          moment(a.formattedDate, 'YYYY-MM-DD HH:mm:ss').valueOf()
       );
 
       this.allTransactions = transactions;
+
+      localStorage.setItem('type', walletId);
     } catch (error) {
       console.error('Error fetching data:', error);
+    } finally {
+      this.loading = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -81,7 +97,11 @@ export class HomeComponent implements OnInit {
 
   getGreeting(): string {
     const hour = new Date().getHours();
-    return hour < 12 ? 'Good Morning,' : hour < 18 ? 'Good Afternoon,' : 'Good Evening,';
+    return hour < 12
+      ? 'Good Morning,'
+      : hour < 18
+      ? 'Good Afternoon,'
+      : 'Good Evening,';
   }
 
   // -------------------------------------------------------------------------------

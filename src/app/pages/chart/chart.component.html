@@ -1,8 +1,8 @@
 <app-page-layout>
   <div>
-    <app-progress-bar *ngIf="storeService.isLoading()"></app-progress-bar>
+    <!-- <app-progress-bar *ngIf="storeService.isLoading()"></app-progress-bar>
 
-    <ng-container *ngIf="!storeService.isLoading()">
+    <ng-container *ngIf="!storeService.isLoading()"> -->
       <!-- Header Container -->
       <div class="header-container">
         <div (click)="returnHome()" class="header-between">
@@ -64,7 +64,7 @@
             <div class="transactions-text">
               <h5>{{ transaction.desc }}</h5>
               <h6>
-                {{ moment(transaction.date, "DD-MM-YYYY").format("LLLL") }}
+                {{ transaction.date }}
               </h6>
             </div>
           </div>
@@ -81,6 +81,6 @@
           </div>
         </div>
       </div>
-    </ng-container>
+    <!-- </ng-container> -->
   </div>
 </app-page-layout>

@@ -52,9 +52,10 @@ export class ChartComponent implements OnInit, AfterViewInit {
   public options: OptionsDropdown[] | undefined;
 
   public selectedOptions = this.stateService.getStateDropdown();
-  public transactions = this.stateService.getStateTransactions();
   public allTransactions: any[] = [];
   public amountTransactions: number = 0;
+  public wallet = this.stateService._stateWallet.value;
+  public transactions = this.stateService.getStateTransactions(this.wallet);
 
   public isAscending = true;
   public isAnimating = false;
@@ -96,7 +97,7 @@ export class ChartComponent implements OnInit, AfterViewInit {
   // -------------------------------------------------------------------------------
   async getAllTransactions(option: string | undefined) {
     try {
-      let transactions = await this.firebaseService.getCollectionData('budget');
+      let transactions = await this.firebaseService.getCollectionData(this.wallet);
       const selectedOpts = option?.toLowerCase();
 
       transactions?.sort((a: any, b: any) => b.amount - a.amount);
@@ -146,7 +147,7 @@ export class ChartComponent implements OnInit, AfterViewInit {
 
   async createLineChart() {
     const option = this.selectedOptions;
-    const allTransactions = await this.stateService.getStateTransactions();
+    const allTransactions = await this.stateService.getStateTransactions(this.wallet);
 
     const filterTransactions = allTransactions?.filter(
       (el: any) => el?.type === option?.name?.toLowerCase()

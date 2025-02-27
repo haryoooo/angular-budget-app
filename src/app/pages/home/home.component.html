@@ -1,104 +1,127 @@
 <app-page-layout>
   <div>
-    <app-progress-bar *ngIf="storeService.isLoading()"></app-progress-bar>
+    <!-- <app-progress-bar *ngIf="storeService.isLoading()"></app-progress-bar>
 
-    <ng-container *ngIf="!storeService.isLoading()">
-      <!-- Header Container -->
-      <div class="header-container">
-        <img
-          class="header"
-          src="../../../assets/img/project/header-bg.png"
-          alt="bg-header"
-        />
-        <div class="header__between">
-          <div class="text-white">
-            <h6 class="font-weight-400">{{ getGreeting() }}</h6>
-            <h4>Guest</h4>
+    <ng-container *ngIf="!storeService.isLoading()"> -->
+    <!-- Header Container -->
+    <div class="header-container">
+      <img
+        class="header"
+        src="../../../assets/img/project/header-bg.png"
+        alt="bg-header"
+      />
+      <div class="header__between">
+        <div class="text-white">
+          <h6 class="font-weight-400">{{ getGreeting() }}</h6>
+          <h4>Guest</h4>
+        </div>
+      </div>
+
+      <div class="card-balance">
+        <div class="card-balance-container">
+          <div>
+            <div>
+              Total Balance
+              <span class="cursor-pointer">
+                <img src="../../../assets/img/project/chevron-down.png" />
+              </span>
+            </div>
+            <h4 *ngIf="loading">
+              Rp
+              <span class="h-10"
+                ><img src="../../../assets/img/favicon/beatloader.svg"
+              /></span>
+            </h4>
+            <h4 *ngIf="!loading">Rp {{ calculateTransactions("balance") }}</h4>
+          </div>
+          <div>
+            <div class="cursor-pointer">
+              <img src="../../../assets/img/project/more.png" />
+            </div>
           </div>
         </div>
 
-        <div class="card-balance">
-          <div class="card-balance-container">
-            <div>
-              <div>
-                Total Balance
-                <span class="cursor-pointer">
-                  <img src="../../../assets/img/project/chevron-down.png" />
-                </span>
+        <div class="card-balance-container">
+          <div>
+            <div class="container-income-outcome">
+              <div class="container-text">
+                <div>
+                  <img src="../../../assets/img/project/arrow-down.png" />
+                </div>
+                <div>
+                  <h6>Income</h6>
+                </div>
               </div>
-              <h4>Rp {{ calculateTransactions("balance") }}</h4>
-            </div>
-
-            <div>
-              <div class="cursor-pointer">
-                <img src="../../../assets/img/project/more.png" />
-              </div>
+              <h5 *ngIf="loading">
+                Rp
+                <span class="h-10"
+                  ><img src="../../../assets/img/favicon/beatloader.svg"
+                /></span>
+              </h5>
+              <h5 *ngIf="!loading">Rp {{ calculateTransactions("income") }}</h5>
             </div>
           </div>
 
-          <div class="card-balance-container">
-            <div>
-              <div class="container-income-outcome">
-                <div class="container-text">
-                  <div>
-                    <img src="../../../assets/img/project/arrow-down.png" />
-                  </div>
-                  <div>
-                    <h6>Income</h6>
-                  </div>
+          <div>
+            <div class="container-income-outcome">
+              <div class="container-text">
+                <div>
+                  <img src="../../../assets/img/project/arrow-up.png" />
                 </div>
-                <h5>Rp {{ calculateTransactions("income") }}</h5>
-              </div>
-            </div>
-
-            <div>
-              <div class="container-income-outcome">
-                <div class="container-text">
-                  <div>
-                    <img src="../../../assets/img/project/arrow-up.png" />
-                  </div>
-                  <div>
-                    <h6>Expenses</h6>
-                  </div>
+                <div>
+                  <h6>Expenses</h6>
                 </div>
-                <h5>Rp {{ calculateTransactions("expense") }}</h5>
               </div>
+              <h5 *ngIf="loading">
+                Rp
+                <span class="h-10"
+                  ><img src="../../../assets/img/favicon/beatloader.svg"
+                /></span>
+              </h5>
+              <h5 *ngIf="!loading">
+                Rp {{ calculateTransactions("expense") }}
+              </h5>
             </div>
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="transactions-desc-container mt-20">
-        <div class="transactions-all">Transactions History</div>
-        <div class="transactions-see-all">See All</div>
-      </div>
+    <div class="transactions-desc-container mt-20">
+      <div class="transactions-all">Transactions History</div>
+      <div class="transactions-see-all">See All</div>
+    </div>
 
-      <div class="transactions-wrapper">
+    <div *ngIf="loading" class="header__center">
+      <div>Load Transactions...</div>
+    </div>
+
+    <div *ngIf="!loading" class="transactions-wrapper">
+      <div
+        *ngFor="let transaction of allTransactions"
+        class="transactions-container"
+        (click)="navigateTo('home/transactions', transaction.identifier)"
+      >
+        <div class="transactions-all">
+          <div class="transactions-text">
+            <h5>{{ transaction.desc }}</h5>
+            <h6>
+              {{ transaction.date }}
+            </h6>
+          </div>
+        </div>
         <div
-          *ngFor="let transaction of allTransactions"
-          class="transactions-container"
-          (click)="navigateTo('home/transactions', transaction.identifier)"
+          class="transactions-all"
+          [ngClass]="{
+            'text-danger': transaction.type === 'expense',
+            'text-success': transaction.type === 'income'
+          }"
         >
-          <div class="transactions-all">
-            <div class="transactions-text">
-              <h5>{{ transaction.desc }}</h5>
-              <h6>
-                {{ moment(transaction.date, "DD-MM-YYYY").format("LLLL") }}
-              </h6>
-            </div>
-          </div>
-          <div
-            class="transactions-all"
-            [ngClass]="{
-              'text-danger': transaction.type === 'expense',
-              'text-success': transaction.type === 'income'
-            }"
-          >
-            {{ transaction.type === "expense" ? "-" : "+" }} Rp
-            {{ getFormattedAmount(transaction.amount) }}
-          </div>
+          {{ transaction.type === "expense" ? "-" : "+" }} Rp
+          {{ getFormattedAmount(transaction.amount) }}
         </div>
       </div>
-    </ng-container>
+    </div>
+    <!-- </ng-container> -->
   </div>
 </app-page-layout>

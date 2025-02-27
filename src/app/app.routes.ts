@@ -26,10 +26,6 @@ export const routes : Routes = [
     loadComponent : () => import('./pages/wallet/wallet.component').then(m => m.WalletComponent),
   },
   { path : '', redirectTo : '/home', pathMatch : 'full' },
-  {
-    path          : 'user',
-    loadComponent : () => import('./pages/user/user.component').then(m => m.UserComponent),
-  },
   { path : '', redirectTo : '/user', pathMatch : 'full' },
   {
     path          : '**',

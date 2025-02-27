@@ -12,6 +12,8 @@ import {
   deleteDoc,
 } from 'firebase/firestore';
 import { AddState } from './transaction.service';
+import moment from 'moment';
+import formatFirestoreDate from '@helpers/formatFirestoreDate.helper';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -32,18 +34,25 @@ const db = getFirestore(app);
 })
 export class FirebaseService {
   constructor() {}
+  
 
   // Fetching data from a Firestore collection
-  async getCollectionData(collectionName: string) {
-    const colRef = collection(db, collectionName);
-    const snapshots = await getDocs(colRef);
-    const dataList = snapshots.docs.map((doc) => ({
+async getCollectionData(collectionName: string) {
+  const colRef = collection(db, collectionName);
+  const snapshots = await getDocs(colRef);
+  const dataList = snapshots.docs.map((doc) => {
+  const data: any = doc.data();
+    
+    return {
       identifier: doc.id, // Extract document ID
-      ...doc.data(), // Spread document fields
-    }));
+      ...data, // Spread other document fields
+      date: formatFirestoreDate(data.date) // Format Firestore timestamp
+    };
+  });
+  
 
-    return dataList;
-  }
+  return dataList;
+}
 
   async addData(collectionName: string, payload: AddState) {
     try {
@@ -74,3 +83,4 @@ export class FirebaseService {
     }
   }
 }
+
