@@ -1,16 +1,24 @@
-import { readFileSync, writeFileSync } from "fs";
-import dotenv from "dotenv";
+import fs from 'fs';
 
-// Load environment variables from .env file
-dotenv.config();
+// Define environment variables
+const envConfig = `
+window.env = {
+  NG_APP_API_BASE_URL: "${process.env.NG_APP_API_BASE_URL || ''}",
+  NG_APP_NAME: "${process.env.NG_APP_NAME || 'Budget Tracker App'}",
+  NG_APP_DEFAULT_LANGUAGE: "${process.env.NG_APP_DEFAULT_LANGUAGE || 'en'}",
+  NG_APP_API_KEY: "${process.env.NG_APP_API_KEY || ''}",
+  NG_APP_AUTH_DOMAIN: "${process.env.NG_APP_AUTH_DOMAIN || ''}",
+  NG_APP_PROJECT_ID: "${process.env.NG_APP_PROJECT_ID || ''}",
+  NG_APP_STORAGE_BUCKET: "${process.env.NG_APP_STORAGE_BUCKET || ''}",
+  NG_APP_MESSAGING_ID: "${process.env.NG_APP_MESSAGING_ID || ''}",
+  NG_APP_APP_ID: "${process.env.NG_APP_APP_ID || ''}"
+};
+`;
 
-// Read template
-let envTemplate = readFileSync("env-template.js", "utf8");
+// Ensure the 'src/assets/' directory exists
+fs.mkdirSync('src/assets', { recursive: true });
 
-// Replace placeholders with actual values
-let envContent = envTemplate.replace(/\${(.*?)}/g, (_, key) => process.env[key] || "");
+// Write to env.js file
+fs.writeFileSync('src/assets/env.js', envConfig);
 
-// Write `env.js` in `src/`
-writeFileSync("src/env.js", envContent);
-
-console.log("✅ env.js generated successfully!");
+console.log('✅ env.js file generated successfully!');

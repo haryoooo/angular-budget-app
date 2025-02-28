@@ -44,6 +44,7 @@
     },
     "useDefineForClassFields": false,
   },
+  "include": ["src", "src/environments/env.d.ts"],
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,

@@ -21,7 +21,6 @@ yarn-error.log
 *.sublime-workspace
 .env
 /environments
-/src/assets/env.js
 
 # Visual Studio Code
 .vscode/*
