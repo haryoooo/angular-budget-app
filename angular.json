@@ -27,7 +27,7 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "assets": ["src/assets/img/favicon/favicon.ico", "src/assets", "src/app/assets/env.js"],
+            "assets": ["src/assets/img/favicon/favicon.ico", "src/assets", "src/assets/env.js"],
             "styles": [
               "src/assets/scss/styles.scss",
               "node_modules/primeng/resources/themes/lara-light-blue/theme.css",
