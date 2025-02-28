@@ -15,7 +15,6 @@ interface Environment {
   messagingSenderId: string;
   appId: string;
 }
-
 // Access environment variables properly in TypeScript
 // NOTE: In Angular, process.env is not directly available
 // We'll need to use window and appropriate type handling
