@@ -5,6 +5,10 @@
     <title>Budget Tracker App</title>
     <base href="/" />
 
+    
+     <!-- Load env.js BEFORE Angular loads -->
+     <script src="assets/env.js"></script>
+
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
@@ -45,8 +49,5 @@
   </head>
   <body>
     <app-root></app-root>
-
-    <!-- ✅ Load env.js dynamically before main.js -->
-    <script src="assets/env.js"></script>
   </body>
 </html>

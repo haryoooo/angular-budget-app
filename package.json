@@ -4,12 +4,11 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "npm run generate-env && ng build",
-    "generate-env": "echo 'window.env = { NG_APP_SCHEME: \"${NG_APP_SCHEME}\", NG_APP_HOST: \"${NG_APP_HOST}\", NG_APP_PORT: \"${NG_APP_PORT}\", NG_APP_PATH: \"${NG_APP_PATH}\", NG_APP_NAME: \"${NG_APP_NAME}\", NG_APP_ENV_NAME: \"${NG_APP_ENV_NAME}\", NG_APP_DEFAULT_LANGUAGE: \"${NG_APP_DEFAULT_LANGUAGE}\", NG_APP_API_KEY: \"${NG_APP_API_KEY}\", NG_APP_AUTH_DOMAIN: \"${NG_APP_AUTH_DOMAIN}\", NG_APP_PROJECT_ID: \"${NG_APP_PROJECT_ID}\", NG_APP_STORAGE_BUCKET: \"${NG_APP_STORAGE_BUCKET}\", NG_APP_MESSAGING_ID: \"${NG_APP_MESSAGING_ID}\", NG_APP_APP_ID: \"${NG_APP_APP_ID}\" };' > src/assets/env.js",
+    "prebuild": "node generate-env.js",
+    "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "add-page": "ng g m pages/page-name --routing && ng g component pages/page-name --skip-tests",
-    "postbuild": "echo \"window.env = { NG_APP_SCHEME: '$NG_APP_SCHEME', NG_APP_HOST: '$NG_APP_HOST', NG_APP_PORT: '$NG_APP_PORT', NG_APP_PATH: '$NG_APP_PATH', NG_APP_NAME: '$NG_APP_NAME', NG_APP_ENV_NAME: '$NG_APP_ENV_NAME', NG_APP_DEFAULT_LANGUAGE: '$NG_APP_DEFAULT_LANGUAGE', NG_APP_API_KEY: '$NG_APP_API_KEY', NG_APP_AUTH_DOMAIN: '$NG_APP_AUTH_DOMAIN', NG_APP_PROJECT_ID: '$NG_APP_PROJECT_ID', NG_APP_STORAGE_BUCKET: '$NG_APP_STORAGE_BUCKET', NG_APP_MESSAGING_ID: '$NG_APP_MESSAGING_ID', NG_APP_APP_ID: '$NG_APP_APP_ID' };\" > src/assets/env.js"
+    "add-page": "ng g m pages/page-name --routing && ng g component pages/page-name --skip-tests"
   },
   "private": true,
   "dependencies": {
@@ -40,17 +39,21 @@
     "zone.js": "~0.14.4"
   },
   "devDependencies": {
+    "@analogjs/vite-plugin-angular": "^1.14.0",
     "@angular-devkit/build-angular": "^18.0.2",
     "@angular/cli": "^18.0.2",
     "@angular/compiler-cli": "^18.0.1",
     "@types/jasmine": "~3.10.0",
-    "@types/node": "^12.11.1",
+    "@types/node": "^20.17.19",
+    "dotenv-webpack": "^8.1.0",
     "jasmine-core": "~4.0.0",
     "karma": "~6.3.0",
     "karma-chrome-launcher": "~3.1.0",
     "karma-coverage": "~2.1.0",
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "~1.7.0",
-    "typescript": "~5.4.5"
+    "typescript": "~5.4.5",
+    "vite": "^6.2.0",
+    "vite-plugin-env-compatible": "^2.0.1"
   }
 }

@@ -21,7 +21,7 @@ const firebaseConfig = {
   authDomain: environment.authDomain,
   projectId: environment.projectId,
   storageBucket: environment.storageBucket,
-  messagingSenderId: environment.messagingId,
+  messagingSenderId: environment.messagingSenderId,
   appId: environment.appId,
 };
 
@@ -34,7 +34,6 @@ const db = getFirestore(app);
 })
 export class FirebaseService {
   constructor() {}
-  
 
   // Fetching data from a Firestore collection
 async getCollectionData(collectionName: string) {
