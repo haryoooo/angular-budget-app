@@ -42,7 +42,7 @@
       "@services/*": ["src/app/shared/services/*"],
       "@env/*": ["src/environments/*"]
     },
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

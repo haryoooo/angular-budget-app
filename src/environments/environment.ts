@@ -2,33 +2,32 @@
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-// Enums
-import { EnvName } from '@enums/environment.enum';
-
 // Packages
+import { EnvConfig } from 'env';
 import packageInfo from '../../package.json';
 
-const scheme = process.env['NG_APP_SCHEME'] || 'http://';
-const host = process.env['NG_APP_HOST'] || 'localhost';
-const port = process.env['NG_APP_PORT'] || ':5000';
-const path = process.env['NG_APP_PATH'] || '/api/';
+// Enums
+const scheme = 'http://';
+const host = 'localhost';
+const port = ':5000';
+const path = '/api/';
 
 const baseUrl = scheme + host + port + path;
 
 export const environment = {
-  production: false,
+  production: (window.env as EnvConfig)?.NG_APP_ENV_NAME !== 'LOCAL',
   version: packageInfo.version,
-  appName: process.env['NG_APP_NAME'] || 'Expense Tracker App',
-  envName: process.env['NG_APP_ENV_NAME'] || EnvName.LOCAL,
-  defaultLanguage: process.env['NG_APP_DEFAULT_LANGUAGE'] || 'en',
-  apiBaseUrl: baseUrl,
-  apiKey: process.env['NG_APP_API_KEY'] || '',
-  authDomain: process.env['NG_APP_AUTH_DOMAIN'] || '',
-  projectId: process.env['NG_APP_PROJECT_ID'] || '',
-  storageBucket: process.env['NG_APP_STORAGE_BUCKET'] || '',
-  messagingId: process.env['NG_APP_MESSAGING_ID'] || '',
-  appId: process.env['NG_APP_APP_ID'] || '',
+  apiBaseUrl: `${(window.env as EnvConfig)?.NG_APP_SCHEME}${(window.env as EnvConfig)?.NG_APP_HOST}${(window.env as EnvConfig)?.NG_APP_PORT}${(window.env as EnvConfig)?.NG_APP_PATH}`,
+  appName: (window.env as EnvConfig)?.NG_APP_NAME,
+  defaultLanguage: (window.env as EnvConfig)?.NG_APP_DEFAULT_LANGUAGE,
+  apiKey: (window.env as EnvConfig)?.NG_APP_API_KEY,
+  authDomain: (window.env as EnvConfig)?.NG_APP_AUTH_DOMAIN,
+  projectId: (window.env as EnvConfig)?.NG_APP_PROJECT_ID,
+  storageBucket: (window.env as EnvConfig)?.NG_APP_STORAGE_BUCKET,
+  messagingId: (window.env as EnvConfig)?.NG_APP_MESSAGING_ID,
+  appId: (window.env as EnvConfig)?.NG_APP_APP_ID,
 };
+
 
 /*
  * For easier debugging in development mode, you can import the following file
