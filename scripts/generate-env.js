@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // Read template
-let envTemplate = readFileSync("env.template.js", "utf8");
+let envTemplate = readFileSync("env-template.js", "utf8");
 
 // Replace placeholders with actual values
 let envContent = envTemplate.replace(/\${(.*?)}/g, (_, key) => process.env[key] || "");
