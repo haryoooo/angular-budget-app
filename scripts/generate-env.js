@@ -1,7 +1,8 @@
 import { readFileSync, writeFileSync } from "fs";
+import dotenv from "dotenv";
 
 // Load environment variables from .env file
-require("dotenv").config();
+dotenv.config();
 
 // Read template
 let envTemplate = readFileSync("env.template.js", "utf8");
