@@ -12,22 +12,21 @@ const host = 'localhost';
 const port = ':5000';
 const path = '/api/';
 
-const baseUrl = scheme + host + port + path;
+const env = window['env'] || {};
 
 export const environment = {
-  production: (window.env as EnvConfig)?.NG_APP_ENV_NAME !== 'LOCAL',
+  production: false,
   version: packageInfo.version,
-  apiBaseUrl: `${(window.env as EnvConfig)?.NG_APP_SCHEME}${(window.env as EnvConfig)?.NG_APP_HOST}${(window.env as EnvConfig)?.NG_APP_PORT}${(window.env as EnvConfig)?.NG_APP_PATH}`,
-  appName: (window.env as EnvConfig)?.NG_APP_NAME,
-  defaultLanguage: (window.env as EnvConfig)?.NG_APP_DEFAULT_LANGUAGE,
-  apiKey: (window.env as EnvConfig)?.NG_APP_API_KEY,
-  authDomain: (window.env as EnvConfig)?.NG_APP_AUTH_DOMAIN,
-  projectId: (window.env as EnvConfig)?.NG_APP_PROJECT_ID,
-  storageBucket: (window.env as EnvConfig)?.NG_APP_STORAGE_BUCKET,
-  messagingId: (window.env as EnvConfig)?.NG_APP_MESSAGING_ID,
-  appId: (window.env as EnvConfig)?.NG_APP_APP_ID,
+  apiBaseUrl: `${env.NG_APP_SCHEME}${env.NG_APP_HOST}${env.NG_APP_PORT}${env.NG_APP_PATH}` || "http://localhost:5000/api/",
+  appName: env.NG_APP_NAME || "Budget Tracker App",
+  defaultLanguage: env.NG_APP_DEFAULT_LANGUAGE || "en",
+  apiKey: env.NG_APP_API_KEY || "",
+  authDomain: env.NG_APP_AUTH_DOMAIN || "",
+  projectId: env.NG_APP_PROJECT_ID || "",
+  storageBucket: env.NG_APP_STORAGE_BUCKET || "",
+  messagingId: env.NG_APP_MESSAGING_ID || "",  // ✅ Corrected
+  appId: env.NG_APP_APP_ID || "",
 };
-
 
 /*
  * For easier debugging in development mode, you can import the following file
