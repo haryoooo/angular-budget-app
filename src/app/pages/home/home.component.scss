@@ -35,11 +35,11 @@
 
 .card-balance {
   position: absolute;
-  top: 45%;
+  top: 40%;
   left: 50%;
   transform: translateX(-50%);
   width: 90%;
-  max-width: 450px;
+  max-width: 500px;
   font-weight: 700;
   color: white;
   line-height: 1.5;
@@ -69,25 +69,35 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 10px;
+  padding: 5px 10px;
+}
+
+.header-balance {
+  font-size: large;
+  margin-bottom: 10px;
 }
 
 .card-balance-container h4 {
   font-size: 1.75rem;
-  font-weight: bold;
+  font-weight: 700;
+}
+
+.container-income-outcome h5 {
+  font-size: 1.1rem;
+  font-weight: 700;
 }
 
 .transactions-wrapper {
-  max-height: 40vh;
-  overflow-y: auto;
+  max-height: 38vh;
+  overflow-y: scroll;
   width: 100%;
-  padding: 10px;
 }
 
 .transactions-desc-container,
 .transactions-container {
   display: flex;
   justify-content: space-between;
-  padding: 12px 16px;
+  padding: 10px;
 }
 
 .transactions-container:hover {
@@ -108,14 +118,28 @@
   cursor: pointer;
 }
 
+.transactions-text {
+  padding: 0px 5px;
+}
+
+.transactions-text h5 {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.transactions-text h6 {
+  font-size: 13px;
+  color: #666666;
+}
+
 .text-danger {
   color: red;
-  font-size: 1.1rem;
+  font-size: 16px;
 }
 
 .text-success {
   color: green;
-  font-size: 1.1rem;
+  font-size: 16px;
 }
 
 .h-10 img {
@@ -125,14 +149,14 @@
 }
 
 .mt-20 {
-  margin-top: 40px;
+  margin-top: 18%;
 }
 
 .container-income-outcome {
   display: flex;
   flex-direction: column;
   align-items: flex-start; /* Align everything to the left */
-  gap: 8px;
+  gap: 6px;
   margin-top: 10px;
 }
 
@@ -184,9 +208,9 @@
     margin-left: 2%;
   }
 
-  .transactions-wrapper {
-    max-height: 45vh;
-  }
+  // .transactions-wrapper {
+  //   max-height: 80vh;
+  // }
 
   .card-balance {
     font-size: 0.9rem;
@@ -213,13 +237,9 @@
     flex-direction: column;
   }
 
-  .transactions-wrapper {
-    max-height: 50vh;
-  }
-
-  .transactions-container {
-    flex-direction: column;
-  }
+  // .transactions-wrapper {
+  //   max-height: 80vh;
+  // }
 
   .card-balance-container h4 {
     font-size: 1.25rem;

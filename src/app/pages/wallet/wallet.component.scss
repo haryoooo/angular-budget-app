@@ -200,16 +200,15 @@
 
 @media (max-width: 480px) {
   .header-container {
-    height: 18vh;
+    height: 22vh;
     padding: 10px;
   }
 
   .content-container {
     width: 100%;
-    max-width: 90%;
     padding: 20px;
     top: 18%;
-    min-height: calc(100vh - 100px);
+    min-height: calc(88vh - 100px);
   }
 
   .btn-next {

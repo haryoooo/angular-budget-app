@@ -36,7 +36,7 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  padding-top: 30px;
+  padding: 10px;
   gap: 15px;
   flex-wrap: wrap;
 }
@@ -51,7 +51,7 @@
 canvas {
   max-width: 100%;
   height: auto;
-  margin-top: 30px;
+  margin-top: 20px;
 }
 
 .transactions-wrapper {
@@ -87,32 +87,34 @@ canvas {
 .transactions-all {
   font-weight: 600;
   gap: 15px;
-  font-size: clamp(14px, 2vw, 18px);
+  font-size: 16px;
 
   h4 {
-    font-size: clamp(14px, 2vw, 18px);
+    font-size: 16px;
   }
 
   .transactions-text {
     h5 {
-      font-size: clamp(13px, 2vw, 16px);
+      font-size: 15px;
     }
 
     h6 {
-      font-size: clamp(12px, 1.5vw, 14px);
-      font-weight: 300;
+      font-size: 13px;
+      font-weight: 400;
     }
   }
 }
 
+
+
 .text-danger {
   color: red;
-  font-size: clamp(14px, 2vw, 18px);
+  font-size: 16px;
 }
 
 .text-success {
   color: green;
-  font-size: clamp(14px, 2vw, 18px);
+  font-size: 16px;
 }
 
 .sort-button {
@@ -152,7 +154,6 @@ canvas {
 
 @media (max-width: 480px) {
   .header-between {
-    flex-direction: column;
     align-items: center;
     text-align: center;
     gap: 10px;
@@ -162,13 +163,13 @@ canvas {
     height: 25vh;
   }
 
-  .transactions-all {
-    font-size: 14px;
+  // .transactions-all {
+  //   font-size: 16px;
 
-    h4 {
-      font-size: 14px;
-    }
-  }
+  //   h4 {
+  //     font-size: 16px;
+  //   }
+  // }
 }
 
 ::ng-deep .p-dropdown-panel .p-dropdown-items {
