@@ -237,7 +237,7 @@
 
 @media (max-width: 768px) {  
   :host ::ng-deep .p-toast-message {
-    padding: 0px 28px !important; /* Apply padding to the message */
+    padding: 0px 36px !important; /* Apply padding to the message */
     border-radius: 8px !important; /* Add rounded corners */
   }
 }  
