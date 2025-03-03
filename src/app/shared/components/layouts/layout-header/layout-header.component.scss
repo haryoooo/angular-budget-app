@@ -22,8 +22,6 @@
   bottom: 13%; /* Ensures proper positioning over nav */
   transform: translate(-50%, 50%);
   width: 150px;
-  height: 150px;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -44,8 +42,7 @@
   }
 
   .nav-add-activity-btn {
-    bottom: 14%;
+    bottom: 13%;
     width: 100px;
-    height: 100px;
   }
 }
