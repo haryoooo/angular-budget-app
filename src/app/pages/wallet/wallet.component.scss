@@ -1,5 +1,5 @@
 .header-container {
-  background-color: #438883;
+  background-color: #429690;
   padding: 15px;
   height: 25vh;
   position: relative;
@@ -45,7 +45,7 @@
   z-index: 100;
   
   /* Adjusting height to fit navigation */
-  min-height: calc(80vh - 75px);
+  min-height: calc(80vh - 100px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -111,7 +111,7 @@
 
 .option-item.selected {
   background-color: #e8f5f2;
-  border: 1px solid #438883;
+  border: 1px solid #429690;
 }
 
 .option-icon {
@@ -144,11 +144,11 @@
 }
 
 .option-checkmark {
-  color: #438883;
+  color: #429690;
 }
 
 .btn-next {
-  background-color: #438883;
+  background-color: #429690;
   color: white;
   border: none;
   padding: 15px;
@@ -208,7 +208,7 @@
     width: 100%;
     padding: 20px;
     top: 18%;
-    min-height: calc(87vh - 100px);
+    min-height: calc(85vh - 100px);
   }
 
   .btn-next {

@@ -19,7 +19,7 @@
 .nav-add-activity-btn {
   position: absolute;
   left: 50%;
-  bottom: 12%; /* Ensures proper positioning over nav */
+  bottom: 13%; /* Ensures proper positioning over nav */
   transform: translate(-50%, 50%);
   width: 150px;
   height: 150px;
@@ -44,8 +44,8 @@
   }
 
   .nav-add-activity-btn {
-    bottom: 12%;
-    width: 120px;
-    height: 120px;
+    bottom: 14%;
+    width: 100px;
+    height: 100px;
   }
 }
