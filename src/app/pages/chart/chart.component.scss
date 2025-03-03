@@ -1,82 +1,83 @@
 .header-container {
   position: relative;
   width: 100%;
-  height: 100%;
-  margin: 50px 0px 50px 0px;
-}
-
-.header {
-  background-repeat: no-repeat;
-  background-size: contain;
-  width: 100%;
-  height: 100%;
+  height: auto;
+  margin: 40px 0;
+  padding: 0 16px;
 }
 
 .header-between {
-  position: absolute;
-  top: 30%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 90%;
-  padding: 10px 0px;
+  width: 100%;
   max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 0;
+}
+
+.header-between img {
+  width: 24px;
+  height: 24px;
 }
 
 .header-center {
   display: flex;
-  gap: 20px;
   justify-content: center;
   align-items: center;
-  padding: 50px 0px 0px 0px;
-  max-width: 500px;
-  overflow: hidden;
+  padding-top: 30px;
+  gap: 15px;
+  max-width: 100%;
+  flex-wrap: wrap;
 }
 
 .header-end {
   display: flex;
-  gap: 20px;
   justify-content: flex-end;
   align-items: center;
-  padding: 50px 20px 0px 0px;
+  padding-top: 30px;
+  gap: 15px;
+  flex-wrap: wrap;
 }
 
 .canvas-container {
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
 }
 
 canvas {
   max-width: 100%;
   height: auto;
-  margin-top: 50px;
+  margin-top: 30px;
 }
 
 .transactions-wrapper {
-  height: 38vh;
-  /* Set the height to 50% of the viewport height */
+  height: 35vh;
   overflow-y: auto;
-  /* Enable vertical scrolling */
   width: 100%;
-  /* Ensure it takes full width */
+  padding: 0 10px;
 }
 
 .transactions-desc-container,
 .transactions-container {
   display: flex;
   justify-content: space-between;
-  padding: 10px 20px;
+  align-items: center;
+  padding: 12px 16px;
+}
+
+.transactions-container {
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  border-radius: 12px;
 }
 
 .transactions-container:hover {
   background-color: #29756f;
-  margin: 0px 5px;
+  transform: scale(1.02);
   color: white;
-  border-radius: 16px;
-  cursor: pointer;
 }
 
 .transactions-container:hover h4 {
@@ -85,20 +86,20 @@ canvas {
 
 .transactions-all {
   font-weight: 600;
-  gap: 20px;
-  font-size: 18px;
+  gap: 15px;
+  font-size: clamp(14px, 2vw, 18px);
 
   h4 {
-    font-size: 18px;
+    font-size: clamp(14px, 2vw, 18px);
   }
 
   .transactions-text {
     h5 {
-      font-size: 16px;
+      font-size: clamp(13px, 2vw, 16px);
     }
 
     h6 {
-      font-size: 13px;
+      font-size: clamp(12px, 1.5vw, 14px);
       font-weight: 300;
     }
   }
@@ -106,20 +107,12 @@ canvas {
 
 .text-danger {
   color: red;
-  font-size: 18px;
+  font-size: clamp(14px, 2vw, 18px);
 }
 
 .text-success {
   color: green;
-  font-size: 18px;
-}
-
-.mt-20 {
-  margin-top: 2%;
-}
-
-.font-weight-400 {
-  font-weight: 400;
+  font-size: clamp(14px, 2vw, 18px);
 }
 
 .sort-button {
@@ -128,38 +121,53 @@ canvas {
 }
 
 .sort-button:active {
-  transform: scale(0.8); /* Button shrinks slightly when clicked */
+  transform: scale(0.85);
+}
+
+.mt-20 {
+  margin-top: 20px;
+}
+
+@media (max-width: 1024px) {
+  .transactions-wrapper {
+    height: 30vh;
+  }
 }
 
 @media (max-width: 768px) {
-  .transactions-wrapper {
-    height: 30vh;
-    /* Set the height to 40% of the viewport height */
+  .header-between {
+    width: 100%;
+    padding: 0 10px;
   }
 
-  .container-income-outcome {
-    margin: 10px 0;
+  .transactions-wrapper {
+    height: 28vh;
+    padding: 0 5px;
   }
 
   .transactions-all {
-    h4 {
-      font-size: 16px;
-    }
+    font-size: 16px;
   }
 }
 
 @media (max-width: 480px) {
+  .header-between {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+  }
+
   .transactions-wrapper {
-    height: 30vh;
-    /* Set the height to 40% of the viewport height */
+    height: 25vh;
   }
 
-  .header__between {
-    width: 95%;
-  }
+  .transactions-all {
+    font-size: 14px;
 
-  .container-income-outcome h5 {
-    font-size: 1rem;
+    h4 {
+      font-size: 14px;
+    }
   }
 }
 
@@ -168,20 +176,16 @@ canvas {
 }
 
 ::ng-deep .p-dropdown-item {
-  // padding: 4px 8px !important; /* Adjust padding to remove extra space */
   margin: 0 !important;
   text-align: left !important;
 }
 
 ::ng-deep .p-dropdown-item.p-highlight {
-  background-color: lightgray !important; /* Light green for selected */
+  background-color: lightgray !important;
   color: #666666 !important;
 }
 
 ::ng-deep .p-dropdown:hover {
-  box-shadow: #666666 !important; /* Green shadow */
-  border-color: #666666 !important; /* Optional: Green border */
+  box-shadow: 0 2px 5px rgba(102, 102, 102, 0.3) !important;
+  border-color: #666666 !important;
 }
-
-
-

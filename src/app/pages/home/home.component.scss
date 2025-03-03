@@ -1,7 +1,7 @@
 .header-container {
   position: relative;
   width: 100%;
-  padding-top: 56.25%; /* 16:9 Aspect Ratio */
+  aspect-ratio: 16 / 9; /* Responsive aspect ratio */
 }
 
 .header {
@@ -10,21 +10,17 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
+  object-fit: cover; /* Ensures image fits without distortion */
 }
 
 .header__between {
   position: absolute;
-  top: 30%;
+  top: 25%;
   left: 50%;
   transform: translate(-50%, -50%);
   display: flex;
   justify-content: space-between;
-  align-items: center;
   width: 90%;
-  padding: 10px 0px;
   max-width: 1200px;
 }
 
@@ -32,163 +28,200 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 50px auto;
+  margin: 40px auto;
   font-weight: 400;
+  font-size: 1.2rem;
 }
 
 .card-balance {
   position: absolute;
   top: 45%;
-  left: 5%;
+  left: 50%;
+  transform: translateX(-50%);
   width: 90%;
   max-width: 450px;
   font-weight: 700;
   color: white;
   line-height: 1.5;
   padding: 20px;
-  font-size: 16px;
-  border: 1px solid transparent;
   border-radius: 16px;
   background-color: #438883;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  max-width: 100%;
+  padding: 16px;
+}
+
+/* Adjust the balance card for responsiveness */
+.balance-card {
+  width: 100%;
+  max-width: 400px; /* Prevents it from stretching too wide */
+  margin: 0 auto; /* Centers it */
+  padding: 16px;
+  border-radius: 12px;
 }
 
 .card-balance-container {
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .card-balance-container h4 {
-  font-size: 1.875rem;
-  margin-top: 10px;
-  font-weight: bold;
-}
-
-.container-income-outcome {
-  margin: 10px 0px;
-}
-
-.container-text {
-  display: flex;
-  justify-content: flex-start;
-  flex-direction: row;
-  color: #d0e5e4;
-  font-size: 16px;
-}
-
-.container-text img {
-  margin: 8px 5px 0px 0px;
-}
-
-.container-text h6 {
-  margin-top: 10px;
-}
-
-.container-income-outcome h5 {
-  font-size: 1.25rem;
+  font-size: 1.75rem;
   font-weight: bold;
 }
 
 .transactions-wrapper {
-  height: 30vh; /* Set the height to 50% of the viewport height */
-  overflow-y: auto; /* Enable vertical scrolling */
-  width: 100%; /* Ensure it takes full width */
+  max-height: 40vh;
+  overflow-y: auto;
+  width: 100%;
+  padding: 10px;
 }
 
 .transactions-desc-container,
 .transactions-container {
   display: flex;
   justify-content: space-between;
-  padding: 10px 20px;
+  padding: 12px 16px;
 }
 
 .transactions-container:hover {
   background-color: #f1f7f7;
-  border-radius: 16px;
+  border-radius: 12px;
   cursor: pointer;
 }
 
 .transactions-all {
   font-weight: 600;
-  font-size: 18px;
-  gap: 20px;
-
-  .transactions-text {
-    h5 {
-      font-size: 16px;
-    }
-
-    h6 {
-      font-size: 13px;
-      font-weight: 300;
-    }
-  }
+  font-size: 1rem;
+  gap: 15px;
 }
 
 .transactions-see-all {
-  font-size: 14px;
+  font-size: 0.9rem;
   font-weight: 400;
   cursor: pointer;
 }
 
 .text-danger {
   color: red;
-  font-size: 18px;
+  font-size: 1.1rem;
 }
 
 .text-success {
   color: green;
-  font-size: 18px;
-}
-
-.mt-20 {
-  margin-top: 20%;
-}
-
-.font-weight-400 {
-  font-weight: 400;
+  font-size: 1.1rem;
 }
 
 .h-10 img {
-  height: 1.5em; /* Matches the size of the text */
-  width: auto; /* Keeps aspect ratio */
-  vertical-align: middle; /* Aligns with text */
+  height: 1.5em;
+  width: auto;
+  vertical-align: middle;
+}
+
+.mt-20 {
+  margin-top: 40px;
+}
+
+.container-income-outcome {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align everything to the left */
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.container-text {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Space between the image and text */
+}
+
+.container-text img {
+  width: 20px; /* Adjust image size */
+  height: auto;
+  display: block;
+}
+
+.container-text h6 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Keep floating button in place */
+.floating-button {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+}
+
+/* Navbar adjustments */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px;
+}
+
+/* Transactions history remains centered */
+.transactions-history {
+  padding: 16px;
 }
 
 @media (max-width: 768px) {
-  .transactions-wrapper {
-    height: 38vh; /* Set the height to 40% of the viewport height */
-  }
-
-  .card-balance {
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    max-width: none;
-  }
-
-  .container-income-outcome {
-    margin: 10px 0;
-  }
-}
-
-@media (max-width: 480px) {
-  .transactions-wrapper {
-    height: 38vh; /* Set the height to 40% of the viewport height */
-  }
-
   .header__between {
     width: 95%;
+    top: 20%;
+    margin-left: 2%;
+  }
+
+  .transactions-wrapper {
+    max-height: 45vh;
   }
 
   .card-balance {
-    font-size: 14px;
+    font-size: 0.9rem;
+    padding: 15px;
   }
 
   .card-balance-container h4 {
     font-size: 1.5rem;
   }
 
-  .container-income-outcome h5 {
-    font-size: 1rem;
+  .balance-card {
+    padding: 12px;
+  }
+  .balance-card h2 {
+    font-size: 18px;
+  }
+  .balance-card p {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header__between {
+    flex-direction: column;
+  }
+
+  .transactions-wrapper {
+    max-height: 50vh;
+  }
+
+  .transactions-container {
+    flex-direction: column;
+  }
+
+  .card-balance-container h4 {
+    font-size: 1.25rem;
   }
 }

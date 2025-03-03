@@ -1,42 +1,42 @@
-// .navbar-brand {
-//   img {
-//     width: 38px;
-//     display: inline-block;
-//     vertical-align: middle;
-//   }
-//   .title-wrapper {
-//     vertical-align: middle;
-//     display: inline-block;
-//     border-left: 1px solid #adadad;
-//     padding-left: 15px;
-//     margin-left: 15px;
-//     span {
-//       display: block;
-//       &.subtitle {
-//         font-size: 71%;
-//       }
-//     }
-//   }
-// }
 .nav-container {
-  position: fixed; /* Fixes the nav to the bottom of the viewport */
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
   max-width: 500px;
-  bottom: 0; /* Positions the nav at the bottom */
-  width: 100%; /* Ensures the nav spans the full width of the viewport */
-  background: var(--white); /* Uses a CSS variable for the background color */
-  display: flex; /* Uses flexbox for layout */
-  justify-content: space-between; /* Distributes space evenly between children */
-  padding: 20px; /* Adds padding for better spacing */
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1); /* Adds a slight shadow for depth */
-  z-index: 500; /* Ensures it stays on top of other elements */
+  width: 100%;
+  background: var(--white);
+  background-color: white !important; /* Ensures full opacity */
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 10000;
+  opacity: 1;
+  border-top: 1px solid rgba(0, 0, 0, 0.1); /* Adds a separator line */
 }
 
+/* Ensure main content has enough bottom padding */
+.main-content {
+  padding-bottom: 100px; /* More space to avoid overlap */
+}
+
+/* Ensures the floating button is above everything */
 .nav-add-activity-btn {
   position: absolute;
-  left: 50%;  /* Centers horizontally */
-  bottom: 0;  /* Aligns to the bottom */
-  transform: translateX(-50%);  /* Adjusts position to be centered */
-  margin: 0px 0px 60px 0px;
-  z-index: 1000;
+  left: 50%;
+  bottom: 60px; /* Ensures it doesn't overlap with nav */
+  transform: translateX(-50%);
+  z-index: 10001; /* Higher than the nav to ensure visibility */
 }
 
+@media (max-width: 768px) {
+  .nav-container {
+    max-width: 100%; /* Full width on smaller screens */
+    padding: 15px;
+  }
+
+  .nav-add-activity-btn {
+    bottom: 70px;
+  }
+}
