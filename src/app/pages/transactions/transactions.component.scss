@@ -45,7 +45,7 @@
   border-radius: 16px;
   min-width: 350px;
   max-width: 450px;
-  z-index: 2000;
+  // z-index: 2000;
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 
@@ -157,11 +157,14 @@
 
 :host ::ng-deep .custom-toast {
   width: 55vh; /* Adjust width as needed */
+  z-index: 99999 !important; /* Ensure it stays on top */
 }
 
 :host ::ng-deep .p-toast-message {
-  padding: 0px 20px !important; /* Apply padding to the message */
+  padding: 0px 40px !important; /* Apply padding to the message */
   border-radius: 8px !important; /* Add rounded corners */
+  z-index: 99999 !important; /* Ensure it stays on top */
+  position: fixed !important; /* Prevent it from being affected by relative parents */
 }
 
 .dot-button {
@@ -183,7 +186,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2200; /* Ensure it stays on top */
+  z-index: 2200 !important; /* Ensure it stays on top */
 }
 
 .modal-overlay div {
@@ -194,7 +197,7 @@
   max-width: 400px;
   width: 90%;
   text-align: center;
-  z-index: 10000; /* Higher than overlay */
+  z-index: 1000 !important; /* Higher than overlay */
 }
 
 .btn-confirm, .btn-cancel {
@@ -231,3 +234,10 @@
   width: auto; /* Keeps aspect ratio */
   vertical-align: middle; /* Aligns with text */
 }
+
+@media (max-width: 768px) {  
+  :host ::ng-deep .p-toast-message {
+    padding: 0px 28px !important; /* Apply padding to the message */
+    border-radius: 8px !important; /* Add rounded corners */
+  }
+}  

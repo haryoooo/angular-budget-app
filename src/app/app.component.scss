@@ -3,35 +3,13 @@
   --safe-area-inset-bottom: env(safe-area-inset-bottom);
 }
 
-.notch-background {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: env(safe-area-inset-top); /* Apply only to the notch area */
-  background-color: #1b7565; /* Match your theme color */
-  z-index: 9999; /* Ensure it stays above other elements */
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: env(safe-area-inset-top);
-  background-color: #1b7565;
-  z-index: 9999;
-}
-
-
 .scrollable-container {
-  height: 100vh;
+  // height: 100vh;
   display: block;
   .layout {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    // min-height: 100vh;
     padding: 0;
     margin: auto;
     max-width: 500px;
