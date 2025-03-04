@@ -36,16 +36,15 @@
   gap: 10px;
   position: absolute;
   background-color: white;
-  top: 60%;
+  top: 62%;
   left: 50%;
   transform: translate(-50%, -50%);
   margin: auto;
   border: 1px solid white;
   padding: 10px;
   border-radius: 16px;
-  min-width: 350px;
+  min-width: 100%;
   max-width: 450px;
-  // z-index: 2000;
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 
