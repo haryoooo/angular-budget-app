@@ -47,6 +47,8 @@ export class TransactionsComponent implements OnInit {
   public isModalOpen = false;
   public isSubmitted = false;
   public isAnimating = false;
+  public isTransactions = true;
+  
   public loading = false;
 
   constructor(

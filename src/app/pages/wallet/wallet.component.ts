@@ -57,16 +57,6 @@ export class WalletComponent implements OnInit {
       title: 'Wallet 3',
       description: 'Connect into wallet 3 to organize your funds',
     },
-    // {
-    //   id: 'budget-4',
-    //   title: 'Wallet 4',
-    //   description: 'Connect into wallet 4 to organize your funds',
-    // },
-    // {
-    //   id: 'budget-5',
-    //   title: 'Wallet 5',
-    //   description: 'Connect into wallet 5 to organize your funds',
-    // },
   ];
 
   public ngOnInit(): void {

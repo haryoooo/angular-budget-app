@@ -63,62 +63,78 @@
   </div>
 
   <div class="content-container">
-    <div>
-      <h5 class="text-label">NAME</h5>
-      <input
-        class="input-content"
-        type="text"
-        alt="desc"
-        [value]="stateAdd.desc"
-        (input)="updateName($event)"
-      />
-    </div>
-    <div>
-      <h5 class="text-label">TYPE</h5>
-      <label class="option-type">
+
+    <div *ngIf="isTransactions" class="content-transactions">
+      <div>
+        <h5 class="text-label">NAME</h5>
         <input
-          class="radio-input"
-          type="radio"
-          alt="radio-type-expense"
-          [checked]="stateAdd.type === 'expense'"
-          (change)="updateType('expense')"
-        />
-        Expense
-      </label>
-      <label class="ml-2 option-type">
-        <input
-          class="radio-input"
-          type="radio"
-          alt="radio-type-income"
-          [checked]="stateAdd.type === 'income'"
-          (change)="updateType('income')"
-        />
-        Income
-      </label>
-    </div>
-    <div class="amount-container">
-      <h5 class="text-label">AMOUNT</h5>
-      <div class="input-wrapper">
-        <span class="currency-symbol">Rp.</span>
-        <input
-          class="input-content-amount"
+          class="input-content"
           type="text"
-          alt="amount"
-          [value]="getFormattedAmount()"
-          (input)="updateAmount($event)"
+          alt="desc"
+          [value]="stateAdd.desc"
+          (input)="updateName($event)"
         />
-        <span class="clear-button" (click)="clearAmount()">Clear</span>
+      </div>
+      <div>
+        <h5 class="text-label">TYPE</h5>
+        <label class="option-type">
+          <input
+            class="radio-input"
+            type="radio"
+            alt="radio-type-expense"
+            [checked]="stateAdd.type === 'expense'"
+            (change)="updateType('expense')"
+          />
+          Expense
+        </label>
+        <label class="ml-2 option-type">
+          <input
+            class="radio-input"
+            type="radio"
+            alt="radio-type-income"
+            [checked]="stateAdd.type === 'income'"
+            (change)="updateType('income')"
+          />
+          Income
+        </label>
+      </div>
+      <div class="amount-container">
+        <h5 class="text-label">AMOUNT</h5>
+        <div class="input-wrapper">
+          <span class="currency-symbol">Rp.</span>
+          <input
+            class="input-content-amount"
+            type="text"
+            alt="amount"
+            [value]="getFormattedAmount()"
+            (input)="updateAmount($event)"
+          />
+          <span class="clear-button" (click)="clearAmount()">Clear</span>
+        </div>
+      </div>
+      <div>
+        <h5 class="text-label">DATE</h5>
+        <input
+          class="input-content"
+          type="date"
+          alt="date"
+          [value]="stateAdd.date | date : 'yyyy-MM-dd'"
+          (input)="updateDate($event)"
+        />
       </div>
     </div>
-    <div>
-      <h5 class="text-label">DATE</h5>
-      <input
-        class="input-content"
-        type="date"
-        alt="date"
-        [value]="stateAdd.date | date : 'yyyy-MM-dd'"
-        (input)="updateDate($event)"
-      />
+
+    <div *ngIf="!isTransactions" class="content-change-wallet">
+      <div>
+        <h5 class="text-label">NAME</h5>
+        <input
+          class="input-content"
+          type="text"
+          alt="desc"
+          [value]="stateAdd.desc"
+          (input)="updateName($event)"
+        />
+      </div>
     </div>
 
     <button
