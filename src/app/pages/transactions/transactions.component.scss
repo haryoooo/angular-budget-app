@@ -156,15 +156,20 @@
 }
 
 :host ::ng-deep .custom-toast {
-  width: 55vh; /* Adjust width as needed */
-  z-index: 99999 !important; /* Ensure it stays on top */
+  max-width: 90vw; /* Makes the toast responsive */
+  min-width: 280px; /* Ensures a minimum width */
+  width: auto; /* Adjusts dynamically */
+  z-index: 99999 !important; /* Keeps it on top */
 }
 
 :host ::ng-deep .p-toast-message {
-  padding: 0px 40px !important; /* Apply padding to the message */
-  border-radius: 8px !important; /* Add rounded corners */
-  z-index: 99999 !important; /* Ensure it stays on top */
-  position: fixed !important; /* Prevent it from being affected by relative parents */
+  padding: 10px 20px !important; /* Balanced padding */
+  border-radius: 10px !important; /* Slightly rounded edges */
+  z-index: 99999 !important;
+  top: 10% !important; /* Prevents blocking important elements */
+  left: 50%;
+  transform: translateX(-50%);
+  position: fixed !important;
 }
 
 .dot-button {
@@ -235,9 +240,19 @@
   vertical-align: middle; /* Aligns with text */
 }
 
-@media (max-width: 768px) {  
+/* Mobile Optimization */
+@media (max-width: 768px) {
   :host ::ng-deep .p-toast-message {
-    padding: 0px 36px !important; /* Apply padding to the message */
-    border-radius: 8px !important; /* Add rounded corners */
+    padding: 8px 16px !important; /* Reduces padding */
+    font-size: 14px !important; /* Adjusts text size */
+    max-width: 80vw; /* Ensures better fitting */
   }
-}  
+}
+
+@media (max-width: 480px) {
+  :host ::ng-deep .p-toast-message {
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+    max-width: 95vw; /* Uses more screen space */
+  }
+}
