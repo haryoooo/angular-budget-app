@@ -42,7 +42,7 @@ export class TransactionsComponent implements OnInit {
   public moment = moment;
   public stateAdd: any;
   public queryId = this.route.snapshot.queryParams['id'];
-  public wallet =  this.stateService._stateWallet.value;
+  public wallet = this.stateService._stateWallet.value;
 
   public isModalOpen = false;
   public isSubmitted = false;
@@ -78,7 +78,7 @@ export class TransactionsComponent implements OnInit {
   }
 
   confirmTransaction(): void {
-    this.showMessageNotification('Success', 'Success delete transaction')
+    this.showMessageNotification('Success', 'Success delete transaction');
     this.isSubmitted = true;
 
     setTimeout(() => {
@@ -94,6 +94,8 @@ export class TransactionsComponent implements OnInit {
     this.stateService.deleteTransaction(id);
 
     this.isAnimating = true;
+
+    this.cdr.detectChanges(); // Trigger change detection
   }
 
   ngOnInit(): void {
@@ -176,20 +178,39 @@ export class TransactionsComponent implements OnInit {
 
   updateAmount(event: Event): void {
     const input = event.target as HTMLInputElement;
-    this.stateAdd = { ...this.stateAdd, amount: parseMoney(input.value) };
+    let value = input.value;
+
+    // Allow only numbers and dots (thousands separator)
+    if (!/^[\d.]+$/.test(value)) {
+      input.value = ''; // Clear input if it contains alphabets
+      return;
+    }
+
+    let parsedAmount = parseMoney(input.value); // Parse input value
+
+    // Convert BigInt to string if necessary
+    const amount =
+      typeof parsedAmount === 'bigint' ? parsedAmount.toString() : parsedAmount;
+
+    // Update state with unformatted value
+    this.stateAdd = { ...this.stateAdd, amount };
+
+    // Manually update input field with formatted value
+    input.value = formatMoney(amount);
+
     this.cdr.detectChanges();
   }
 
   updateDate(event: Event): void {
     const inputDate = (event.target as HTMLInputElement).value; // Expected format: 'YYYY-MM-DD'
-  
+
     this.stateAdd = {
       ...this.stateAdd,
-      date: moment(inputDate, 'YYYY-MM-DD').format('dddd, MMMM D, YYYY') // Store formatted date without time
+      date: moment(inputDate, 'YYYY-MM-DD').format('dddd, MMMM D, YYYY'), // Store formatted date without time
     };
-  
+
     this.cdr.detectChanges();
-  }  
+  }
 
   clearAmount(): void {
     this.stateAdd = { ...this.stateAdd, amount: 0 };
@@ -226,7 +247,7 @@ export class TransactionsComponent implements OnInit {
 
     this.isSubmitted = true;
 
-    this.showMessageNotification('Success', messageSuccess)
+    this.showMessageNotification('Success', messageSuccess);
 
     setTimeout(() => {
       if (paramValueEdit) {

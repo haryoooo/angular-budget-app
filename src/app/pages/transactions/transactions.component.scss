@@ -155,23 +155,6 @@
   transform: scale(1.03);
 }
 
-:host ::ng-deep .custom-toast {
-  max-width: 90vw; /* Makes the toast responsive */
-  min-width: 280px; /* Ensures a minimum width */
-  width: auto; /* Adjusts dynamically */
-  z-index: 99999 !important; /* Keeps it on top */
-}
-
-:host ::ng-deep .p-toast-message {
-  padding: 10px 20px !important; /* Balanced padding */
-  border-radius: 10px !important; /* Slightly rounded edges */
-  z-index: 99999 !important;
-  top: 10% !important; /* Prevents blocking important elements */
-  left: 50%;
-  transform: translateX(-50%);
-  position: fixed !important;
-}
-
 .dot-button {
   cursor: pointer;
   transition: transform 0.2s ease-in-out;
@@ -240,19 +223,23 @@
   vertical-align: middle; /* Aligns with text */
 }
 
+:host ::ng-deep .custom-toast {
+  z-index: 99999 !important; /* Keeps it on top */
+}
+
 /* Mobile Optimization */
 @media (max-width: 768px) {
   :host ::ng-deep .p-toast-message {
     padding: 8px 16px !important; /* Reduces padding */
+    margin: 0px 20px;
     font-size: 14px !important; /* Adjusts text size */
-    max-width: 80vw; /* Ensures better fitting */
   }
 }
 
 @media (max-width: 480px) {
   :host ::ng-deep .p-toast-message {
-    padding: 6px 12px !important;
-    font-size: 12px !important;
-    max-width: 95vw; /* Uses more screen space */
+    padding: 6px  12px !important;
+    margin: 0px 20px;
+    font-size: 13px !important;
   }
 }
