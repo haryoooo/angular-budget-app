@@ -43,7 +43,7 @@ export class WalletComponent implements OnInit {
   // -------------------------------------------------------------------------------
   options: Option[] = [
     {
-      id: 'budget',
+      id: 'budget-1',
       title: 'Wallet 1',
       description: 'Connect into wallet 1 to organize your funds',
     },
@@ -87,6 +87,10 @@ export class WalletComponent implements OnInit {
       this.router.navigate(['home']), 
       this.loading = false; 
     }, 1000)
+  }
+
+  navigateTo(url: string): void {
+    this.router.navigateByUrl(url, { replaceUrl: true });
   }
 
   // -------------------------------------------------------------------------------
