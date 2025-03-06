@@ -22,7 +22,6 @@ import { formatMoney, parseMoney } from '@helpers/moneyFormatter.helper';
 import { FirebaseService } from '@services/firebase.service';
 import { MessageService } from 'primeng/api';
 import { filter } from 'rxjs/operators';
-import { ModalDeleteComponent } from '@modals/modal-delete/modal-delete.component';
 
 @Component({
   selector: 'app-transactions',
@@ -30,7 +29,6 @@ import { ModalDeleteComponent } from '@modals/modal-delete/modal-delete.componen
   styleUrls: ['./transactions.component.scss'],
   standalone: true,
   imports: [
-    ModalDeleteComponent,
     PageLayoutComponent,
     NgIf,
     ProgressBarComponent,
@@ -263,7 +261,7 @@ export class TransactionsComponent implements OnInit {
     setTimeout(() => {
       if (paramValueEdit) {
         this.stateService.updateTransaction(paramValueEdit, this.stateAdd);
-        this.cdr.detectChanges();
+            this.cdr.detectChanges();
       } else {
         this.stateService.setLatestTransactions(newTransaction);
         this.cdr.detectChanges();
