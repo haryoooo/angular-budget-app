@@ -64,7 +64,7 @@
 
   <div class="content-container">
 
-    <div *ngIf="isTransactions" class="content-transactions">
+    <div class="content-transactions">
       <div>
         <h5 class="text-label">NAME</h5>
         <input
@@ -120,19 +120,6 @@
           alt="date"
           [value]="stateAdd.date | date : 'yyyy-MM-dd'"
           (input)="updateDate($event)"
-        />
-      </div>
-    </div>
-
-    <div *ngIf="!isTransactions" class="content-change-wallet">
-      <div>
-        <h5 class="text-label">NAME</h5>
-        <input
-          class="input-content"
-          type="text"
-          alt="desc"
-          [value]="stateAdd.desc"
-          (input)="updateName($event)"
         />
       </div>
     </div>

@@ -33,7 +33,7 @@ export const initialState: AddState = {
   providedIn: 'root', // This makes the service available application-wide
 })
 export class TransactionService {
-  public wallet = localStorage.getItem("type") === null ? 'budget' : localStorage.getItem("type");
+  public wallet = localStorage.getItem("type") === null ? 'budget-1' : localStorage.getItem("type");
   public transactions = [];
   private initialState: AddState = {
     type: 'expense', // default value

@@ -22,6 +22,7 @@ import { formatMoney, parseMoney } from '@helpers/moneyFormatter.helper';
 import { FirebaseService } from '@services/firebase.service';
 import { MessageService } from 'primeng/api';
 import { filter } from 'rxjs/operators';
+import { ModalDeleteComponent } from '@modals/modal-delete/modal-delete.component';
 
 @Component({
   selector: 'app-transactions',
@@ -29,6 +30,7 @@ import { filter } from 'rxjs/operators';
   styleUrls: ['./transactions.component.scss'],
   standalone: true,
   imports: [
+    ModalDeleteComponent,
     PageLayoutComponent,
     NgIf,
     ProgressBarComponent,
@@ -47,8 +49,7 @@ export class TransactionsComponent implements OnInit {
   public isModalOpen = false;
   public isSubmitted = false;
   public isAnimating = false;
-  public isTransactions = true;
-  
+
   public loading = false;
 
   constructor(
@@ -173,6 +174,14 @@ export class TransactionsComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  updateNameWallet(event: Event): void {
+    this.stateAdd = {
+      ...this.stateAdd,
+      desc: (event.target as HTMLInputElement).value,
+    };
+    this.cdr.detectChanges();
+  }
+
   updateType(selectedType: string): void {
     this.stateAdd = { ...this.stateAdd, type: selectedType };
     this.cdr.detectChanges();
@@ -254,8 +263,10 @@ export class TransactionsComponent implements OnInit {
     setTimeout(() => {
       if (paramValueEdit) {
         this.stateService.updateTransaction(paramValueEdit, this.stateAdd);
+        this.cdr.detectChanges();
       } else {
         this.stateService.setLatestTransactions(newTransaction);
+        this.cdr.detectChanges();
       }
       this.stateService.resetStateAdd();
       this.returnHome();
