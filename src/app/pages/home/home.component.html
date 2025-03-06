@@ -21,10 +21,10 @@
         <div class="card-balance-container">
           <div>
             <div class="header-balance">
-              Total Balance
-              <span class="cursor-pointer">
+              Total Balance - {{ this.wallet.replace('budget-', 'Wallet ') }}
+              <!-- <span class="cursor-pointer">
                 <img src="../../../assets/img/project/chevron-down.png" />
-              </span>
+              </span> -->
             </div>
             <h4 *ngIf="loading">
               Rp
