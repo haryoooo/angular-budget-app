@@ -27,31 +27,43 @@ import { StoreService }        from '@services/store.service';
   standalone  : true,
   imports     : [FormsModule, ReactiveFormsModule, NgClass, NgIf, RouterLink, TranslateModule]
 })
-export class LoginComponent
-{
+export class LoginComponent {
   public appName : string = environment.appName;
   public formGroup !: FormGroup<{
+    fullname : FormControl<string>,
+    username : FormControl<string>,
     email    : FormControl<string>,
     password : FormControl<string>,
   }>;
+  public showPassword : boolean = false;
+  public currentPath : string = '';
 
-  constructor
-  (
+  constructor(
     private router       : Router,
     private storeService : StoreService,
     private appService   : AppService,
-  )
-  {
-    this.initFormGroup();
+  ) {
+    this.initFormGroup(),
+
+    this.router.events.subscribe(() => {
+      this.currentPath = this.router.url; // same as pathname
+    });
   }
 
   // -------------------------------------------------------------------------------
   // NOTE Init ---------------------------------------------------------------------
   // -------------------------------------------------------------------------------
 
-  private initFormGroup() : void
-  {
+  private initFormGroup() : void {
     this.formGroup = new FormGroup({
+      fullname   : new FormControl<string>({
+        value    : '',
+        disabled : false
+      }, { validators : [Validators.required, Validators.minLength(6), Validators.pattern(/^[a-zA-Z]+(\s[a-zA-Z]+)*$/)], nonNullable : true }),
+      username   : new FormControl<string>({
+        value    : '',
+        disabled : false
+      }, { validators : [Validators.required, Validators.minLength(6), Validators.pattern(/^[a-zA-Z]+(\s[a-zA-Z]+)*$/)], nonNullable : true }),
       email      : new FormControl<string>({
         value    : '',
         disabled : false
@@ -59,7 +71,7 @@ export class LoginComponent
       password   : new FormControl<string>({
         value    : '',
         disabled : false
-      }, { validators : [Validators.required], nonNullable : true })
+      }, { validators : [Validators.required, Validators.minLength(6)], nonNullable : true })
     });
   }
 
@@ -67,22 +79,58 @@ export class LoginComponent
   // NOTE Actions ------------------------------------------------------------------
   // -------------------------------------------------------------------------------
 
-  public async onClickSubmit() : Promise<void>
-  {
-    await this.authenticate();
+  public async onClickSubmit() : Promise<void> {
+    if (this.formGroup.valid) {
+      await this.authenticate();
+    } else {
+      this.markFormGroupTouched();
+    }
   }
+
+  public onClickGuest(): void {
+    this.storeService.isGuest.set(true);
+    this.router.navigate(['/home']);
+  }
+
+  public onClickTogglePassword(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  public onClickForgotPassword(): void {
+    // Navigate to forgot password page
+    this.router.navigate(['/forgot-password']);
+  }
+
+  public onClickSignUp(): void {
+    // Navigate to sign up page
+    this.router.navigate(['/auth/signup']);
+  }
+
+  public onClickLogin(): void {
+    // Navigate to sign up page
+    this.router.navigate(['/auth/login']);
+  }
+
+  public createDataUsers(email: string, password: string): void {
+    // Navigate to sign up page
+    this.router.navigate(['/auth/login']);
+  }
+
 
   // -------------------------------------------------------------------------------
   // NOTE Requests -----------------------------------------------------------------
   // -------------------------------------------------------------------------------
 
-  private async authenticate() : Promise<void>
-  {
+  private async authenticate() : Promise<void> {
     this.storeService.isLoading.set(true);
 
+    const fullname = this.formGroup.controls.fullname.getRawValue();
+    const username = this.formGroup.controls.username.getRawValue();
     const email    = this.formGroup.controls.email.getRawValue();
     const password = this.formGroup.controls.password.getRawValue();
-    const success  = await this.appService.authenticate(email, password);
+    const success  = await this.appService.authenticate(fullname, username, email, password);
+
+    console.log(email, password, fullname, username);
 
     this.storeService.isLoading.set(false);
 
@@ -97,4 +145,30 @@ export class LoginComponent
   // NOTE Helpers ------------------------------------------------------------------
   // -------------------------------------------------------------------------------
 
+  private markFormGroupTouched(): void {
+    Object.keys(this.formGroup.controls).forEach(key => {
+      this.formGroup.get(key)?.markAsTouched();
+    });
+  }
+
+  // Getters for template usage
+  public get fullname() { 
+    return this.formGroup.get('fullname'); 
+  }
+
+    public get username() { 
+    return this.formGroup.get('username'); 
+  }
+
+  public get email() { 
+    return this.formGroup.get('email'); 
+  }
+
+  public get password() { 
+    return this.formGroup.get('password'); 
+  }
+
+  public get isLoading() { 
+    return this.storeService.isLoading(); 
+  }
 }

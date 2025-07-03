@@ -15,7 +15,8 @@ import { environment }      from '@env/environment';
 export class StoreService
 {
   public isServer  = signal(isPlatformServer(this.platformId));
-  public isLoading = signal(true);
+  public isLoading = signal(false);
+  public isGuest = signal(false);
   public pageTitle = signal(environment.appName);
 
   constructor

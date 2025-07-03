@@ -181,6 +181,20 @@
   vertical-align: middle;
 }
 
+/* Fixes the add button position */
+.nav-add-activity-btn {
+  display: flex;
+  // align-items: center;
+  justify-content: center;
+  z-index: 1001;
+}
+
+/* Ensures the add icon inside the button is properly sized */
+.nav-add-activity-btn img {
+  width: 50px;
+  height: auto;
+}
+
 @media (max-width: 768px) {
   .content-container {
     width: 95%;

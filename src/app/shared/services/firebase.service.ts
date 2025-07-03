@@ -10,10 +10,19 @@ import {
   doc,
   setDoc,
   deleteDoc,
+  serverTimestamp,
 } from 'firebase/firestore';
 import { AddState } from './transaction.service';
 import moment from 'moment';
 import formatFirestoreDate from '@helpers/formatFirestoreDate.helper';
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword,
+  sendEmailVerification,
+  updateProfile
+} from 'firebase/auth';
+
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -28,6 +37,7 @@ const firebaseConfig = {
 // Initialize Firebase and Firestore
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
 @Injectable({
   providedIn: 'root',
@@ -35,23 +45,50 @@ const db = getFirestore(app);
 export class FirebaseService {
   constructor() {}
 
-  // Fetching data from a Firestore collection
-async getCollectionData(collectionName: string) {
-  const colRef = collection(db, collectionName);
-  const snapshots = await getDocs(colRef);
-  const dataList = snapshots.docs.map((doc) => {
-  const data: any = doc.data();
-    
-    return {
-      identifier: doc.id, // Extract document ID
-      ...data, // Spread other document fields
-      date: formatFirestoreDate(data.date) // Format Firestore timestamp
-    };
-  });
-  
+  // Client-side user creation
+  async createUser (email: string, password: string, additionalData: any){
+    try {
+      // Create auth user
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
-  return dataList;
-}
+      console.log(email, password, additionalData);
+      
+      // // Create user document
+      // await setDoc(doc(db, 'users', user.uid), {
+      //   email: user.email,
+      //   emailVerified: user.emailVerified,
+      //   createdAt: serverTimestamp(),
+      //   updatedAt: serverTimestamp(),
+      //   lastLoginAt: serverTimestamp(),
+      //   loginCount: 1,
+      //   provider: 'email',
+      //   disabled: false,
+      //   ...additionalData
+      // });
+      
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  // Fetching data from a Firestore collection
+  async getCollectionData(collectionName: string) {
+    const colRef = collection(db, collectionName);
+    const snapshots = await getDocs(colRef);
+    const dataList = snapshots.docs.map((doc) => {
+      const data: any = doc.data();
+
+      return {
+        identifier: doc.id, // Extract document ID
+        ...data, // Spread other document fields
+        date: formatFirestoreDate(data.date), // Format Firestore timestamp
+      };
+    });
+
+    return dataList;
+  }
 
   async addData(collectionName: string, payload: AddState) {
     try {
@@ -82,4 +119,3 @@ async getCollectionData(collectionName: string) {
     }
   }
 }
-
