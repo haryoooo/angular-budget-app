@@ -13,14 +13,11 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { AddState } from './transaction.service';
-import moment from 'moment';
 import formatFirestoreDate from '@helpers/formatFirestoreDate.helper';
 import { 
   getAuth, 
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword,
-  sendEmailVerification,
-  updateProfile
 } from 'firebase/auth';
 
 
@@ -43,6 +40,8 @@ const auth = getAuth(app);
   providedIn: 'root',
 })
 export class FirebaseService {
+  firebaseService: any;
+  getUserDocument: any;
   constructor() {}
 
   // Client-side user creation
@@ -65,6 +64,26 @@ export class FirebaseService {
       });
       
       return user;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  // Client-side user creation
+  async loginUser (email: string, password: string){
+    try {
+      // Sign in with Firebase Auth
+      const userCredential = await signInWithEmailAndPassword(
+        auth, 
+        email, 
+        password
+      );
+      const user = userCredential.user;
+
+      return {
+        success: true,
+        user,
+      };
     } catch (error) {
       throw error;
     }

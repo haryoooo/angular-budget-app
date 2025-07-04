@@ -41,6 +41,7 @@
         [ngClass]="{'error': username?.invalid && username?.touched}">
       <div class="error-message" *ngIf="username?.invalid && username?.touched">
         <span *ngIf="username?.errors?.['required']">{{ 'LOGIN.USERNAME_REQUIRED' | translate }}</span>
+        <div *ngIf="username?.touched && username?.errors?.['pattern']">{{ 'LOGIN.USERNAME_INVALID' | translate }}</div>
       </div>
     </div>
 
@@ -51,10 +52,10 @@
         id="email" 
         formControlName="email" 
         [placeholder]="'LOGIN.EMAIL_PLACEHOLDER' | translate"
-        [ngClass]="{'error': email?.invalid && email?.touched}">
+        [ngClass]="{'error': email?.invalid && email?.touched }">
       <div class="error-message" *ngIf="email?.invalid && email?.touched">
         <span *ngIf="email?.errors?.['required']">{{ 'LOGIN.EMAIL_REQUIRED' | translate }}</span>
-        <span *ngIf="email?.errors?.['email']">{{ 'LOGIN.EMAIL_INVALID' | translate }}</span>
+        <span *ngIf="email?.errors?.['email'] && currentPath === '/auth/signup'">{{ 'LOGIN.EMAIL_INVALID' | translate }}</span>
       </div>
     </div>
 
@@ -66,7 +67,7 @@
           id="password" 
           formControlName="password" 
           [placeholder]="'LOGIN.PASSWORD_PLACEHOLDER' | translate"
-          [ngClass]="{'error': password?.invalid && password?.touched}">
+          [ngClass]="{'error': password?.invalid && password?.touched && currentPath === '/auth/signup'}">
         <button 
           type="button" 
           class="toggle-password" 
@@ -76,7 +77,7 @@
       </div>
       <div class="error-message" *ngIf="password?.invalid && password?.touched">
         <span *ngIf="password?.errors?.['required']">{{ 'LOGIN.PASSWORD_REQUIRED' | translate }}</span>
-        <span *ngIf="password?.errors?.['minlength']">{{ 'LOGIN.PASSWORD_MIN_LENGTH' | translate }}</span>
+        <span *ngIf="password?.touched && password?.errors?.['pattern'] && currentPath === '/auth/signup'">{{ 'LOGIN.PASSWORD_RULES' | translate }}</span>
       </div>
     </div>
 

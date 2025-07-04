@@ -72,7 +72,6 @@ export class LoginComponent {
   // -------------------------------------------------------------------------------
   // NOTE Init ---------------------------------------------------------------------
   // -------------------------------------------------------------------------------
-
   private initFormGroup(): void {
     this.formGroup = new FormGroup(
       {
@@ -98,8 +97,7 @@ export class LoginComponent {
           {
             validators: [
               Validators.required,
-              Validators.minLength(6),
-              Validators.pattern(/^[a-zA-Z]+(\s[a-zA-Z]+)*$/),
+              Validators.pattern(/^[^\s]*$/)
             ],
             nonNullable: true,
           }
@@ -120,7 +118,7 @@ export class LoginComponent {
             disabled: false,
           },
           {
-            validators: [Validators.required, Validators.minLength(6)],
+            validators: [Validators.required, Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/)],
             nonNullable: true,
           }
         ),
@@ -158,10 +156,46 @@ export class LoginComponent {
   }
 
   public async onClickSubmit(): Promise<void> {
+    console.log(this.formGroup.valid);
     if (this.formGroup.valid) {
       await this.authenticate();
-    } else {
+    }
+    
+    else if (this.currentPath === '/auth/login'){
+      const email = this.formGroup.controls.email.getRawValue();
+      const password = this.formGroup.controls.password.getRawValue();
+
+      await this.login(email, password);
+    }
+
+    else {
       this.markFormGroupTouched();
+    }
+  }
+
+  // Main login method
+  public async login(email: string, password: string) {
+    try {
+      this.storeService.isLoading.set(true);
+
+      const users: any = await this.firebaseService.loginUser(email, password);
+      console.log(users, "value users :");
+
+      if(users.user.accessToken){
+        this.showMessageNotification(
+          'Success',
+          'Login Success'
+        );
+        this.storeService.isLoading.set(false);
+
+        setTimeout(() => { 
+          this.router.navigate(['/home']);
+        }, (1000))
+      }
+    } catch (error: any) {
+      console.log(error, "error :");
+      this.storeService.isLoading.set(false);
+      this.showMessageNotification('Error', JSON.stringify(error?.code));
     }
   }
 
@@ -189,7 +223,7 @@ export class LoginComponent {
     this.router.navigate(['/auth/login']);
   }
 
-  public createDataUsers(email: string, password: string): void {
+  public createDataUsers(): void {
     // Navigate to sign up page
     this.router.navigate(['/auth/login']);
   }
@@ -205,8 +239,8 @@ export class LoginComponent {
     const username = this.formGroup.controls.username.getRawValue();
     const email = this.formGroup.controls.email.getRawValue();
     const password = this.formGroup.controls.password.getRawValue();
-    const confirmPassword =
-      this.formGroup.controls.confirmPassword.getRawValue();
+    const confirmPassword = this.formGroup.controls.confirmPassword.getRawValue();
+    
     const success = await this.appService.authenticate(
       fullname,
       username,
@@ -232,10 +266,10 @@ export class LoginComponent {
       isPasswordMatch: password === confirmPassword,
     });
 
+    // Signup Phase
     if (fullname?.length > 0) {
       try {
         const users: any = await this.firebaseService.createUser(payload);
-        console.log('User created:', users);
         if (users?.accessToken) {
           this.showMessageNotification(
             'Success',
@@ -249,7 +283,6 @@ export class LoginComponent {
           return;
         }
       } catch (error: any) {
-        console.log(error);
         this.storeService.isLoading.set(false);
         this.showMessageNotification('Error', JSON.stringify(error?.code));
         return;
@@ -299,3 +332,4 @@ export class LoginComponent {
     return this.storeService.isLoading();
   }
 }
+
