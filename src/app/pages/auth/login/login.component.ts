@@ -1,85 +1,163 @@
 // Angular modules
-import { NgClass }             from '@angular/common';
-import { NgIf }                from '@angular/common';
-import { Component }           from '@angular/core';
-import { FormGroup }           from '@angular/forms';
-import { FormsModule }         from '@angular/forms';
+import { NgClass } from '@angular/common';
+import { NgIf } from '@angular/common';
+import { Component } from '@angular/core';
+import {
+  AbstractControl,
+  FormGroup,
+  ValidationErrors,
+  ValidatorFn,
+} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
-import { FormControl }         from '@angular/forms';
-import { Validators }          from '@angular/forms';
-import { Router }              from '@angular/router';
-import { RouterLink }          from '@angular/router';
+import { FormControl } from '@angular/forms';
+import { Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 
 // External modules
-import { TranslateModule }     from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 
 // Internal modules
-import { environment }         from '@env/environment';
+import { environment } from '@env/environment';
 
 // Services
-import { AppService }          from '@services/app.service';
-import { StoreService }        from '@services/store.service';
+import { AppService } from '@services/app.service';
+import { StoreService } from '@services/store.service';
+import { FirebaseService } from '@services/firebase.service';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
-  selector    : 'app-login',
-  templateUrl : './login.component.html',
-  styleUrls   : ['./login.component.scss'],
-  standalone  : true,
-  imports     : [FormsModule, ReactiveFormsModule, NgClass, NgIf, RouterLink, TranslateModule]
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss'],
+  standalone: true,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    NgClass,
+    NgIf,
+    RouterLink,
+    TranslateModule,
+    ToastModule,
+  ],
+  providers: [MessageService],
 })
 export class LoginComponent {
-  public appName : string = environment.appName;
-  public formGroup !: FormGroup<{
-    fullname : FormControl<string>,
-    username : FormControl<string>,
-    email    : FormControl<string>,
-    password : FormControl<string>,
+  public appName: string = environment.appName;
+  public formGroup!: FormGroup<{
+    fullname: FormControl<string>;
+    username: FormControl<string>;
+    email: FormControl<string>;
+    password: FormControl<string>;
+    confirmPassword: FormControl<string>;
   }>;
-  public showPassword : boolean = false;
-  public currentPath : string = '';
+  public showPassword: boolean = false;
+  public currentPath: string = '';
 
   constructor(
-    private router       : Router,
-    private storeService : StoreService,
-    private appService   : AppService,
+    private router: Router,
+    private storeService: StoreService,
+    private appService: AppService,
+    public firebaseService: FirebaseService,
+    public messageService: MessageService
   ) {
     this.initFormGroup(),
-
-    this.router.events.subscribe(() => {
-      this.currentPath = this.router.url; // same as pathname
-    });
+      this.router.events.subscribe(() => {
+        this.currentPath = this.router.url; // same as pathname
+      });
   }
 
   // -------------------------------------------------------------------------------
   // NOTE Init ---------------------------------------------------------------------
   // -------------------------------------------------------------------------------
 
-  private initFormGroup() : void {
-    this.formGroup = new FormGroup({
-      fullname   : new FormControl<string>({
-        value    : '',
-        disabled : false
-      }, { validators : [Validators.required, Validators.minLength(6), Validators.pattern(/^[a-zA-Z]+(\s[a-zA-Z]+)*$/)], nonNullable : true }),
-      username   : new FormControl<string>({
-        value    : '',
-        disabled : false
-      }, { validators : [Validators.required, Validators.minLength(6), Validators.pattern(/^[a-zA-Z]+(\s[a-zA-Z]+)*$/)], nonNullable : true }),
-      email      : new FormControl<string>({
-        value    : '',
-        disabled : false
-      }, { validators : [Validators.required, Validators.email], nonNullable : true }),
-      password   : new FormControl<string>({
-        value    : '',
-        disabled : false
-      }, { validators : [Validators.required, Validators.minLength(6)], nonNullable : true })
-    });
+  private initFormGroup(): void {
+    this.formGroup = new FormGroup(
+      {
+        fullname: new FormControl<string>(
+          {
+            value: '',
+            disabled: false,
+          },
+          {
+            validators: [
+              Validators.required,
+              Validators.minLength(6),
+              Validators.pattern(/^[a-zA-Z]+(\s[a-zA-Z]+)*$/),
+            ],
+            nonNullable: true,
+          }
+        ),
+        username: new FormControl<string>(
+          {
+            value: '',
+            disabled: false,
+          },
+          {
+            validators: [
+              Validators.required,
+              Validators.minLength(6),
+              Validators.pattern(/^[a-zA-Z]+(\s[a-zA-Z]+)*$/),
+            ],
+            nonNullable: true,
+          }
+        ),
+        email: new FormControl<string>(
+          {
+            value: '',
+            disabled: false,
+          },
+          {
+            validators: [Validators.required, Validators.email],
+            nonNullable: true,
+          }
+        ),
+        password: new FormControl<string>(
+          {
+            value: '',
+            disabled: false,
+          },
+          {
+            validators: [Validators.required, Validators.minLength(6)],
+            nonNullable: true,
+          }
+        ),
+        confirmPassword: new FormControl<string>(
+          {
+            value: '',
+            disabled: false,
+          },
+          { validators: [Validators.required], nonNullable: true }
+        ),
+      },
+      { validators: this.passwordMatchValidator() }
+    );
   }
 
   // -------------------------------------------------------------------------------
   // NOTE Actions ------------------------------------------------------------------
   // -------------------------------------------------------------------------------
 
-  public async onClickSubmit() : Promise<void> {
+  public showMessageNotification(sign: string, message: string): void {
+    this.messageService.add({
+      severity: sign.toLowerCase(),
+      summary: sign,
+      detail: message,
+    });
+  }
+
+  // 👇 Custom validator to compare password and confirmPassword
+  public passwordMatchValidator(): ValidatorFn {
+    return (group: AbstractControl): ValidationErrors | null => {
+      const password = group.get('password')?.value;
+      const confirmPassword = group.get('confirmPassword')?.value;
+      return password === confirmPassword ? null : { passwordMismatch: true };
+    };
+  }
+
+  public async onClickSubmit(): Promise<void> {
     if (this.formGroup.valid) {
       await this.authenticate();
     } else {
@@ -116,26 +194,71 @@ export class LoginComponent {
     this.router.navigate(['/auth/login']);
   }
 
-
   // -------------------------------------------------------------------------------
   // NOTE Requests -----------------------------------------------------------------
   // -------------------------------------------------------------------------------
 
-  private async authenticate() : Promise<void> {
+  private async authenticate(): Promise<void> {
     this.storeService.isLoading.set(true);
 
     const fullname = this.formGroup.controls.fullname.getRawValue();
     const username = this.formGroup.controls.username.getRawValue();
-    const email    = this.formGroup.controls.email.getRawValue();
+    const email = this.formGroup.controls.email.getRawValue();
     const password = this.formGroup.controls.password.getRawValue();
-    const success  = await this.appService.authenticate(fullname, username, email, password);
+    const confirmPassword =
+      this.formGroup.controls.confirmPassword.getRawValue();
+    const success = await this.appService.authenticate(
+      fullname,
+      username,
+      email,
+      password,
+      confirmPassword
+    );
 
-    console.log(email, password, fullname, username);
+    const payload = {
+      fullname,
+      username,
+      email,
+      password,
+      confirmPassword,
+    };
+
+    console.log('🔐 Signup Form Submission:', {
+      fullname,
+      username,
+      email,
+      password,
+      confirmPassword,
+      isPasswordMatch: password === confirmPassword,
+    });
+
+    if (fullname?.length > 0) {
+      try {
+        const users: any = await this.firebaseService.createUser(payload);
+        console.log('User created:', users);
+        if (users?.accessToken) {
+          this.showMessageNotification(
+            'Success',
+            'Your account has been created'
+          );
+          this.storeService.isLoading.set(false);
+
+          setTimeout(() => {
+            this.router.navigate(['/auth/login']);
+          }, 1000);
+          return;
+        }
+      } catch (error: any) {
+        console.log(error);
+        this.storeService.isLoading.set(false);
+        this.showMessageNotification('Error', JSON.stringify(error?.code));
+        return;
+      }
+    }
+
+    if (!success) return;
 
     this.storeService.isLoading.set(false);
-
-    if (!success)
-      return;
 
     // NOTE Redirect to home
     this.router.navigate(['/home']);
@@ -146,29 +269,33 @@ export class LoginComponent {
   // -------------------------------------------------------------------------------
 
   private markFormGroupTouched(): void {
-    Object.keys(this.formGroup.controls).forEach(key => {
+    Object.keys(this.formGroup.controls).forEach((key) => {
       this.formGroup.get(key)?.markAsTouched();
     });
   }
 
   // Getters for template usage
-  public get fullname() { 
-    return this.formGroup.get('fullname'); 
+  public get fullname() {
+    return this.formGroup.get('fullname');
   }
 
-    public get username() { 
-    return this.formGroup.get('username'); 
+  public get username() {
+    return this.formGroup.get('username');
   }
 
-  public get email() { 
-    return this.formGroup.get('email'); 
+  public get email() {
+    return this.formGroup.get('email');
   }
 
-  public get password() { 
-    return this.formGroup.get('password'); 
+  public get password() {
+    return this.formGroup.get('password');
   }
 
-  public get isLoading() { 
-    return this.storeService.isLoading(); 
+  public get confirmPassword() {
+    return this.formGroup.get('confirmPassword');
+  }
+
+  public get isLoading() {
+    return this.storeService.isLoading();
   }
 }

@@ -46,26 +46,23 @@ export class FirebaseService {
   constructor() {}
 
   // Client-side user creation
-  async createUser (email: string, password: string, additionalData: any){
+  async createUser (payload: any){
     try {
       // Create auth user
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, payload.email, payload.password);
       const user = userCredential.user;
-
-      console.log(email, password, additionalData);
       
-      // // Create user document
-      // await setDoc(doc(db, 'users', user.uid), {
-      //   email: user.email,
-      //   emailVerified: user.emailVerified,
-      //   createdAt: serverTimestamp(),
-      //   updatedAt: serverTimestamp(),
-      //   lastLoginAt: serverTimestamp(),
-      //   loginCount: 1,
-      //   provider: 'email',
-      //   disabled: false,
-      //   ...additionalData
-      // });
+      // Create user document
+      await setDoc(doc(db, 'users', user.uid), {
+        email: user.email,
+        emailVerified: user.emailVerified,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        lastLoginAt: serverTimestamp(),
+        provider: 'email',
+        disabled: false,
+        ...payload
+      });
       
       return user;
     } catch (error) {

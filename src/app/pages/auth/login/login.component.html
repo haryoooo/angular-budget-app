@@ -1,4 +1,11 @@
 <div class="login-container">
+
+  <p-toast
+    position="top-center"
+    showTransformOptions="translateY(-50%)"
+    styleClass="custom-toast"
+  />
+
   <div class="login-header">
     <!-- <div class="logo">
       <h1>{{ appName }}</h1>
@@ -74,14 +81,14 @@
     </div>
 
     <div *ngIf="currentPath === '/auth/signup'" class="form-group">
-      <label for="password">{{ 'LOGIN.CONFIRM_PASSWORD' | translate }}</label>
+      <label for="confirmPassword">{{ 'LOGIN.CONFIRM_PASSWORD' | translate }}</label>
       <div class="password-input">
         <input 
           [type]="showPassword ? 'text' : 'password'" 
           id="password" 
-          formControlName="password" 
+          formControlName="confirmPassword" 
           [placeholder]="'LOGIN.CONFIRM_PASSWORD_PLACEHOLDER' | translate"
-          [ngClass]="{'error': password?.invalid && password?.touched}">
+          [ngClass]="{'error': confirmPassword?.invalid && confirmPassword?.touched}">
         <button 
           type="button" 
           class="toggle-password" 
@@ -89,22 +96,36 @@
           <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
         </button>
       </div>
-      <div class="error-message" *ngIf="password?.invalid && password?.touched">
-        <span *ngIf="password?.errors?.['required']">{{ 'LOGIN.PASSWORD_REQUIRED' | translate }}</span>
-        <span *ngIf="password?.errors?.['minlength']">{{ 'LOGIN.PASSWORD_MIN_LENGTH' | translate }}</span>
+      <div class="error-message" *ngIf="confirmPassword?.touched && confirmPassword?.invalid">
+        <span *ngIf="confirmPassword?.errors?.['required']">
+          {{ 'LOGIN.PASSWORD_REQUIRED' | translate }}
+        </span>
+      </div>
+
+      <!-- Group-level password mismatch -->
+      <div class="error-message" *ngIf="formGroup?.errors?.['passwordMismatch'] && (confirmPassword?.value?.length ?? 0) > 0">
+        {{ 'LOGIN.CONFIRM_PASSWORD_INVALID' | translate }}
       </div>
     </div>
 
-    <div hidden="currentPath?.includes('signup')" class="forgot-password">
+    <div hidden="currentPath === '/auth/signup'" class="forgot-password">
       <a (click)="onClickForgotPassword()">{{ 'LOGIN.FORGOT_PASSWORD' | translate }}</a>
     </div>
 
     <button 
       type="submit" 
-      class="btn-primary" 
+      class="btn-primary"
+      (click)="onClickSubmit()"
       [disabled]="isLoading">
       <span *ngIf="isLoading" class="spinner"></span>
-      {{ isLoading ? ('LOGIN.SIGNING_IN' | translate) : currentPath?.includes('signup') ? ('LOGIN.SIGN_UP' | translate) : ('LOGIN.SIGN_IN' | translate) }}
+      {{ isLoading && currentPath === '/auth/login' ? 
+        ('LOGIN.SIGNING_IN' | translate) : 
+        isLoading && currentPath === '/auth/signup' ? 
+        ('LOGIN.SIGNING_UP' | translate) : 
+        currentPath === '/auth/signup' ? 
+        ('LOGIN.SIGN_UP' | translate) : 
+        ('LOGIN.SIGN_IN' | translate) 
+      }}
     </button>
 
     <div class="divider">

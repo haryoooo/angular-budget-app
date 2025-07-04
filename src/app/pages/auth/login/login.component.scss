@@ -216,66 +216,6 @@ $shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
       }
     }
 
-    .social-login {
-      text-align: center;
-      margin-top: 30px;
-
-      p {
-        color: $text-secondary;
-        font-size: 0.9rem;
-        margin-bottom: 15px;
-      }
-
-      .social-buttons {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-
-        .social-btn {
-          width: 50px;
-          height: 50px;
-          border: 2px solid $border-color;
-          border-radius: 50%;
-          background: $white;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          transition: all 0.3s ease;
-
-          &:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-          }
-
-          &.google {
-            &:hover {
-              border-color: #DB4437;
-              color: #DB4437;
-            }
-          }
-
-          &.facebook {
-            &:hover {
-              border-color: #4267B2;
-              color: #4267B2;
-            }
-          }
-
-          &.apple {
-            &:hover {
-              border-color: #000000;
-              color: #000000;
-            }
-          }
-
-          i {
-            font-size: 1.2rem;
-          }
-        }
-      }
-    }
-
     .signup-link {
       text-align: center;
       margin-top: 25px;
@@ -297,6 +237,10 @@ $shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
       }
     }
   }
+}
+
+:host ::ng-deep .custom-toast {
+  z-index: 99999 !important; /* Keeps it on top */
 }
 
 @keyframes spin {
@@ -325,5 +269,11 @@ $shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     .login-form {
       padding: 25px 20px;
     }
+  }
+
+  :host ::ng-deep .p-toast-message {
+    padding: 6px  12px !important;
+    margin: 0px 20px;
+    font-size: 13px !important;
   }
 }
