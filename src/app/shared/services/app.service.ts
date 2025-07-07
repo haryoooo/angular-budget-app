@@ -66,7 +66,7 @@ export class AppService
   // SECTION Methods ------------------------------------------------------------------------------
   // ----------------------------------------------------------------------------------------------
 
-  public async authenticate(fullname: string, username: string,  email: string, password: string, confirmPassword: string) : Promise<boolean>
+  public async authenticate(email: string, password: string) : Promise<boolean>
   {
     return Promise.resolve(true);
 

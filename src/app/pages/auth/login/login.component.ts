@@ -2,12 +2,7 @@
 import { NgClass } from '@angular/common';
 import { NgIf } from '@angular/common';
 import { Component } from '@angular/core';
-import {
-  AbstractControl,
-  FormGroup,
-  ValidationErrors,
-  ValidatorFn,
-} from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormControl } from '@angular/forms';
@@ -24,9 +19,12 @@ import { environment } from '@env/environment';
 // Services
 import { AppService } from '@services/app.service';
 import { StoreService } from '@services/store.service';
-import { FirebaseService } from '@services/firebase.service';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { passwordMatchValidator } from '@helpers/passwordMatchValidator.helper';
+import { FirebaseService } from '@services/firebase.service';
+import { AuthService } from '@services/auth.service';
+import { onAuthStateChanged } from 'firebase/auth';
 
 @Component({
   selector: 'app-login',
@@ -61,6 +59,7 @@ export class LoginComponent {
     private storeService: StoreService,
     private appService: AppService,
     public firebaseService: FirebaseService,
+    public authService: AuthService,
     public messageService: MessageService
   ) {
     this.initFormGroup(),
@@ -95,10 +94,7 @@ export class LoginComponent {
             disabled: false,
           },
           {
-            validators: [
-              Validators.required,
-              Validators.pattern(/^[^\s]*$/)
-            ],
+            validators: [Validators.required, Validators.pattern(/^[^\s]*$/)],
             nonNullable: true,
           }
         ),
@@ -118,7 +114,12 @@ export class LoginComponent {
             disabled: false,
           },
           {
-            validators: [Validators.required, Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/)],
+            validators: [
+              Validators.required,
+              Validators.pattern(
+                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/
+              ),
+            ],
             nonNullable: true,
           }
         ),
@@ -130,14 +131,13 @@ export class LoginComponent {
           { validators: [Validators.required], nonNullable: true }
         ),
       },
-      { validators: this.passwordMatchValidator() }
+      { validators: passwordMatchValidator() }
     );
   }
 
   // -------------------------------------------------------------------------------
   // NOTE Actions ------------------------------------------------------------------
   // -------------------------------------------------------------------------------
-
   public showMessageNotification(sign: string, message: string): void {
     this.messageService.add({
       severity: sign.toLowerCase(),
@@ -146,29 +146,19 @@ export class LoginComponent {
     });
   }
 
-  // 👇 Custom validator to compare password and confirmPassword
-  public passwordMatchValidator(): ValidatorFn {
-    return (group: AbstractControl): ValidationErrors | null => {
-      const password = group.get('password')?.value;
-      const confirmPassword = group.get('confirmPassword')?.value;
-      return password === confirmPassword ? null : { passwordMismatch: true };
-    };
-  }
-
   public async onClickSubmit(): Promise<void> {
-    console.log(this.formGroup.valid);
+    // If Sign Up is Valid
     if (this.formGroup.valid) {
       await this.authenticate();
     }
-    
-    else if (this.currentPath === '/auth/login'){
+
+    // If Login is Valid
+    else if (this.currentPath === '/auth/login') {
       const email = this.formGroup.controls.email.getRawValue();
       const password = this.formGroup.controls.password.getRawValue();
 
       await this.login(email, password);
-    }
-
-    else {
+    } else {
       this.markFormGroupTouched();
     }
   }
@@ -179,22 +169,24 @@ export class LoginComponent {
       this.storeService.isLoading.set(true);
 
       const users: any = await this.firebaseService.loginUser(email, password);
-      console.log(users, "value users :");
+      const dataAuth = await this.firebaseService.loadUserProfile(users.user.uid);
 
-      if(users.user.accessToken){
-        this.showMessageNotification(
-          'Success',
-          'Login Success'
-        );
+      if (users.user.accessToken) {
+        this.showMessageNotification('Success', 'Login Success');
         this.storeService.isLoading.set(false);
 
-        setTimeout(() => { 
+        this.authService.setUserProfile(dataAuth);
+        this.authService.setUserAuthorization(users, 'authenticated');
+
+        setTimeout(() => {
           this.router.navigate(['/home']);
-        }, (1000))
+        }, 1000);
       }
     } catch (error: any) {
-      console.log(error, "error :");
+      console.log(error, 'error :');
       this.storeService.isLoading.set(false);
+      this.authService.setUserProfile(null);
+      this.authService.setUserAuthorization(null, 'unauthenticated');
       this.showMessageNotification('Error', JSON.stringify(error?.code));
     }
   }
@@ -223,11 +215,6 @@ export class LoginComponent {
     this.router.navigate(['/auth/login']);
   }
 
-  public createDataUsers(): void {
-    // Navigate to sign up page
-    this.router.navigate(['/auth/login']);
-  }
-
   // -------------------------------------------------------------------------------
   // NOTE Requests -----------------------------------------------------------------
   // -------------------------------------------------------------------------------
@@ -239,15 +226,10 @@ export class LoginComponent {
     const username = this.formGroup.controls.username.getRawValue();
     const email = this.formGroup.controls.email.getRawValue();
     const password = this.formGroup.controls.password.getRawValue();
-    const confirmPassword = this.formGroup.controls.confirmPassword.getRawValue();
-    
-    const success = await this.appService.authenticate(
-      fullname,
-      username,
-      email,
-      password,
-      confirmPassword
-    );
+    const confirmPassword =
+      this.formGroup.controls.confirmPassword.getRawValue();
+
+    const success = await this.appService.authenticate(email, password);
 
     const payload = {
       fullname,
@@ -256,15 +238,6 @@ export class LoginComponent {
       password,
       confirmPassword,
     };
-
-    console.log('🔐 Signup Form Submission:', {
-      fullname,
-      username,
-      email,
-      password,
-      confirmPassword,
-      isPasswordMatch: password === confirmPassword,
-    });
 
     // Signup Phase
     if (fullname?.length > 0) {
@@ -332,4 +305,3 @@ export class LoginComponent {
     return this.storeService.isLoading();
   }
 }
-

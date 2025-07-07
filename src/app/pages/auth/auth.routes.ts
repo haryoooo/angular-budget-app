@@ -22,10 +22,6 @@ export const routes : Routes = [
         path          : 'forgot-password',
         loadComponent : () => import('./forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent),
       },
-      {
-        path          : 'validate-account',
-        loadComponent : () => import('./validate-account/validate-account.component').then(m => m.ValidateAccountComponent),
-      },
     ]
   }
 ];

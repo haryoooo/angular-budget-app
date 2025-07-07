@@ -1,0 +1,59 @@
+<app-page-layout>
+  <p-toast
+    position="top-center"
+    showTransformOptions="translateY(-50%)"
+    styleClass="custom-toast"
+  />
+  
+  <div class="profile-container">
+    <!-- Header Section -->
+    <div class="header-container">
+      <img
+        class="header"
+        src="../../../assets/img/project/header-bg.png"
+        alt="bg-header"
+      />
+      <div class="header__between">
+        <div
+          class="cursor-pointer"
+          (click)="router.navigateByUrl('home', { replaceUrl: true })"
+        >
+          <img src="../../../assets/img/project/chevron-left.png" />
+        </div>
+        <div>
+          <h4 class="text-white">Profile</h4>
+        </div>
+        <div
+          class="dot-button"
+          [ngClass]="{ clicked: isAnimating }"
+          (animationend)="isAnimating = false"
+        >
+          <img *ngIf="queryId" src="../../../assets/img/project/more.png" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Info Section -->
+    <div class="profile-info-section">
+      <div class="profile-avatar">
+        <img src="../../../assets/img/project/avatar-placeholder.png" alt="Profile Avatar" />
+      </div>
+      <h3 class="profile-name">Enjelin Morgeana</h3>
+      <p class="profile-username">enjelin_morgeana</p>
+    </div>
+
+    <!-- Menu Options Section -->
+    <div class="menu-options">
+      <div 
+        class="menu-item" 
+        *ngFor="let menuItem of menuItems" 
+        (click)="navigateToPage(menuItem.route)"
+      >
+        <div class="menu-icon">
+          <img [src]="menuItem.icon" [alt]="menuItem.title" />
+        </div>
+        <span class="menu-text">{{ menuItem.title }}</span>
+      </div>
+    </div>
+  </div>
+</app-page-layout>

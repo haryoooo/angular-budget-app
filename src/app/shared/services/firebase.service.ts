@@ -11,15 +11,16 @@ import {
   setDoc,
   deleteDoc,
   serverTimestamp,
+  getDoc,
 } from 'firebase/firestore';
 import { AddState } from './transaction.service';
 import formatFirestoreDate from '@helpers/formatFirestoreDate.helper';
-import { 
-  getAuth, 
-  createUserWithEmailAndPassword, 
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  User,
 } from 'firebase/auth';
-
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -40,17 +41,30 @@ const auth = getAuth(app);
   providedIn: 'root',
 })
 export class FirebaseService {
+  setUserAuthorization(user: User, arg1: string) {
+    throw new Error('Method not implemented.');
+  }
+  setUserProfile(dataAuth: any) {
+    throw new Error('Method not implemented.');
+  }
   firebaseService: any;
   getUserDocument: any;
   constructor() {}
 
   // Client-side user creation
-  async createUser (payload: any){
+  async createUser(payload: any) {
     try {
       // Create auth user
-      const userCredential = await createUserWithEmailAndPassword(auth, payload.email, payload.password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        payload.email,
+        payload.password
+      );
       const user = userCredential.user;
-      
+
+      delete payload.confirmPassword;
+      delete payload.password;
+
       // Create user document
       await setDoc(doc(db, 'users', user.uid), {
         email: user.email,
@@ -60,22 +74,22 @@ export class FirebaseService {
         lastLoginAt: serverTimestamp(),
         provider: 'email',
         disabled: false,
-        ...payload
+        ...payload,
       });
-      
+
       return user;
     } catch (error) {
       throw error;
     }
-  };
+  }
 
   // Client-side user creation
-  async loginUser (email: string, password: string){
+  async loginUser(email: string, password: string) {
     try {
       // Sign in with Firebase Auth
       const userCredential = await signInWithEmailAndPassword(
-        auth, 
-        email, 
+        auth,
+        email,
         password
       );
       const user = userCredential.user;
@@ -87,7 +101,20 @@ export class FirebaseService {
     } catch (error) {
       throw error;
     }
-  };
+  }
+
+  async loadUserProfile(uid: string) {
+    try {
+      const userDoc = await getDoc(doc(db, 'users', uid));
+      if (userDoc.exists()) {
+        const dataUser: any = userDoc.data();
+
+        return dataUser;
+      }
+    } catch (error) {
+      console.error('Error loading user profile:', error);
+    }
+  }
 
   // Fetching data from a Firestore collection
   async getCollectionData(collectionName: string) {
