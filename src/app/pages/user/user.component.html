@@ -14,11 +14,7 @@
         alt="bg-header"
       />
       <div class="header__between">
-        <div
-          class="cursor-pointer"
-          (click)="router.navigateByUrl('home', { replaceUrl: true })"
-        >
-          <img src="../../../assets/img/project/chevron-left.png" />
+        <div>
         </div>
         <div>
           <h4 class="text-white">Profile</h4>
@@ -27,8 +23,9 @@
           class="dot-button"
           [ngClass]="{ clicked: isAnimating }"
           (animationend)="isAnimating = false"
+          (click)="logout()"
         >
-          <img *ngIf="queryId" src="../../../assets/img/project/more.png" />
+          <img width="20" src="../../../assets/img/project/logout.svg" alt="Logout Icon" />
         </div>
       </div>
     </div>
@@ -38,8 +35,8 @@
       <div class="profile-avatar">
         <img src="../../../assets/img/project/avatar-placeholder.png" alt="Profile Avatar" />
       </div>
-      <h3 class="profile-name">Enjelin Morgeana</h3>
-      <p class="profile-username">enjelin_morgeana</p>
+      <h3 class="profile-name">{{ userProfile?.fullname }}</h3>
+      <p class="profile-username">{{ userProfile?.username }}</p>
     </div>
 
     <!-- Menu Options Section -->

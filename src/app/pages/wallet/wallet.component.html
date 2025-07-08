@@ -1,82 +1,148 @@
 <app-page-layout>
-  <!-- <div class="container my-3"> -->
-  <!-- <app-progress-bar *ngIf="storeService.isLoading()"></app-progress-bar>
-
-  <ng-container *ngIf="!storeService.isLoading()"> -->
-  <!-- <p-toast
-        position="top-center"
-        showTransformOptions="translateY(-50%)"
-        styleClass="custom-toast"
-      /> -->
-
   <div class="header-container">
     <div class="header__between">
       <div>
         <h4 class="text-white">Change Wallet</h4>
       </div>
+      <div class="header-actions">
+      </div>
     </div>
   </div>
 
   <div class="content-container">
-    <!-- <div class="tabs-container">
-        <div
-          class="tab"
-          [ngClass]="{ active: activeTab === 'cards' }"
-          (click)="setActiveTab('cards')"
-        >
-          Cards
-        </div>
-        <div
-          class="tab"
-          [ngClass]="{ active: activeTab === 'accounts' }"
-          (click)="setActiveTab('accounts')"
-        >
-          Accounts
-        </div>
-      </div> -->
+    <!-- Loading state for wallet check -->
+    <div *ngIf="checkingWallets" class="loading-wallets text-center">
+      <div class="loading-spinner">
+        <img src="../../../assets/img/favicon/beatloader.svg" alt="Loading..." />
+      </div>
+      <p class="mt-3">Checking available wallets...</p>
+    </div>
 
-    <div class="connection-options">
+    <!-- Wallet options -->
+    <div class="connection-options" *ngIf="!checkingWallets">
       <div
         *ngFor="let option of options"
         class="option-item"
         [class.selected]="selectedOption === option.id"
+        [class.wallet-empty]="isWalletEmpty(option.id)"
         (click)="selectOption(option.id)"
       >
         <div class="option-icon {{ option.id }}-icon">
           <img [src]="getIconSrc(option.id)" [alt]="option.id" />
+          <!-- Show indicator if wallet is empty/new -->
+          <span *ngIf="isWalletEmpty(option.id)" class="new-wallet-badge">New</span>
         </div>
+        
         <div class="option-details">
           <div class="option-title">{{ option.title }}</div>
           <div class="option-description">
-            {{ option.description }}
+            {{ getWalletDescription(option.id) }}
+          </div>
+          <!-- Show transaction count if available -->
+          <div class="option-meta" *ngIf="walletStats[option.id]">
+            <span class="transaction-count">
+              {{ walletStats[option.id].count }} transactions
+            </span>
+            <span class="wallet-balance" [class.positive]="walletStats[option.id].balance > 0">
+              ${{ walletStats[option.id].balance | number:'1.2-2' }}
+            </span>
           </div>
         </div>
-        <div class="option-checkmark" *ngIf="selectedOption === option.id">
-          <img
-            src="../../../assets/img/project/navigation/checkmark.png"
-            alt="selected"
-          />
+
+        <div class="option-actions">
+          <!-- Delete button for empty wallets -->
+          <button 
+            *ngIf="isWalletEmpty(option.id) && options.length > 1"
+            class="btn-delete-wallet"
+            (click)="deleteWallet(option.id, $event)"
+          >
+            <img src="../../../assets/img/project/navigation/trash.png" alt="Delete" />
+          </button>
+          
+          <!-- Checkmark for selected wallet -->
+          <div class="option-checkmark" *ngIf="selectedOption === option.id">
+            <img
+              src="../../../assets/img/project/navigation/checkmark.png"
+              alt="selected"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Add new wallet option -->
+      <div class="option-item add-wallet-option" (click)="showAddWalletModal()">
+        <div class="option-icon w-20">
+          <img src="../../../assets/img/project/navigation/plus.svg" alt="Add Wallet" />
+        </div>
+        <div class="option-details">
+          <div class="option-title">Add New Wallet</div>
+          <div class="option-description">Create a new wallet to organize your funds</div>
         </div>
       </div>
     </div>
 
-    <!-- <div class="nav-add-activity-btn" (click)="navigateTo('home/transactions?isTransactions=false')">
-      <img
-        src="../../../../../assets/img/project/navigation/add-btn.png" 
-        alt="add-activity" 
-        style="cursor: pointer;"  
-      />
-    </div> -->
-
-    <button (click)="submitChangeWallet()" class="btn-next">
+    <!-- Change wallet button -->
+    <button 
+      (click)="submitChangeWallet()" 
+      class="btn-next"
+      [disabled]="loading || !selectedOption"
+    >
       <span *ngIf="loading">
-        <span class="h-10"
-          ><img src="../../../assets/img/favicon/beatloader.svg"
-        /></span>
+        <span class="h-10">
+          <img src="../../../assets/img/favicon/beatloader.svg" />
+        </span>
       </span>
-      <span class="my-3" *ngIf="!loading">Change Wallet</span>
+      <span class="my-3" *ngIf="!loading">
+        {{ isWalletEmpty(selectedOption) ? 'Create & Select Wallet' : 'Change Wallet' }}
+      </span>
     </button>
   </div>
-  <!-- </ng-container> -->
-  <!-- </div> -->
+
+  <!-- Add Wallet Modal -->
+  <div class="modal-overlay" *ngIf="showAddModal" (click)="hideAddWalletModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Add New Wallet</h3>
+        <button class="btn-close" (click)="hideAddWalletModal()">×</button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="walletName">Wallet Name</label>
+          <input 
+            type="text" 
+            id="walletName"
+            [(ngModel)]="newWalletName"
+            placeholder="Enter wallet name"
+            class="form-control"
+            maxlength="50"
+          />
+        </div>
+        
+        <div class="form-group">
+          <label for="walletDescription">Description (Optional)</label>
+          <textarea 
+            id="walletDescription"
+            [(ngModel)]="newWalletDescription"
+            placeholder="Enter wallet description"
+            class="form-control"
+            rows="3"
+            maxlength="200"
+          ></textarea>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="hideAddWalletModal()">Cancel</button>
+        <button 
+          class="btn-create" 
+          (click)="createNewWallet()"
+          [disabled]="!newWalletName.trim() || creatingWallet"
+        >
+          <span *ngIf="creatingWallet">Creating...</span>
+          <span *ngIf="!creatingWallet">Create Wallet</span>
+        </button>
+      </div>
+    </div>
+  </div>
 </app-page-layout>

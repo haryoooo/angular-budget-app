@@ -33,7 +33,7 @@ export class LayoutHeaderComponent implements OnInit {
   public appName: string = environment.appName;
   public isMenuCollapsed: boolean = true;
 
-  constructor(private router: Router) { }
+  constructor(private router: Router) {}
 
   // Navigation items for the bottom navigation bar
   public navItems = [
@@ -55,10 +55,10 @@ export class LayoutHeaderComponent implements OnInit {
     },
   ];
 
-  public ngOnInit(): void { }
   // -------------------------------------------------------------------------------
   // NOTE Init ---------------------------------------------------------------------
   // -------------------------------------------------------------------------------
+  public ngOnInit(): void { }
 
   // -------------------------------------------------------------------------------
   // NOTE Actions ------------------------------------------------------------------

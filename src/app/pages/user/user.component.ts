@@ -4,24 +4,21 @@ import { CommonModule } from '@angular/common';
 import {
   Component,
   OnInit,
-  ChangeDetectorRef,
-  HostListener,
 } from '@angular/core';
-import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
+import { Router } from '@angular/router';
 
 // Services
 import { StoreService } from '@services/store.service';
 import { TransactionService } from '@services/transaction.service';
 import { ToastModule } from 'primeng/toast';
+import { FirebaseService } from '@services/firebase.service';
+import { MessageService } from 'primeng/api';
+import { AuthService } from '@services/auth.service';
 
 // Components
 import { ProgressBarComponent } from '@blocks/progress-bar/progress-bar.component';
 import { PageLayoutComponent } from '@layouts/page-layout/page-layout.component';
 import * as moment from 'moment';
-import { formatMoney, parseMoney } from '@helpers/moneyFormatter.helper';
-import { FirebaseService } from '@services/firebase.service';
-import { MessageService } from 'primeng/api';
-import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-user',
@@ -38,13 +35,9 @@ import { filter } from 'rxjs/operators';
   providers: [MessageService],
 })
 export class UserComponent implements OnInit {
-  public stateTransaction: any = [];
   public moment = moment;
-  public stateAdd: any;
-  public queryId = this.route.snapshot.queryParams['id'];
-  public wallet = this.stateService._stateWallet.value;
+  public userProfile: any;
 
-  public isModalOpen = false;
   public isSubmitted = false;
   public isAnimating = false;
 
@@ -56,16 +49,8 @@ export class UserComponent implements OnInit {
     public stateService: TransactionService,
     public firebaseService: FirebaseService,
     public messageService: MessageService,
-    private route: ActivatedRoute
+    public authService: AuthService,
   ) {}
-
-  showMessageNotification(sign: string, message: string): void {
-    this.messageService.add({
-      severity: sign.toLowerCase(),
-      summary: sign,
-      detail: message,
-    });
-  }
 
   // Menu items data array
   menuItems = [
@@ -86,10 +71,31 @@ export class UserComponent implements OnInit {
     },
   ];
 
+  public showMessageNotification(sign: string, message: string): void {
+    this.messageService.add({
+      severity: sign.toLowerCase(),
+      summary: sign,
+      detail: message,
+    });
+  }
+
   // Single navigation method
   navigateToPage(route: string) {
     this.router.navigateByUrl(route);
   }
 
-  ngOnInit(): void {}
+  public logout() {
+    this.firebaseService.logoutUser();
+    this.showMessageNotification('Success', 'Logout Success');
+    
+    setTimeout(() => {
+      this.navigateToPage("/")
+    }, 1000);
+  }
+
+  ngOnInit(): void {
+    this.authService.userProfile$.subscribe((profile) => {
+      this.userProfile = profile;
+    });
+  }
 }

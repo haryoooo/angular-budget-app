@@ -25,6 +25,7 @@ import { passwordMatchValidator } from '@helpers/passwordMatchValidator.helper';
 import { FirebaseService } from '@services/firebase.service';
 import { AuthService } from '@services/auth.service';
 import { onAuthStateChanged } from 'firebase/auth';
+import { filter, take } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -147,21 +148,26 @@ export class LoginComponent {
   }
 
   public async onClickSubmit(): Promise<void> {
-    // If Sign Up is Valid
-    if (this.formGroup.valid) {
-      await this.authenticate();
-    }
-
-    // If Login is Valid
-    else if (this.currentPath === '/auth/login') {
+    if (this.currentPath === '/auth/login') {
       const email = this.formGroup.controls.email.getRawValue();
       const password = this.formGroup.controls.password.getRawValue();
 
+      if (!email || !password || this.formGroup.controls.email.invalid || this.formGroup.controls.password.invalid) {
+        this.markFormGroupTouched();
+        return;
+      }
+
       await this.login(email, password);
     } else {
-      this.markFormGroupTouched();
+      // Registration flow
+      if (this.formGroup.valid) {
+        await this.authenticate(); // Register
+      } else {
+        this.markFormGroupTouched();
+      }
     }
   }
+
 
   // Main login method
   public async login(email: string, password: string) {
@@ -169,24 +175,16 @@ export class LoginComponent {
       this.storeService.isLoading.set(true);
 
       const users: any = await this.firebaseService.loginUser(email, password);
-      const dataAuth = await this.firebaseService.loadUserProfile(users.user.uid);
-
+    
       if (users.user.accessToken) {
         this.showMessageNotification('Success', 'Login Success');
         this.storeService.isLoading.set(false);
 
-        this.authService.setUserProfile(dataAuth);
-        this.authService.setUserAuthorization(users, 'authenticated');
-
-        setTimeout(() => {
-          this.router.navigate(['/home']);
-        }, 1000);
+        this.router.navigate(['/home']);
       }
     } catch (error: any) {
       console.log(error, 'error :');
       this.storeService.isLoading.set(false);
-      this.authService.setUserProfile(null);
-      this.authService.setUserAuthorization(null, 'unauthenticated');
       this.showMessageNotification('Error', JSON.stringify(error?.code));
     }
   }

@@ -16,6 +16,7 @@ import { formatMoney } from '@helpers/moneyFormatter.helper';
 import { FirebaseService } from '@services/firebase.service';
 import { calculateTransaction } from '@helpers/transactionSum.helper';
 import formatTransactionDate from '@helpers/formatTransactionDate.helper';
+import { AuthService } from '@services/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -30,12 +31,14 @@ export class HomeComponent implements OnInit {
   public greeting: string = '';
   public wallet = this.stateService._stateWallet.value;
   public transactions = this.stateService.getStateTransactions(this.wallet);
+  public userProfile: any;
   public loading = true;
 
   constructor(
     public storeService: StoreService,
     public stateService: TransactionService,
     public firebaseService: FirebaseService,
+    public authService: AuthService,
     public router: Router,
     public cdr: ChangeDetectorRef
   ) {}
@@ -48,9 +51,9 @@ export class HomeComponent implements OnInit {
       this.getAllTransactions(state);
     });
 
-    // setTimeout((_) => {
-    //   this.storeService.isLoading.set(false);
-    // }, 2000);
+    this.authService.userProfile$.subscribe((profile) => {
+      this.userProfile = profile;
+    });
   }
 
   async getAllTransactions(walletId: string) {

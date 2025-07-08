@@ -20,6 +20,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   User,
+  signOut,
 } from 'firebase/auth';
 
 // Your web app's Firebase configuration
@@ -103,6 +104,15 @@ export class FirebaseService {
     }
   }
 
+  async logoutUser() {
+    try {
+      await signOut(auth); // Firebase handles token/session cleanup
+      return { success: true };
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async loadUserProfile(uid: string) {
     try {
       const userDoc = await getDoc(doc(db, 'users', uid));
@@ -160,5 +170,41 @@ export class FirebaseService {
     } catch (e) {
       console.error('Error deleting document:', e);
     }
+  }
+
+  async createWallet(walletName: string): Promise<void> {
+    try {
+      // Create a new collection by adding an initial document
+      const colRef = collection(db, walletName);
+      const initialDoc = {
+        type: 'expense',
+        date: new Date(),
+        desc: 'Initial wallet setup',
+        amount: 0,
+        createdAt: new Date(),
+      };
+
+      await addDoc(colRef, initialDoc);
+      console.log(`Wallet ${walletName} created successfully`);
+    } catch (error) {
+      console.error('Error creating wallet:', error);
+      throw error;
+    }
+  }
+
+  async checkWalletExists(walletName: string): Promise<boolean> {
+    try {
+      const colRef = collection(db, walletName);
+      const snapshot = await getDocs(colRef);
+      return !snapshot.empty;
+    } catch (error) {
+      console.error('Error checking wallet existence:', error);
+      return false;
+    }
+  }
+
+  async deleteWallet(walletId: string): Promise<void> {
+    // Delete the entire collection from Firebase
+    await this.firebaseService.deleteCollection(walletId);
   }
 }

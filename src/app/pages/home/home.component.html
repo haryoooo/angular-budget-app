@@ -1,8 +1,5 @@
 <app-page-layout>
   <div>
-    <!-- <app-progress-bar *ngIf="storeService.isLoading()"></app-progress-bar>
-
-    <ng-container *ngIf="!storeService.isLoading()"> -->
     <!-- Header Container -->
     <div class="header-container">
       <img
@@ -13,7 +10,7 @@
       <div class="header__between">
         <div class="text-white">
           <h6 class="font-weight-400">{{ getGreeting() }}</h6>
-          <h4>Guest</h4>
+          <h4>{{ userProfile?.fullname }}</h4>
         </div>
       </div>
 

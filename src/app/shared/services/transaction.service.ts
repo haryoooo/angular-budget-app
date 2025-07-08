@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-// import { transactions } from 'src/app/example/transactions';
 import { FirebaseService } from './firebase.service';
 
 export interface OptionsDropdown {
@@ -84,9 +83,26 @@ export class TransactionService {
   }
 
   async getStateTransactions(optionValues: string) {
-    const transaction = await this.firebaseService.getCollectionData(optionValues);
-   
-    return transaction
+    try {
+      const transaction = await this.firebaseService.getCollectionData(optionValues);
+      
+      // If wallet is empty, create it
+      if (transaction.length === 0) {
+        const walletExists = await this.firebaseService.checkWalletExists(optionValues);
+        
+        if (!walletExists) {
+          console.log(`Creating new wallet: ${optionValues}`);
+          await this.firebaseService.createWallet(optionValues);
+          // Return empty array for new wallet
+          return [];
+        }
+      }
+      
+      return transaction;
+    } catch (error) {
+      console.error('Error getting transactions:', error);
+      return [];
+    }
   }
 
   setLatestTransactions(updatedState: AddState): any {
