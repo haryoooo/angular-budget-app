@@ -10,26 +10,34 @@
 
   <div
     *ngIf="isModalOpen && queryId"
-    (click)="closeModal()"
     class="modal-overlay"
+    (click)="closeModal()"
   >
-    <div (click)="$event.stopPropagation()">
-      <h4>Delete Transaction</h4>
-      <p class="my-4">Are you sure you want to delete this transaction?</p>
-      <button
-        [disabled]="isSubmitted"
-        class="btn-confirm"
-        (click)="confirmTransaction()"
-      >
-        Delete
-      </button>
-      <button
-        [disabled]="isSubmitted"
-        class="btn-cancel"
-        (click)="closeModal()"
-      >
-        Cancel
-      </button>
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h4>Delete Transaction</h4>
+      </div>
+
+      <div class="modal-body">
+        <h6>Are you sure you want to delete this transaction?</h6>
+      </div>
+
+      <div class="modal-footer">
+        <button
+          [disabled]="isSubmitted"
+          class="btn-cancel"
+          (click)="closeModal()"
+        >
+          Cancel
+        </button>
+        <button
+          [disabled]="isSubmitted"
+          class="btn-confirm"
+          (click)="confirmTransaction()"
+        >
+          Delete
+        </button>
+      </div>
     </div>
   </div>
 
@@ -63,7 +71,6 @@
   </div>
 
   <div class="content-container">
-
     <div class="content-transactions">
       <div>
         <h5 class="text-label">NAME</h5>

@@ -72,8 +72,9 @@ export class HomeComponent implements OnInit {
       );
 
       this.allTransactions = transactions;
+      // const findTitle = this.userProfile?.wallets?.fi d
 
-      localStorage.setItem('type', walletId);
+      // localStorage.setItem('type', walletId);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {

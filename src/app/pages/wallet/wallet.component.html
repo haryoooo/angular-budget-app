@@ -44,7 +44,7 @@
               {{ walletStats[option.id].count }} transactions
             </span>
             <span class="wallet-balance" [class.positive]="walletStats[option.id].balance > 0">
-              ${{ walletStats[option.id].balance | number:'1.2-2' }}
+              Rp.{{ walletStats[option.id].balance | number:'1.2-2' }}
             </span>
           </div>
         </div>
@@ -84,7 +84,7 @@
     <!-- Change wallet button -->
     <button 
       (click)="submitChangeWallet()" 
-      class="btn-next"
+      class="btn-next btn-full"
       [disabled]="loading || !selectedOption"
     >
       <span *ngIf="loading">
@@ -103,7 +103,7 @@
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h3>Add New Wallet</h3>
-        <button class="btn-close" (click)="hideAddWalletModal()">×</button>
+        <button class="btn-close" (click)="hideAddWalletModal()"></button>
       </div>
       
       <div class="modal-body">
@@ -135,7 +135,7 @@
       <div class="modal-footer">
         <button class="btn-cancel" (click)="hideAddWalletModal()">Cancel</button>
         <button 
-          class="btn-create" 
+          class="btn-next" 
           (click)="createNewWallet()"
           [disabled]="!newWalletName.trim() || creatingWallet"
         >

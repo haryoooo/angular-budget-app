@@ -12,6 +12,8 @@ import {
   deleteDoc,
   serverTimestamp,
   getDoc,
+  updateDoc,
+  arrayUnion,
 } from 'firebase/firestore';
 import { AddState } from './transaction.service';
 import formatFirestoreDate from '@helpers/formatFirestoreDate.helper';
@@ -22,6 +24,12 @@ import {
   User,
   signOut,
 } from 'firebase/auth';
+
+interface Option {
+  id: string;
+  title: string;
+  description: string;
+}
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -126,6 +134,23 @@ export class FirebaseService {
     }
   }
 
+  async updateUserProfile(
+    collectionName: string,
+    docId: string,
+    payload: AddState | Option,
+    arrayField = 'wallets' // default to 'wallets' array
+  ) {
+    try {
+      const docRef = doc(db, collectionName, docId);
+      await updateDoc(docRef, {
+        [arrayField]: arrayUnion(payload)
+      });
+      console.log(`Payload added to '${arrayField}' array in document: `, docRef.id);
+    } catch (e) {
+      console.error('Error updating document: ', e);
+    }
+  }
+
   // Fetching data from a Firestore collection
   async getCollectionData(collectionName: string) {
     const colRef = collection(db, collectionName);
@@ -153,7 +178,7 @@ export class FirebaseService {
   }
 
   async updateData(collectionName: string, docId: string, payload: AddState) {
-    try {
+    try {      
       const docRef = doc(db, collectionName, docId);
       await setDoc(docRef, payload, { merge: false });
       console.log('Document written with ID: ', docRef.id);

@@ -87,6 +87,7 @@ export class UserComponent implements OnInit {
   public logout() {
     this.firebaseService.logoutUser();
     this.showMessageNotification('Success', 'Logout Success');
+    localStorage.clear();
     
     setTimeout(() => {
       this.navigateToPage("/")

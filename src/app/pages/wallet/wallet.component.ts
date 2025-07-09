@@ -14,6 +14,7 @@ import { PageLayoutComponent } from '@layouts/page-layout/page-layout.component'
 import { TransactionService } from '@services/transaction.service';
 import { FirebaseService } from '@services/firebase.service';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '@services/auth.service';
 
 interface Option {
   id: string;
@@ -38,25 +39,21 @@ export class WalletComponent implements OnInit {
   public creatingWallet = false;
   public newWalletName = '';
   public newWalletDescription = '';
+  public userProfile: any;
+  public userId: any;
   
   // Track wallet stats and empty status
   public walletStats: { [key: string]: { count: number; balance: number } } = {};
   public emptyWallets: string[] = [];
+  public options: Option[] = [];
 
   constructor(
     public router: Router,
     public stateService: TransactionService,
     public storeService: StoreService,
-    public firebaseService: FirebaseService
+    public firebaseService: FirebaseService,
+    public authService: AuthService,
   ) {}
-
-  options: Option[] = [
-    {
-      id: 'budget-1',
-      title: 'Wallet 1',
-      description: 'Connect into wallet 1 to organize your funds',
-    },
-  ];
 
   public async ngOnInit(): Promise<void> {
     this.storeService.isLoading.set(false);
@@ -64,6 +61,14 @@ export class WalletComponent implements OnInit {
 
     this.wallet = this.stateService._stateWallet.value;
     this.selectedOption = this.wallet;
+
+    this.authService.currentUser$.subscribe(state=> {
+      this.userId = state?.uid;
+    })
+
+    this.authService.userProfile$.subscribe(state=> {
+      this.options = state?.wallets
+    })
   }
 
   async checkAllWallets(): Promise<void> {
@@ -132,6 +137,7 @@ export class WalletComponent implements OnInit {
       }
       
       // Set the wallet
+      // const findTitle: any = this?.options?.find((el: { id: string; })=> el.id === this.selectedOption);
       this.stateService.setWallet(this.selectedOption);
       
       // Store in localStorage
@@ -185,9 +191,12 @@ export class WalletComponent implements OnInit {
       
       // Add to options
       this.options.push(newOption);
+
+      console.log(newOption);
       
-      // Create in Firebase
+      // // Create in Firebase
       await this.firebaseService.createWallet(walletId);
+      await this.firebaseService.updateUserProfile('users', this.userId, newOption); // Adds to `wallets` array
       
       // Select the new wallet
       this.selectedOption = walletId;
