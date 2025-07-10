@@ -2,10 +2,12 @@
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '@services/auth.service';
+import { StoreService } from '@services/store.service';
 import { map, filter, take } from 'rxjs';
 
 export const authGuards = () => {
   const authService = inject(AuthService);
+  const guestStates = inject(StoreService);
   const router = inject(Router);
 
   return authService.authRestored$.pipe(
@@ -14,8 +16,9 @@ export const authGuards = () => {
     map(() => {
       const authState = authService.authStateSubject.value;
       const isAuthenticated = authState === 'authenticated';
+      const isGuest = guestStates.isGuest();
       
-      if (isAuthenticated) {
+      if (isAuthenticated || isGuest) {
         return true;
       }
       

@@ -50,6 +50,8 @@ export class TransactionsComponent implements OnInit {
 
   public loading = false;
 
+  public now = moment();
+
   constructor(
     public storeService: StoreService,
     public router: Router,
@@ -89,12 +91,13 @@ export class TransactionsComponent implements OnInit {
     }, 1000);
   }
 
-  deleteTransaction(): void {
+  async deleteTransaction(): Promise<void> {
     const id = this.queryId;
 
-    this.stateService.deleteTransaction(id);
+    await this.stateService.deleteTransaction(id);
 
     this.isAnimating = true;
+    await this.getDataTransaction(this.wallet); // Re-fetch stateTransaction if needed
 
     this.cdr.detectChanges(); // Trigger change detection
   }
@@ -142,9 +145,17 @@ export class TransactionsComponent implements OnInit {
 
     if (filterById?.identifier) {
       const { id, ...filteredData } = filterById;
-      this.stateAdd = { ...filteredData };
+
+      // ✅ Preserve createdAt
+      this.stateAdd = {
+        ...filteredData,
+        createdAt: filterById.createdAt ?? new Date().toISOString(),
+      };
     } else {
-      this.stateAdd = { ...state };
+      this.stateAdd = {
+        ...state,
+        createdAt: state.createdAt ?? new Date().toISOString(),
+      };
     }
 
     this.cdr.detectChanges(); // Trigger change detection
@@ -156,9 +167,10 @@ export class TransactionsComponent implements OnInit {
 
   async getDataTransaction(collectionName: string) {
     try {
-      this.stateTransaction = await this.firebaseService
-        .getCollectionData(collectionName)
-        .then((el) => el);
+      const data = await this.firebaseService.getCollectionData(collectionName);
+      this.stateTransaction = data;
+      this.stateService._stateTransactions.next(data); // Push to state
+      this.cdr.detectChanges();
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -239,10 +251,11 @@ export class TransactionsComponent implements OnInit {
     this.router.navigate(['home']);
   }
 
-  submitTransaction(): void {
+  async submitTransaction(): Promise<void> {
     this.loading = true;
 
     const paramValueEdit = this.queryId;
+
     const messageSuccess = paramValueEdit
       ? 'Success edit transaction'
       : 'Success add transaction';
@@ -252,24 +265,27 @@ export class TransactionsComponent implements OnInit {
       date: moment(this.stateAdd.date).format('dddd, MMMM D, YYYY'),
       desc: this.stateAdd.desc,
       amount: this.stateAdd.amount,
+      createdAt: this.now.toISOString(),
     };
 
     this.isSubmitted = true;
-
     this.showMessageNotification('Success', messageSuccess);
 
-    setTimeout(() => {
+    setTimeout(async () => {
       if (paramValueEdit) {
-        this.stateService.updateTransaction(paramValueEdit, this.stateAdd);
-            this.cdr.detectChanges();
+        await this.stateService.updateTransaction(paramValueEdit, this.stateAdd);
       } else {
-        this.stateService.setLatestTransactions(newTransaction);
-        this.cdr.detectChanges();
+        await this.stateService.setLatestTransactions(newTransaction);
       }
+
+      await this.getDataTransaction(this.wallet); // Update local view
+
       this.stateService.resetStateAdd();
       this.returnHome();
       this.isSubmitted = false;
       this.loading = false;
+
+      this.cdr.detectChanges();
     }, 1000);
   }
 }

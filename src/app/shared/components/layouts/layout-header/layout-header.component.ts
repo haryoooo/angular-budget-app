@@ -13,6 +13,7 @@ import { TranslateModule } from '@ngx-translate/core';
 // Internal modules
 import { environment } from '@env/environment';
 import { NgFor, NgIf } from '@angular/common';
+import { StoreService } from '@services/store.service';
 
 @Component({
   selector: 'app-layout-header',
@@ -30,10 +31,11 @@ import { NgFor, NgIf } from '@angular/common';
   ],
 })
 export class LayoutHeaderComponent implements OnInit {
+  private isGuest = this.storeService.isGuest();
   public appName: string = environment.appName;
   public isMenuCollapsed: boolean = true;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private storeService: StoreService) {}
 
   // Navigation items for the bottom navigation bar
   public navItems = [
@@ -58,7 +60,11 @@ export class LayoutHeaderComponent implements OnInit {
   // -------------------------------------------------------------------------------
   // NOTE Init ---------------------------------------------------------------------
   // -------------------------------------------------------------------------------
-  public ngOnInit(): void { }
+  public ngOnInit(): void {
+    if(this.isGuest){
+      this.navItems.pop(); // Removes the last item
+    }
+  }
 
   // -------------------------------------------------------------------------------
   // NOTE Actions ------------------------------------------------------------------

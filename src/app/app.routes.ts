@@ -2,14 +2,12 @@
 import { Routes } from '@angular/router';
 
 import { authGuards } from './guards/authGuards';
-import { guestGuards } from './guards/guestGuards';
 
 export const routes: Routes = [
   // Auth routes (only accessible when NOT authenticated)
   {
     path: 'auth',
     loadChildren: () => import('./pages/auth/auth.routes').then(m => m.routes),
-    canActivate: [guestGuards], // Redirect to /home if already authenticated
   },
   
   // Protected routes (require authentication)

@@ -26,10 +26,12 @@ import { AuthService } from '@services/auth.service';
   imports: [PageLayoutComponent, NgIf, ProgressBarComponent, NgFor, NgClass],
 })
 export class HomeComponent implements OnInit {
+  private isGuest = this.storeService.isGuest();
+
   public allTransactions: any[] = [];
   public moment = moment;
   public greeting: string = '';
-  public wallet = this.stateService._stateWallet.value;
+  public wallet = this.isGuest ? 'budget-1' : this.stateService._stateWallet.value;
   public transactions = this.stateService.getStateTransactions(this.wallet);
   public userProfile: any;
   public loading = true;
@@ -48,7 +50,7 @@ export class HomeComponent implements OnInit {
 
   public ngOnInit(): void {
     this.stateService.stateWallet$.subscribe((state) => {
-      this.getAllTransactions(state);
+      this.getAllTransactions(this.isGuest ? 'budget-1' : state);
     });
 
     this.authService.userProfile$.subscribe((profile) => {
@@ -60,21 +62,18 @@ export class HomeComponent implements OnInit {
     try {
       let transactions = await this.firebaseService.getCollectionData(walletId);
 
+      // Add display format (optional)
       transactions.forEach((transaction: any) => {
         transaction.formattedDate = formatTransactionDate(transaction.date);
       });
 
-      // Sort transactions by date (newest first)
+      // Sort by createdAt (or original date field if it includes full timestamp)
       transactions.sort(
         (a: any, b: any) =>
-          moment(b.formattedDate, 'YYYY-MM-DD HH:mm:ss').valueOf() -
-          moment(a.formattedDate, 'YYYY-MM-DD HH:mm:ss').valueOf()
+          moment(b.createdAt || b.date).valueOf() - moment(a.createdAt || a.date).valueOf()
       );
 
       this.allTransactions = transactions;
-      // const findTitle = this.userProfile?.wallets?.fi d
-
-      // localStorage.setItem('type', walletId);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {

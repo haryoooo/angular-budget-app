@@ -70,7 +70,7 @@
       </div>
 
       <!-- Add new wallet option -->
-      <div class="option-item add-wallet-option" (click)="showAddWalletModal()">
+      <div class="option-item add-wallet-option" *ngIf="!isGuest" (click)="showAddWalletModal()">
         <div class="option-icon w-20">
           <img src="../../../assets/img/project/navigation/plus.svg" alt="Add Wallet" />
         </div>
@@ -85,7 +85,7 @@
     <button 
       (click)="submitChangeWallet()" 
       class="btn-next btn-full"
-      [disabled]="loading || !selectedOption"
+      [disabled]="loading || !selectedOption || isGuest"
     >
       <span *ngIf="loading">
         <span class="h-10">

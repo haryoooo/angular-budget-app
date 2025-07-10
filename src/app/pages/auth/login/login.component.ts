@@ -24,8 +24,6 @@ import { ToastModule } from 'primeng/toast';
 import { passwordMatchValidator } from '@helpers/passwordMatchValidator.helper';
 import { FirebaseService } from '@services/firebase.service';
 import { AuthService } from '@services/auth.service';
-import { onAuthStateChanged } from 'firebase/auth';
-import { filter, take } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -72,6 +70,16 @@ export class LoginComponent {
   // -------------------------------------------------------------------------------
   // NOTE Init ---------------------------------------------------------------------
   // -------------------------------------------------------------------------------
+  async ngOnInit() {
+    try {
+      await this.firebaseService.emptyBudgetCollection('budget-1');
+      console.log('Deleted wallet');
+    } catch (err) {
+      console.error('Delete failed:', err);
+    }
+  }
+
+
   private initFormGroup(): void {
     this.formGroup = new FormGroup(
       {
@@ -152,7 +160,12 @@ export class LoginComponent {
       const email = this.formGroup.controls.email.getRawValue();
       const password = this.formGroup.controls.password.getRawValue();
 
-      if (!email || !password || this.formGroup.controls.email.invalid || this.formGroup.controls.password.invalid) {
+      if (
+        !email ||
+        !password ||
+        this.formGroup.controls.email.invalid ||
+        this.formGroup.controls.password.invalid
+      ) {
         this.markFormGroupTouched();
         return;
       }
@@ -168,17 +181,17 @@ export class LoginComponent {
     }
   }
 
-
   // Main login method
   public async login(email: string, password: string) {
     try {
       this.storeService.isLoading.set(true);
 
       const users: any = await this.firebaseService.loginUser(email, password);
-    
+
       if (users.user.accessToken) {
         this.showMessageNotification('Success', 'Login Success');
         this.storeService.isLoading.set(false);
+        this.storeService.isGuest.set(false);
 
         this.router.navigate(['/home']);
       }
@@ -191,6 +204,7 @@ export class LoginComponent {
 
   public onClickGuest(): void {
     this.storeService.isGuest.set(true);
+
     this.router.navigate(['/home']);
   }
 

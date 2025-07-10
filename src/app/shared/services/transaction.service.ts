@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { FirebaseService } from './firebase.service';
+import { StoreService } from './store.service';
 
 export interface OptionsDropdown {
   name: string;
@@ -32,7 +33,8 @@ export const initialState: AddState = {
   providedIn: 'root', // This makes the service available application-wide
 })
 export class TransactionService {
-  public wallet = localStorage.getItem("type");
+  private isGuest = this.storeService.isGuest();
+  public wallet = this.isGuest ? 'budget-1' : localStorage.getItem("type") ;
   public transactions = [];
   private initialState: AddState = {
     type: 'expense', // default value
@@ -45,7 +47,7 @@ export class TransactionService {
   // Initial states with appropriate data types
   private _stateOptions = new BehaviorSubject<OptionsDropdown>(initialStateDropdown);
   private _stateAdd = new BehaviorSubject<AddState>(initialState);
-  private _stateTransactions = new BehaviorSubject<any>(this.transactions);
+  public _stateTransactions = new BehaviorSubject<any>(this.transactions);
   public _stateWallet = new BehaviorSubject<any>(this.wallet);
 
   // Expose observables to allow components to subscribe to state changes
@@ -54,7 +56,7 @@ export class TransactionService {
   stateOptions$ = this._stateOptions.asObservable();
   stateWallet$ = this._stateWallet.asObservable();
 
-  constructor(private firebaseService: FirebaseService) {}
+  constructor(private firebaseService: FirebaseService, private storeService: StoreService) {}
 
   setStateAdd(updatedValues: Partial<AddState>): void {
     const currentState = this._stateAdd.value;
@@ -105,15 +107,33 @@ export class TransactionService {
     }
   }
 
-  setLatestTransactions(updatedState: AddState): any {
-    this.firebaseService.addData(this._stateWallet.value, updatedState);
+  async setLatestTransactions(newData: AddState): Promise<void> {
+    try {
+      await this.firebaseService.addData(this._stateWallet.value, newData);
+      const updatedList = await this.firebaseService.getCollectionData(this._stateWallet.value);
+      this._stateTransactions.next(updatedList);
+    } catch (err) {
+      console.error('Failed to add transaction', err);
+    }
   }
 
-  updateTransaction(id: string, newData: AddState){
-    this.firebaseService.updateData(this._stateWallet.value, id, newData);
+  async updateTransaction(id: string, newData: AddState): Promise<void> {
+    try {
+      await this.firebaseService.updateData(this._stateWallet.value, id, newData);
+      const updatedList = await this.firebaseService.getCollectionData(this._stateWallet.value);
+      this._stateTransactions.next(updatedList);
+    } catch (err) {
+      console.error('Failed to update transaction', err);
+    }
   }
 
-  deleteTransaction(id: string){
-    this.firebaseService.deleteData(this._stateWallet.value, id);
+  async deleteTransaction(id: string): Promise<void> {
+    try {
+      await this.firebaseService.deleteData(this._stateWallet.value, id);
+      const updatedList = await this.firebaseService.getCollectionData(this._stateWallet.value);
+      this._stateTransactions.next(updatedList);
+    } catch (err) {
+      console.error('Failed to delete transaction', err);
+    }
   }
 }

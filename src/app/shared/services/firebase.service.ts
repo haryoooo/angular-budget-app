@@ -232,4 +232,15 @@ export class FirebaseService {
     // Delete the entire collection from Firebase
     await this.firebaseService.deleteCollection(walletId);
   }
+
+  async emptyBudgetCollection(walletId: string): Promise<void> {
+    const colRef = collection(db, walletId);
+    const snapshot = await getDocs(colRef);
+
+    const deletePromises = snapshot.docs.map((docSnap) =>
+      deleteDoc(doc(db, walletId, docSnap.id))
+    );
+
+    await Promise.all(deletePromises);
+  }
 }

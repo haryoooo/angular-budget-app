@@ -30,6 +30,8 @@ interface Option {
   imports: [PageLayoutComponent, NgIf, ProgressBarComponent, NgClass, NgFor, FormsModule, CommonModule],
 })
 export class WalletComponent implements OnInit {
+  public isGuest = this.storeService.isGuest();
+
   public wallet!: string;
   public selectedOption!: string;
   public activeTab: string = 'accounts';
@@ -45,7 +47,7 @@ export class WalletComponent implements OnInit {
   // Track wallet stats and empty status
   public walletStats: { [key: string]: { count: number; balance: number } } = {};
   public emptyWallets: string[] = [];
-  public options: Option[] = [];
+  public options: Option[] = this.isGuest ? [{id: 'budget-1', title: 'Budget 1', description: 'this is example wallet'}]  : [];
 
   constructor(
     public router: Router,
@@ -57,18 +59,22 @@ export class WalletComponent implements OnInit {
 
   public async ngOnInit(): Promise<void> {
     this.storeService.isLoading.set(false);
-    await this.checkAllWallets();
-
-    this.wallet = this.stateService._stateWallet.value;
+    
+    this.wallet = this.isGuest ? 'budget-1' : this.stateService._stateWallet.value;
     this.selectedOption = this.wallet;
 
-    this.authService.currentUser$.subscribe(state=> {
+    this.authService.currentUser$.subscribe(state => {
       this.userId = state?.uid;
-    })
+    });
 
-    this.authService.userProfile$.subscribe(state=> {
-      this.options = state?.wallets
-    })
+    // Wait for user profile to load, then check wallets
+    this.authService.userProfile$.subscribe(async state => {
+      if (state?.wallets) {
+        this.options = state.wallets;
+        // Only check wallets after options are loaded
+        await this.checkAllWallets();
+      }
+    });
   }
 
   async checkAllWallets(): Promise<void> {
@@ -191,8 +197,6 @@ export class WalletComponent implements OnInit {
       
       // Add to options
       this.options.push(newOption);
-
-      console.log(newOption);
       
       // // Create in Firebase
       await this.firebaseService.createWallet(walletId);
