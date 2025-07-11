@@ -1,24 +1,111 @@
 // Variables
 $primary: #4A9B8E;
 $primary-dark: #3A7A6E;
-$secondary: #6B7280;
-$success: #10B981;
 $error: #EF4444;
 $text-primary: #1F2937;
 $text-secondary: #6B7280;
-$background: #F9FAFB;
 $white: #FFFFFF;
 $border: #E5E7EB;
-$shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-$radius: 10px;
 
-// Mixins
-@mixin button-base {
+// Base styles
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
+  padding: 20px;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding-top: 60px;
+  .logo { color: $white; }
+}
+
+.login-form {
+  background: $white;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  margin: 0 auto;
+  width: 100%;
+
+  h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: $primary;
+    margin-bottom: 40px;
+  }
+
+  p {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+  }
+}
+
+// Form elements
+.form-group {
+  margin-bottom: 20px;
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    color: $text-primary;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+
+  input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid $border;
+    border-radius: 10px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+
+    &:focus {
+      outline: none;
+      border-color: $primary;
+      box-shadow: 0 0 0 3px rgba(74, 155, 142, 0.1);
+    }
+
+    &.error { border-color: $error; }
+    &::placeholder { color: $text-secondary; }
+  }
+
+  .password-input {
+    position: relative;
+
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: $text-secondary;
+      cursor: pointer;
+      &:hover { color: $primary; }
+    }
+  }
+
+  .error-message {
+    color: $error;
+    font-size: 0.85rem;
+    margin-top: 5px;
+  }
+}
+
+// Buttons
+.btn-primary, .btn-guest {
   width: 100%;
   padding: 14px;
-  font-size: 1rem;
   font-weight: 600;
-  border-radius: $radius;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -27,206 +114,97 @@ $radius: 10px;
   cursor: pointer;
 }
 
-// Layout
-.login-container {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
-  padding: 20px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+.btn-primary {
+  background: $primary;
+  color: $white;
+  border: none;
 
-  .login-header {
-    text-align: center;
-    margin-bottom: 40px;
-    padding-top: 60px;
-
-    .logo { color: $white; }
+  &:hover:not(:disabled) {
+    background: $primary-dark;
+    transform: translateY(-1px);
   }
 
-  .login-form {
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid $white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+}
+
+.btn-guest {
+  background: $white;
+  color: $primary;
+  border: 2px solid $primary;
+
+  &:hover {
+    background: $primary;
+    color: $white;
+    transform: translateY(-1px);
+  }
+}
+
+// Utilities
+.forgot-password {
+  text-align: right;
+  margin-bottom: 25px;
+  a {
+    color: $primary;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    &:hover { text-decoration: underline; }
+  }
+}
+
+.divider {
+  text-align: center;
+  margin: 25px 0;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: $border;
+  }
+
+  span {
     background: $white;
-    border-radius: 20px;
-    padding: 30px;
-    box-shadow: $shadow;
-    max-width: 400px;
-    margin: 0 auto;
-    width: 100%;
+    padding: 0 15px;
+    color: $text-secondary;
+    font-size: 0.9rem;
+    position: relative;
+    z-index: 1;
+  }
+}
 
-    h2 {
-      font-size: 1.8rem;
+.signup-link {
+  text-align: center;
+  margin-top: 25px;
+  p {
+    color: $text-secondary;
+    font-size: 0.9rem;
+    a {
+      color: $primary;
+      text-decoration: none;
       font-weight: 600;
-      color: $primary;
-      margin-bottom: 40px;
-    }
-
-    p {
-      color: rgba(255, 255, 255, 0.8);
-      font-size: 1rem;
-      margin: 0;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-
-      label {
-        display: block;
-        margin-bottom: 8px;
-        color: $text-primary;
-        font-weight: 500;
-        font-size: 0.9rem;
-      }
-
-      input {
-        width: 100%;
-        padding: 12px 16px;
-        border: 2px solid $border;
-        border-radius: $radius;
-        font-size: 1rem;
-        box-sizing: border-box;
-        transition: all 0.3s ease;
-
-        &:focus {
-          outline: none;
-          border-color: $primary;
-          box-shadow: 0 0 0 3px rgba(74, 155, 142, 0.1);
-        }
-
-        &.error { border-color: $error; }
-        &::placeholder { color: $text-secondary; }
-      }
-
-      .password-input {
-        position: relative;
-
-        .toggle-password {
-          position: absolute;
-          right: 12px;
-          top: 50%;
-          transform: translateY(-50%);
-          background: none;
-          border: none;
-          color: $text-secondary;
-          padding: 4px;
-          cursor: pointer;
-
-          &:hover { color: $primary; }
-        }
-      }
-
-      .error-message {
-        color: $error;
-        font-size: 0.85rem;
-        margin-top: 5px;
-      }
-    }
-
-    .forgot-password {
-      text-align: right;
-      margin-bottom: 25px;
-
-      a {
-        color: $primary;
-        text-decoration: none;
-        font-size: 0.9rem;
-        font-weight: 500;
-
-        &:hover { text-decoration: underline; }
-      }
-    }
-
-    .btn-primary {
-      @include button-base;
-      background: $primary;
-      color: $white;
-      border: none;
-
-      &:hover:not(:disabled) {
-        background: $primary-dark;
-        transform: translateY(-1px);
-      }
-
-      &:disabled {
-        opacity: 0.7;
-        cursor: not-allowed;
-      }
-
-      .spinner {
-        width: 16px;
-        height: 16px;
-        border: 2px solid transparent;
-        border-top: 2px solid $white;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-      }
-    }
-
-    .divider {
-      text-align: center;
-      margin: 25px 0;
-      position: relative;
-
-      &::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: $border;
-      }
-
-      span {
-        background: $white;
-        padding: 0 15px;
-        color: $text-secondary;
-        font-size: 0.9rem;
-        position: relative;
-        z-index: 1;
-      }
-    }
-
-    .btn-guest {
-      @include button-base;
-      background: $white;
-      color: $primary;
-      border: 2px solid $primary;
-
-      &:hover {
-        background: $primary;
-        color: $white;
-        transform: translateY(-1px);
-      }
-
-      i { font-size: 1.1rem; }
-    }
-
-    .signup-link {
-      text-align: center;
-      margin-top: 25px;
-
-      p {
-        color: $text-secondary;
-        font-size: 0.9rem;
-
-        a {
-          color: $primary;
-          text-decoration: none;
-          font-weight: 600;
-
-          &:hover { text-decoration: underline; }
-        }
-      }
+      &:hover { text-decoration: underline; }
     }
   }
 }
 
-// Toast
-:host ::ng-deep .custom-toast {
-  z-index: 99999 !important;
-}
-
-// Spinner
+// Animations
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
@@ -234,24 +212,14 @@ $radius: 10px;
 
 // Responsive
 @media (max-width: 480px) {
-  .login-container {
-    padding: 15px;
+  .login-container { padding: 15px; }
+  .login-header { padding-top: 40px; margin-bottom: 30px; }
+  .login-form { padding: 25px 20px; h2 { font-size: 1.5rem; } }
+}
 
-    .login-header {
-      padding-top: 40px;
-      margin-bottom: 30px;
-    }
-
-    .login-form {
-      padding: 25px 20px;
-
-      h2 { font-size: 1.5rem; }
-    }
-  }
-
-  :host ::ng-deep .p-toast-message {
-    padding: 6px 12px !important;
-    margin: 0 20px;
-    font-size: 13px !important;
-  }
+:host ::ng-deep .custom-toast { z-index: 99999 !important; }
+:host ::ng-deep .p-toast-message {
+  padding: 6px 12px !important;
+  margin: 0 20px;
+  font-size: 13px !important;
 }
