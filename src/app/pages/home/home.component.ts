@@ -1,6 +1,6 @@
 // Angular modules
 import { NgFor, NgIf, NgClass } from '@angular/common';
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, effect } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 // Services
@@ -26,13 +26,11 @@ import { AuthService } from '@services/auth.service';
   imports: [PageLayoutComponent, NgIf, ProgressBarComponent, NgFor, NgClass],
 })
 export class HomeComponent implements OnInit {
-  private isGuest = this.storeService.isGuest();
-
   public allTransactions: any[] = [];
   public moment = moment;
   public greeting: string = '';
-  public wallet = this.isGuest ? 'budget-1' : this.stateService._stateWallet.value;
-  public transactions = this.stateService.getStateTransactions(this.wallet);
+  public wallet: string = '';
+  public transactions: any;
   public userProfile: any;
   public loading = true;
 
@@ -44,23 +42,49 @@ export class HomeComponent implements OnInit {
     public router: Router,
     public cdr: ChangeDetectorRef
   ) {}
+
   // -------------------------------------------------------------------------------
   // NOTE Init ---------------------------------------------------------------------
   // -------------------------------------------------------------------------------
 
   public ngOnInit(): void {
-    this.stateService.stateWallet$.subscribe((state) => {
-      this.getAllTransactions(this.isGuest ? 'budget-1' : state);
+    // Initialize wallet immediately
+    this.initializeWallet();
+
+    // Subscribe to wallet state changes
+    this.stateService.stateWallet$.subscribe((walletId) => {
+      this.loading = false;
+      
+      if (walletId && walletId !== this.wallet) {
+        this.wallet = walletId;
+        this.transactions = this.stateService.getStateTransactions(walletId);
+        this.getAllTransactions(walletId);
+      }
     });
 
+    // Subscribe to user profile changes
     this.authService.userProfile$.subscribe((profile) => {
       this.userProfile = profile;
     });
   }
 
+  private initializeWallet(): void {
+    const isGuest = this.storeService.isGuest();
+    this.wallet = isGuest ? 'budget-1' : this.stateService._stateWallet.value;
+    
+    if (this.wallet) {
+      this.getAllTransactions(this.wallet);
+    }
+  }
+
   async getAllTransactions(walletId: string) {
+    if (!walletId) {
+      return;
+    }
+    
     try {
       let transactions = await this.firebaseService.getCollectionData(walletId);
+      this.loading = false;
 
       // Add display format (optional)
       transactions.forEach((transaction: any) => {
@@ -88,7 +112,6 @@ export class HomeComponent implements OnInit {
 
   calculateTransactions(type: string) {
     const result = calculateTransaction(this.allTransactions, type);
-
     return formatMoney(result);
   }
 
@@ -105,7 +128,7 @@ export class HomeComponent implements OnInit {
       : hour < 18
       ? 'Good Afternoon,'
       : 'Good Evening,';
-  }
+}
 
   // -------------------------------------------------------------------------------
   // NOTE Actions ------------------------------------------------------------------

@@ -24,6 +24,7 @@ import { ToastModule } from 'primeng/toast';
 import { passwordMatchValidator } from '@helpers/passwordMatchValidator.helper';
 import { FirebaseService } from '@services/firebase.service';
 import { AuthService } from '@services/auth.service';
+import { TransactionService } from '@services/transaction.service';
 
 @Component({
   selector: 'app-login',
@@ -59,7 +60,8 @@ export class LoginComponent {
     private appService: AppService,
     public firebaseService: FirebaseService,
     public authService: AuthService,
-    public messageService: MessageService
+    public messageService: MessageService,
+    public transactionService: TransactionService
   ) {
     this.initFormGroup(),
       this.router.events.subscribe(() => {
@@ -73,12 +75,11 @@ export class LoginComponent {
   async ngOnInit() {
     try {
       await this.firebaseService.emptyBudgetCollection('budget-1');
-      console.log('Deleted wallet');
+      console.log('Deleted wallet', this.storeService.isGuest());
     } catch (err) {
       console.error('Delete failed:', err);
     }
   }
-
 
   private initFormGroup(): void {
     this.formGroup = new FormGroup(
@@ -204,8 +205,13 @@ export class LoginComponent {
 
   public onClickGuest(): void {
     this.storeService.isGuest.set(true);
-
-    this.router.navigate(['/home']);
+    this.firebaseService.createWallet('budget-1')
+    
+    // The TransactionService will automatically handle wallet changes
+    // based on the guest state, so we don't need to manually set the wallet
+    setTimeout(() => { 
+      this.router.navigate(['/home']);
+    }, 500); // Reduced timeout for better UX
   }
 
   public onClickTogglePassword(): void {
@@ -238,8 +244,7 @@ export class LoginComponent {
     const username = this.formGroup.controls.username.getRawValue();
     const email = this.formGroup.controls.email.getRawValue();
     const password = this.formGroup.controls.password.getRawValue();
-    const confirmPassword =
-      this.formGroup.controls.confirmPassword.getRawValue();
+    const confirmPassword = this.formGroup.controls.confirmPassword.getRawValue();
 
     const success = await this.appService.authenticate(email, password);
 
@@ -280,7 +285,7 @@ export class LoginComponent {
 
     // NOTE Redirect to home
     this.router.navigate(['/home']);
-  }
+}
 
   // -------------------------------------------------------------------------------
   // NOTE Helpers ------------------------------------------------------------------

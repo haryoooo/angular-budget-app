@@ -1,18 +1,18 @@
 // Variables
-$primary-color: #4A9B8E;
+$primary: #4A9B8E;
 $primary-dark: #3A7A6E;
-$secondary-color: #6B7280;
-$success-color: #10B981;
-$error-color: #EF4444;
+$secondary: #6B7280;
+$success: #10B981;
+$error: #EF4444;
 $text-primary: #1F2937;
 $text-secondary: #6B7280;
 $background: #F9FAFB;
 $white: #FFFFFF;
-$border-color: #E5E7EB;
+$border: #E5E7EB;
 $shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 $radius: 10px;
 
-// Utility
+// Mixins
 @mixin button-base {
   width: 100%;
   padding: 14px;
@@ -32,7 +32,7 @@ $radius: 10px;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+  background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
   padding: 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
@@ -41,9 +41,7 @@ $radius: 10px;
     margin-bottom: 40px;
     padding-top: 60px;
 
-    .logo {
-      color: $white;
-    }
+    .logo { color: $white; }
   }
 
   .login-form {
@@ -58,7 +56,7 @@ $radius: 10px;
     h2 {
       font-size: 1.8rem;
       font-weight: 600;
-      color: $primary-color;
+      color: $primary;
       margin-bottom: 40px;
     }
 
@@ -82,7 +80,7 @@ $radius: 10px;
       input {
         width: 100%;
         padding: 12px 16px;
-        border: 2px solid $border-color;
+        border: 2px solid $border;
         border-radius: $radius;
         font-size: 1rem;
         box-sizing: border-box;
@@ -90,17 +88,12 @@ $radius: 10px;
 
         &:focus {
           outline: none;
-          border-color: $primary-color;
+          border-color: $primary;
           box-shadow: 0 0 0 3px rgba(74, 155, 142, 0.1);
         }
 
-        &.error {
-          border-color: $error-color;
-        }
-
-        &::placeholder {
-          color: $text-secondary;
-        }
+        &.error { border-color: $error; }
+        &::placeholder { color: $text-secondary; }
       }
 
       .password-input {
@@ -117,14 +110,12 @@ $radius: 10px;
           padding: 4px;
           cursor: pointer;
 
-          &:hover {
-            color: $primary-color;
-          }
+          &:hover { color: $primary; }
         }
       }
 
       .error-message {
-        color: $error-color;
+        color: $error;
         font-size: 0.85rem;
         margin-top: 5px;
       }
@@ -135,20 +126,18 @@ $radius: 10px;
       margin-bottom: 25px;
 
       a {
-        color: $primary-color;
+        color: $primary;
         text-decoration: none;
         font-size: 0.9rem;
         font-weight: 500;
 
-        &:hover {
-          text-decoration: underline;
-        }
+        &:hover { text-decoration: underline; }
       }
     }
 
     .btn-primary {
       @include button-base;
-      background: $primary-color;
+      background: $primary;
       color: $white;
       border: none;
 
@@ -184,7 +173,7 @@ $radius: 10px;
         left: 0;
         right: 0;
         height: 1px;
-        background: $border-color;
+        background: $border;
       }
 
       span {
@@ -200,18 +189,16 @@ $radius: 10px;
     .btn-guest {
       @include button-base;
       background: $white;
-      color: $primary-color;
-      border: 2px solid $primary-color;
+      color: $primary;
+      border: 2px solid $primary;
 
       &:hover {
-        background: $primary-color;
+        background: $primary;
         color: $white;
         transform: translateY(-1px);
       }
 
-      i {
-        font-size: 1.1rem;
-      }
+      i { font-size: 1.1rem; }
     }
 
     .signup-link {
@@ -223,27 +210,25 @@ $radius: 10px;
         font-size: 0.9rem;
 
         a {
-          color: $primary-color;
+          color: $primary;
           text-decoration: none;
           font-weight: 600;
 
-          &:hover {
-            text-decoration: underline;
-          }
+          &:hover { text-decoration: underline; }
         }
       }
     }
   }
 }
 
-// Toast Z-index override
+// Toast
 :host ::ng-deep .custom-toast {
   z-index: 99999 !important;
 }
 
 // Spinner
 @keyframes spin {
-  0%   { transform: rotate(0deg); }
+  0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
 
@@ -260,9 +245,7 @@ $radius: 10px;
     .login-form {
       padding: 25px 20px;
 
-      h2 {
-        font-size: 1.5rem;
-      }
+      h2 { font-size: 1.5rem; }
     }
   }
 

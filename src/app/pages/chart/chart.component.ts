@@ -158,6 +158,8 @@ export class ChartComponent implements OnInit, AfterViewInit {
       0
     );
 
+    console.log(filterTransactions, countAmount);
+
     const labels = [
       'Jan',
       'Feb',
@@ -176,11 +178,11 @@ export class ChartComponent implements OnInit, AfterViewInit {
     const currentMonthNumber = moment().month();
     const subsetData = [65, 59, 80, 81, 56, 55, 40, 50, 75, 100, 35, 40];
 
-    const subsetFilteredData = subsetData?.map((el, index) => {
+    const subsetFilteredData = subsetData?.map((el, index) => {      
       if (index === currentMonthNumber) {
         return countAmount;
       }
-      return el;
+      return el; 
     });
 
     if (this.lineCanvas && this.lineCanvas.nativeElement) {

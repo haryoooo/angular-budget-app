@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { effect, Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { FirebaseService } from './firebase.service';
 import { StoreService } from './store.service';
@@ -33,8 +33,7 @@ export const initialState: AddState = {
   providedIn: 'root', // This makes the service available application-wide
 })
 export class TransactionService {
-  private isGuest = this.storeService.isGuest();
-  public wallet = this.isGuest ? 'budget-1' : localStorage.getItem("type") ;
+  public wallet: string = '';
   public transactions = [];
   private initialState: AddState = {
     type: 'expense', // default value
@@ -56,7 +55,29 @@ export class TransactionService {
   stateOptions$ = this._stateOptions.asObservable();
   stateWallet$ = this._stateWallet.asObservable();
 
-  constructor(private firebaseService: FirebaseService, private storeService: StoreService) {}
+  constructor(private firebaseService: FirebaseService, private storeService: StoreService) {
+    // Initialize wallet based on current guest state
+    this.initializeWallet();
+    
+    // React to guest state changes using effect
+    effect(() => {
+      const isGuest = this.storeService.isGuest();
+      const newWallet = isGuest ? 'budget-1' : localStorage.getItem("type");
+      
+      if (newWallet && newWallet !== this.wallet) {
+        this.wallet = newWallet;
+        this.setWallet(newWallet);
+      }
+    });
+  }
+
+  private initializeWallet(): void {
+    const isGuest = this.storeService.isGuest();
+    this.wallet = isGuest ? 'budget-1' : localStorage.getItem("type") || '';
+    if (this.wallet) {
+      this.setWallet(this.wallet);
+    }
+  }
 
   setStateAdd(updatedValues: Partial<AddState>): void {
     const currentState = this._stateAdd.value;
@@ -69,6 +90,7 @@ export class TransactionService {
   }
   
   setWallet(values: string): void {
+    this.wallet = values;
     this._stateWallet.next(values);
   }
 

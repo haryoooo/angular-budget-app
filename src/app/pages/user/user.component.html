@@ -40,11 +40,11 @@
     </div>
 
     <!-- Menu Options Section -->
+     <!-- (click)="navigateToPage(menuItem.route)" -->
     <div class="menu-options">
       <div 
         class="menu-item" 
         *ngFor="let menuItem of menuItems" 
-        (click)="navigateToPage(menuItem.route)"
       >
         <div class="menu-icon">
           <img [src]="menuItem.icon" [alt]="menuItem.title" />

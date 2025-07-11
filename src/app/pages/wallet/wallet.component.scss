@@ -41,7 +41,6 @@ $transition: all 0.3s ease;
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
-    transform: none;
   }
 }
 
@@ -54,7 +53,7 @@ $transition: all 0.3s ease;
 
 // Header
 .header-container {
-  background-color: $primary;
+  background: $primary;
   padding: 15px;
   height: 25vh;
   display: flex;
@@ -79,7 +78,7 @@ $transition: all 0.3s ease;
   text-align: center;
 }
 
-// Content Container
+// Content
 .content-container {
   display: flex;
   flex-direction: column;
@@ -90,7 +89,7 @@ $transition: all 0.3s ease;
   transform: translateX(-50%);
   width: 90%;
   max-width: 500px;
-  background-color: $white;
+  background: $white;
   padding: 25px;
   border-radius: $radius-lg $radius-lg 0 0;
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
@@ -99,7 +98,7 @@ $transition: all 0.3s ease;
   justify-content: space-between;
 }
 
-// Wallet Options
+// Options
 .connection-options {
   display: flex;
   flex-direction: column;
@@ -111,15 +110,8 @@ $transition: all 0.3s ease;
 
   &::-webkit-scrollbar {
     width: 6px;
-
-    &-thumb {
-      background-color: #ccc;
-      border-radius: 3px;
-    }
-
-    &-track {
-      background: transparent;
-    }
+    &-thumb { background: #ccc; border-radius: 3px; }
+    &-track { background: transparent; }
   }
 }
 
@@ -128,18 +120,18 @@ $transition: all 0.3s ease;
   display: flex;
   align-items: center;
   padding: 15px;
-  background-color: #f5f5f5;
+  background: #f5f5f5;
   cursor: pointer;
   border: 2px solid $gray-200;
 
   &:hover {
-    background-color: #e0f0ec;
+    background: #e0f0ec;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 
   &.selected {
-    background-color: $primary-light;
+    background: $primary-light;
     border-color: $primary;
   }
 
@@ -165,10 +157,7 @@ $transition: all 0.3s ease;
   position: relative;
   background: $gray-100;
 
-  img {
-    width: 70%;
-    height: auto;
-  }
+  img { width: 70%; height: auto; }
 }
 
 .new-wallet-badge {
@@ -205,17 +194,11 @@ $transition: all 0.3s ease;
   margin-top: 0.5rem;
   font-size: 0.75rem;
 
-  .transaction-count {
-    color: $gray-500;
-  }
-
+  .transaction-count { color: $gray-500; }
   .wallet-balance {
     color: #dc2626;
     font-weight: 600;
-
-    &.positive {
-      color: #059669;
-    }
+    &.positive { color: #059669; }
   }
 }
 
@@ -233,14 +216,8 @@ $transition: all 0.3s ease;
   border-radius: 6px;
   transition: $transition;
 
-  &:hover {
-    background: #fee2e2;
-  }
-
-  img {
-    width: 16px;
-    height: 16px;
-  }
+  &:hover { background: #fee2e2; }
+  img { width: 16px; height: 16px; }
 }
 
 .option-checkmark {
@@ -251,10 +228,7 @@ $transition: all 0.3s ease;
   align-items: center;
   justify-content: center;
 
-  img {
-    width: 20px;
-    height: 20px;
-  }
+  img { width: 20px; height: 20px; }
 }
 
 // Loading
@@ -268,11 +242,7 @@ $transition: all 0.3s ease;
 
   .loading-spinner {
     margin-bottom: 1rem;
-
-    img {
-      width: 30px;
-      height: 30px;
-    }
+    img { width: 30px; height: 30px; }
   }
 }
 
@@ -281,10 +251,7 @@ $transition: all 0.3s ease;
   @include btn-primary;
   padding: 15px;
   margin-top: auto;
-
-  &.btn-full {
-    width: 100%;
-  }
+  &.btn-full { width: 100%; }
 }
 
 .btn-cancel {
@@ -380,9 +347,7 @@ $transition: all 0.3s ease;
     box-shadow: 0 0 0 3px rgba(66, 150, 144, 0.1);
   }
 
-  &::placeholder {
-    color: $gray-400;
-  }
+  &::placeholder { color: $gray-400; }
 }
 
 .modal-footer {
@@ -394,7 +359,7 @@ $transition: all 0.3s ease;
   border-top: 1px solid $gray-200;
 }
 
-// Media Queries
+// Responsive
 @media (max-width: 768px) {
   .content-container {
     width: 95%;
@@ -407,22 +372,16 @@ $transition: all 0.3s ease;
     padding: 12px;
   }
   
-  .option-item {
-    padding: 12px;
-  }
+  .option-item { padding: 12px; }
   
   .modal-content {
     width: 95%;
     max-width: 450px;
   }
   
-  .modal-header, .modal-body, .modal-footer {
-    padding: 1.25rem;
-  }
+  .modal-header, .modal-body, .modal-footer { padding: 1.25rem; }
   
-  .form-control {
-    font-size: 14px;
-  }
+  .form-control { font-size: 14px; }
 }
 
 @media (max-width: 480px) {
@@ -443,13 +402,9 @@ $transition: all 0.3s ease;
     font-size: 13px;
   }
   
-  .connection-options {
-    max-height: 45vh;
-  }
+  .connection-options { max-height: 45vh; }
   
-  .option-item {
-    padding: 10px;
-  }
+  .option-item { padding: 10px; }
   
   .option-icon {
     width: 35px;
@@ -457,13 +412,9 @@ $transition: all 0.3s ease;
     margin-right: 12px;
   }
   
-  .option-title {
-    font-size: 14px;
-  }
+  .option-title { font-size: 14px; }
   
-  .option-description {
-    font-size: 13px;
-  }
+  .option-description { font-size: 13px; }
   
   .modal-content {
     width: 100%;
@@ -471,13 +422,9 @@ $transition: all 0.3s ease;
     margin: 10px;
   }
   
-  .modal-header, .modal-body, .modal-footer {
-    padding: 1rem;
-  }
+  .modal-header, .modal-body, .modal-footer { padding: 1rem; }
   
-  .modal-header h3 {
-    font-size: 1.1rem;
-  }
+  .modal-header h3 { font-size: 1.1rem; }
   
   .form-control {
     font-size: 13px;
@@ -493,8 +440,6 @@ $transition: all 0.3s ease;
     flex-direction: column;
     gap: 0.75rem;
     
-    .btn-cancel, .btn-next {
-      width: 100%;
-    }
+    .btn-cancel, .btn-next { width: 100%; }
   }
 }

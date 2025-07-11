@@ -24,6 +24,7 @@ import {
   User,
   signOut,
 } from 'firebase/auth';
+import moment from 'moment';
 
 interface Option {
   id: string;
@@ -204,6 +205,7 @@ export class FirebaseService {
       const initialDoc = {
         type: 'expense',
         date: new Date(),
+        month: moment(new Date()).month() + 1,
         desc: 'Initial wallet setup',
         amount: 0,
         createdAt: new Date(),

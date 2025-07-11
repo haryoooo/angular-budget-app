@@ -49,7 +49,6 @@ export class TransactionsComponent implements OnInit {
   public isAnimating = false;
 
   public loading = false;
-
   public now = moment();
 
   constructor(
@@ -263,6 +262,7 @@ export class TransactionsComponent implements OnInit {
     const newTransaction = {
       type: this.stateAdd.type,
       date: moment(this.stateAdd.date).format('dddd, MMMM D, YYYY'),
+      month: moment(this.stateAdd.date).month() + 1,
       desc: this.stateAdd.desc,
       amount: this.stateAdd.amount,
       createdAt: this.now.toISOString(),
@@ -271,21 +271,20 @@ export class TransactionsComponent implements OnInit {
     this.isSubmitted = true;
     this.showMessageNotification('Success', messageSuccess);
 
-    setTimeout(async () => {
-      if (paramValueEdit) {
-        await this.stateService.updateTransaction(paramValueEdit, this.stateAdd);
-      } else {
-        await this.stateService.setLatestTransactions(newTransaction);
-      }
+    if (paramValueEdit) {
+      await this.stateService.updateTransaction(paramValueEdit, this.stateAdd);
+    } else {
+      await this.stateService.setLatestTransactions(newTransaction);
+    }
 
-      await this.getDataTransaction(this.wallet); // Update local view
+    await this.getDataTransaction(this.wallet); // Update local view
 
-      this.stateService.resetStateAdd();
-      this.returnHome();
-      this.isSubmitted = false;
-      this.loading = false;
+    this.stateService.resetStateAdd();
+    this.isSubmitted = false;
+    this.loading = false;
+    // Navigate Home
+    this.returnHome();
 
-      this.cdr.detectChanges();
-    }, 1000);
+    this.cdr.detectChanges();
   }
 }
