@@ -189,7 +189,7 @@ export class LoginComponent {
 
       const users: any = await this.firebaseService.loginUser(email, password);
 
-      if (users.user.accessToken) {
+      if (users?.user?.accessToken) {
         this.showMessageNotification('Success', 'Login Success');
         this.storeService.isLoading.set(false);
         this.storeService.isGuest.set(false);
@@ -269,7 +269,7 @@ export class LoginComponent {
 
           setTimeout(() => {
             this.router.navigate(['/auth/login']);
-          }, 1000);
+          }, 500);
           return;
         }
       } catch (error: any) {

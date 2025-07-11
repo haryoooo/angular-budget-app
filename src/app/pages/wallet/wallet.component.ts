@@ -174,40 +174,52 @@ export class WalletComponent implements OnInit {
 
   async createNewWallet(): Promise<void> {
     if (!this.newWalletName.trim()) return;
-    
+
     this.creatingWallet = true;
-    
+
     try {
       // Generate wallet ID from name
       const walletId = this.generateWalletId(this.newWalletName);
-      
+
       // Check if wallet already exists
       const exists = this.options.some(opt => opt.id === walletId);
       if (exists) {
         alert('A wallet with this name already exists');
         return;
       }
-      
+
       // Create new wallet option
       const newOption: Option = {
         id: walletId,
         title: this.newWalletName,
         description: this.newWalletDescription || `Connect into ${this.newWalletName} to organize your funds`
       };
-      
-      // Add to options
-      this.options.push(newOption);
-      
-      // // Create in Firebase
+
+      // Create in Firebase
       await this.firebaseService.createWallet(walletId);
       await this.firebaseService.updateUserProfile('users', this.userId, newOption); // Adds to `wallets` array
-      
+
+      // Update local options
+      this.options.push(newOption);
+
+      // ✅ Manually update userProfile$ so the component reacts
+      const previousProfile = this.authService.userProfileSubject.value;
+      const updatedWallets = [...(previousProfile?.wallets || []), newOption];
+
+      this.authService.userProfileSubject.next({
+        ...previousProfile,
+        wallets: updatedWallets
+      });
+
       // Select the new wallet
       this.selectedOption = walletId;
-      
+
       // Hide modal
       this.hideAddWalletModal();
-      
+
+      // Refresh wallet stats
+      await this.checkAllWallets();
+
     } catch (error) {
       console.error('Error creating new wallet:', error);
       alert('Failed to create wallet. Please try again.');

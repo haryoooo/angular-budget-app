@@ -175,4 +175,10 @@
   .menu-item {
     padding: 35px 0;
   }
+
+  :host ::ng-deep .p-toast-message {
+    padding: 6px 12px !important;
+    margin: 0 20px;
+    font-size: 13px !important;
+  } 
 }

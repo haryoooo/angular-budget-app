@@ -146,7 +146,7 @@ export class FirebaseService {
       await updateDoc(docRef, {
         [arrayField]: arrayUnion(payload)
       });
-      console.log(`Payload added to '${arrayField}' array in document: `, docRef.id);
+      // console.log(`Payload added to '${arrayField}' array in document: `, docRef.id);
     } catch (e) {
       console.error('Error updating document: ', e);
     }
@@ -192,7 +192,7 @@ export class FirebaseService {
     try {
       const docRef = doc(db, collectionName, docId);
       await deleteDoc(docRef);
-      console.log('Document deleted with ID:', docId);
+      // console.log('Document deleted with ID:', docId);
     } catch (e) {
       console.error('Error deleting document:', e);
     }

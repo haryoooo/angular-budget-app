@@ -256,7 +256,7 @@ $white: #fff;
   background: $white;
   border-radius: 16px;
   width: 90%;
-  max-width: 500px;
+  max-width: 400px;
   box-shadow: 0 20px 25px -5px rgba(66, 150, 144, 0.3);
   overflow: hidden;
 }
@@ -328,7 +328,7 @@ $white: #fff;
   .content-container { width: 95%; padding: 20px; }
   .btn-next { font-size: 14px; padding: 12px; }
   .option-item { padding: 12px; }
-  .modal-content { width: 95%; }
+  .modal-content { width: 90%; }
 }
 
 @media (max-width: 480px) {

@@ -71,7 +71,7 @@ export class AppComponent implements OnInit {
 
     if (isAuthenticated) {
       // User is authenticated
-      if (currentUrl === '/' || currentUrl.startsWith('/auth')) {
+      if (currentUrl === '/' || currentUrl.startsWith('/auth/login')) {
         console.log('Redirecting authenticated user to /home');
         this.router.navigateByUrl('/home');
       }
