@@ -227,6 +227,7 @@ export class TransactionsComponent implements OnInit {
     this.stateAdd = {
       ...this.stateAdd,
       date: moment(inputDate, 'YYYY-MM-DD').format('dddd, MMMM D, YYYY'), // Store formatted date without time
+      month: moment(inputDate).month() + 1
     };
 
     this.cdr.detectChanges();

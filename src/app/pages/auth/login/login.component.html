@@ -67,17 +67,18 @@
           id="password" 
           formControlName="password" 
           [placeholder]="'LOGIN.PASSWORD_PLACEHOLDER' | translate"
-          [ngClass]="{'error': password?.invalid && password?.touched && currentPath === '/auth/signup'}">
+          [ngClass]="{'error': password?.invalid && password?.touched}">
         <button 
           type="button" 
           class="toggle-password" 
           (click)="onClickTogglePassword()">
-          <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+          <img *ngIf="showPassword" width="20" src="../../../../assets/img/project/eye.svg" />
+          <img *ngIf="!showPassword" width="20" src="../../../../assets/img/project/eye-slash.svg" />
         </button>
       </div>
       <div class="error-message" *ngIf="password?.invalid && password?.touched">
         <span *ngIf="password?.errors?.['required']">{{ 'LOGIN.PASSWORD_REQUIRED' | translate }}</span>
-        <span *ngIf="password?.touched && password?.errors?.['pattern'] && currentPath === '/auth/signup'">{{ 'LOGIN.PASSWORD_RULES' | translate }}</span>
+        <span *ngIf="password?.touched && password?.errors?.['pattern']">{{ 'LOGIN.PASSWORD_RULES' | translate }}</span>
       </div>
     </div>
 
@@ -94,7 +95,8 @@
           type="button" 
           class="toggle-password" 
           (click)="onClickTogglePassword()">
-          <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+          <img *ngIf="showPassword" width="20" src="../../../../assets/img/project/eye.svg" />
+          <img *ngIf="!showPassword" width="20" src="../../../../assets/img/project/eye-slash.svg" />
         </button>
       </div>
       <div class="error-message" *ngIf="confirmPassword?.touched && confirmPassword?.invalid">
@@ -141,7 +143,7 @@
       {{ 'LOGIN.CONTINUE_AS_GUEST' | translate }}
     </button>
 
-    <div class="signup-link">
+    <div class="signup-link cursor-pointer">
       <p *ngIf="currentPath === '/auth/login'">{{ 'LOGIN.NO_ACCOUNT' | translate }} <a (click)="onClickSignUp()">{{ 'LOGIN.SIGN_UP' | translate }}</a></p>
       <p *ngIf="currentPath === '/auth/signup'">{{ 'LOGIN.HAS_ACCOUNT' | translate }} <a (click)="onClickLogin()">{{ 'LOGIN.SIGN_IN' | translate }}</a></p>
     </div>

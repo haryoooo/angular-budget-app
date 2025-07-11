@@ -84,14 +84,16 @@ export class UserComponent implements OnInit {
     this.router.navigateByUrl(route);
   }
 
-  public logout() {
-    this.firebaseService.logoutUser();
-    this.showMessageNotification('Success', 'Logout Success');
-    localStorage.clear();
+  public async logout() {
+    await this.firebaseService.logoutUser();
     
+    this.showMessageNotification('Success', 'Logout Success');
+    
+    // Wait for message to be visible for 2 seconds, then proceed with logout
     setTimeout(() => {
-      this.navigateToPage("/")
-    }, 1000);
+      localStorage.clear();
+      this.navigateToPage("/");
+    }, 500); // Message shows for 2 seconds
   }
 
   ngOnInit(): void {

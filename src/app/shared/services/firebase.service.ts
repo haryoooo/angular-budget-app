@@ -172,7 +172,7 @@ export class FirebaseService {
   async addData(collectionName: string, payload: AddState) {
     try {
       const docRef = await addDoc(collection(db, collectionName), payload);
-      console.log('Document written with ID: ', docRef.id);
+      // console.log('Document written with ID: ', docRef.id);
     } catch (e) {
       console.error('Error adding document: ', e);
     }
@@ -182,7 +182,7 @@ export class FirebaseService {
     try {      
       const docRef = doc(db, collectionName, docId);
       await setDoc(docRef, payload, { merge: false });
-      console.log('Document written with ID: ', docRef.id);
+      // console.log('Document written with ID: ', docRef.id);
     } catch (e) {
       console.error('Error adding document: ', e);
     }

@@ -52,6 +52,7 @@ export class ChartComponent implements OnInit, AfterViewInit {
   public options: OptionsDropdown[] | undefined;
 
   public selectedOptions = this.stateService.getStateDropdown();
+  public allSubsetCount: any = [];
   public allTransactions: any[] = [];
   public amountTransactions: number = 0;
   public wallet = this.stateService._stateWallet.value;
@@ -97,7 +98,9 @@ export class ChartComponent implements OnInit, AfterViewInit {
   // -------------------------------------------------------------------------------
   async getAllTransactions(option: string | undefined) {
     try {
-      let transactions = await this.firebaseService.getCollectionData(this.wallet);
+      let transactions = await this.firebaseService.getCollectionData(
+        this.wallet
+      );
       const selectedOpts = option?.toLowerCase();
 
       transactions?.sort((a: any, b: any) => b.amount - a.amount);
@@ -146,20 +149,6 @@ export class ChartComponent implements OnInit, AfterViewInit {
   }
 
   async createLineChart() {
-    const option = this.selectedOptions;
-    const allTransactions = await this.stateService.getStateTransactions(this.wallet);
-
-    const filterTransactions = allTransactions?.filter(
-      (el: any) => el?.type === option?.name?.toLowerCase()
-    );
-
-    const countAmount = filterTransactions?.reduce(
-      (acc: any, el: any) => acc + el?.amount,
-      0
-    );
-
-    console.log(filterTransactions, countAmount);
-
     const labels = [
       'Jan',
       'Feb',
@@ -175,15 +164,22 @@ export class ChartComponent implements OnInit, AfterViewInit {
       'Dec',
     ];
 
-    const currentMonthNumber = moment().month();
-    const subsetData = [65, 59, 80, 81, 56, 55, 40, 50, 75, 100, 35, 40];
+    const option = this.selectedOptions;
+    const allTransactions = await this.stateService.getStateTransactions(
+      this.wallet
+    );
 
-    const subsetFilteredData = subsetData?.map((el, index) => {      
-      if (index === currentMonthNumber) {
-        return countAmount;
-      }
-      return el; 
-    });
+    const filterTransactions = allTransactions?.filter(
+      (el: any) => el?.type === option?.name?.toLowerCase()
+    );
+
+    const subsetData = new Array(12).fill(0);
+
+    filterTransactions.forEach(el=>{
+      const monthIndex = el.month - 1
+
+      subsetData[monthIndex] += el.amount
+    })
 
     if (this.lineCanvas && this.lineCanvas.nativeElement) {
       // Create gradient
@@ -205,7 +201,7 @@ export class ChartComponent implements OnInit, AfterViewInit {
           labels: labels,
           datasets: [
             {
-              data: subsetFilteredData,
+              data: subsetData,
               borderColor: '#29756f',
               backgroundColor: gradient || 'rgba(75,192,192,0.1)',
               fill: true,
