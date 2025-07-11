@@ -1,12 +1,6 @@
 // Variables
 $primary: #429690;
 $primary-dark: #3a7a75;
-$primary-light: #e8f5f2;
-$gray-100: #f3f4f6;
-$gray-200: #e5e7eb;
-$gray-500: #6b7280;
-$gray-600: #374151;
-$gray-700: #1f2937;
 $white: #fff;
 
 // Header
@@ -18,7 +12,6 @@ $white: #fff;
   align-items: center;
   justify-content: center;
   border-radius: 0 0 1rem 1rem;
-  position: relative;
 }
 
 .header__between {
@@ -50,7 +43,7 @@ $white: #fff;
   background: $white;
   padding: 25px;
   border-radius: 16px 16px 0 0;
-  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  box-shadow: 0 8px 24px rgba(149, 157, 165, 0.2);
   z-index: 100;
   min-height: calc(80vh - 100px);
   justify-content: space-between;
@@ -69,7 +62,6 @@ $white: #fff;
   &::-webkit-scrollbar {
     width: 6px;
     &-thumb { background: #ccc; border-radius: 3px; }
-    &-track { background: transparent; }
   }
 }
 
@@ -79,10 +71,9 @@ $white: #fff;
   padding: 15px;
   background: #f5f5f5;
   cursor: pointer;
-  border: 2px solid $gray-200;
+  border: 2px solid #e5e7eb;
   border-radius: 12px;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
   &:hover {
     background: #e0f0ec;
@@ -91,7 +82,7 @@ $white: #fff;
   }
 
   &.selected {
-    background: $primary-light;
+    background: #e8f5f2;
     border-color: $primary;
   }
 
@@ -115,7 +106,7 @@ $white: #fff;
   height: 40px;
   margin-right: 15px;
   position: relative;
-  background: $gray-100;
+  background: #f3f4f6;
 
   img { width: 70%; height: auto; }
 }
@@ -140,7 +131,7 @@ $white: #fff;
 .option-title {
   font-weight: 500;
   margin-bottom: 4px;
-  color: $gray-700;
+  color: #1f2937;
 }
 
 .option-description {
@@ -154,7 +145,7 @@ $white: #fff;
   margin-top: 0.5rem;
   font-size: 0.75rem;
 
-  .transaction-count { color: $gray-500; }
+  .transaction-count { color: #6b7280; }
   .wallet-balance {
     color: #dc2626;
     font-weight: 600;
@@ -198,7 +189,7 @@ $white: #fff;
   align-items: center;
   justify-content: center;
   padding: 3rem 1rem;
-  color: $gray-500;
+  color: #6b7280;
 
   .loading-spinner {
     margin-bottom: 1rem;
@@ -232,18 +223,17 @@ $white: #fff;
 }
 
 .btn-cancel {
-  border: none;
+  border: 2px solid #e5e7eb;
   cursor: pointer;
   font-weight: 500;
   transition: all 0.3s ease;
   border-radius: 25px;
-  background: $gray-100;
-  color: $gray-600;
-  border: 2px solid $gray-200;
+  background: #f3f4f6;
+  color: #374151;
   padding: 0.75rem 1.5rem;
 
   &:hover {
-    background: $gray-200;
+    background: #e5e7eb;
     transform: translateY(-1px);
   }
 }
@@ -278,11 +268,7 @@ $white: #fff;
   padding: 1.5rem;
   background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
 
-  h3 {
-    margin: 0;
-    color: $white;
-    font-weight: 500;
-  }
+  h3 { margin: 0; color: $white; font-weight: 500; }
 }
 
 .btn-close {
@@ -306,7 +292,7 @@ $white: #fff;
   label {
     display: block;
     margin-bottom: 0.5rem;
-    color: $gray-700;
+    color: #1f2937;
     font-weight: 500;
   }
 }
@@ -314,7 +300,7 @@ $white: #fff;
 .form-control {
   width: 100%;
   padding: 0.75rem;
-  border: 2px solid $gray-200;
+  border: 2px solid #e5e7eb;
   border-radius: 12px;
   font-size: 1rem;
   transition: all 0.3s ease;
@@ -334,39 +320,25 @@ $white: #fff;
   gap: 1rem;
   padding: 1.5rem;
   background: #f8fffe;
-  border-top: 1px solid $gray-200;
+  border-top: 1px solid #e5e7eb;
 }
 
 // Responsive
 @media (max-width: 768px) {
-  .content-container {
-    width: 95%;
-    padding: 20px;
-    max-width: 450px;
-  }
-  
-  .btn-next {
-    font-size: 14px;
-    padding: 12px;
-  }
-  
+  .content-container { width: 95%; padding: 20px; }
+  .btn-next { font-size: 14px; padding: 12px; }
   .option-item { padding: 12px; }
-  
   .modal-content { width: 95%; }
 }
 
 @media (max-width: 480px) {
   .header-container { height: 22vh; }
-  .content-container {
-    width: 100%;
-    top: 18%;
-    min-height: calc(78vh - 100px);
-  }
+  .content-container { width: 100%; top: 18%; min-height: calc(78vh - 100px); }
   .connection-options { max-height: 45vh; }
   .option-icon { width: 35px; height: 35px; }
-  .modal-footer {
-    flex-direction: column;
-    gap: 0.75rem;
+  .modal-footer { 
+    flex-direction: column; 
+    gap: 0.75rem; 
     .btn-cancel, .btn-next { width: 100%; }
   }
 }
