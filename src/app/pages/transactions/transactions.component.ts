@@ -43,6 +43,7 @@ export class TransactionsComponent implements OnInit {
   public stateAdd: any;
   public queryId = this.route.snapshot.queryParams['id'];
   public wallet = this.stateService._stateWallet.value;
+  public isGuest = this.storeService.isGuest();
 
   public isModalOpen = false;
   public isSubmitted = false;
@@ -93,7 +94,7 @@ export class TransactionsComponent implements OnInit {
   async deleteTransaction(): Promise<void> {
     const id = this.queryId;
 
-    await this.stateService.deleteTransaction(id);
+    await this.stateService.deleteTransaction(id, this.isGuest);
 
     this.isAnimating = true;
     await this.getDataTransaction(this.wallet); // Re-fetch stateTransaction if needed
@@ -103,17 +104,26 @@ export class TransactionsComponent implements OnInit {
 
   ngOnInit(): void {
     this.getDataTransaction(this.wallet).then(() => {
-      // Now that stateTransaction is available, we can safely update stateAdd
-
-      // Subscribe to state changes
+      // Existing subscription for stateAdd
       this.stateService.stateAdd$.subscribe((state) => {
         this.updateStateAdd(state);
       });
 
-      // Listen for query parameter changes
+      // ✅ If guest, re-render stateTransaction on update
+      if (this.isGuest) {
+        this.stateService.stateTransactions$.subscribe((transactions) => {
+          console.log(transactions);
+          
+          this.stateTransaction = transactions; // Update local state
+          this.updateStateAdd(this.stateAdd);   // Re-pick correct transaction
+          this.cdr.detectChanges();             // Trigger re-render
+        });
+      }
+
+      // Query param & navigation subscriptions
       this.route.queryParams.subscribe((params) => {
-        this.queryId = params['id']; // Update queryId when URL changes
-        this.updateStateAdd(this.stateAdd); // Ensure state is updated when queryId changes
+        this.queryId = params['id'];
+        this.updateStateAdd(this.stateAdd);
       });
 
       this.router.events
@@ -273,9 +283,9 @@ export class TransactionsComponent implements OnInit {
     this.showMessageNotification('Success', messageSuccess);
 
     if (paramValueEdit) {
-      await this.stateService.updateTransaction(paramValueEdit, this.stateAdd);
+      await this.stateService.updateTransaction(paramValueEdit, this.stateAdd, this.isGuest);
     } else {
-      await this.stateService.setLatestTransactions(newTransaction);
+      await this.stateService.setLatestTransactions(newTransaction, this.isGuest);
     }
 
     await this.getDataTransaction(this.wallet); // Update local view

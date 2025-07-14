@@ -72,14 +72,7 @@ export class LoginComponent {
   // -------------------------------------------------------------------------------
   // NOTE Init ---------------------------------------------------------------------
   // -------------------------------------------------------------------------------
-  async ngOnInit() {
-    try {
-      await this.firebaseService.emptyBudgetCollection('budget-1');
-      console.log('Deleted wallet', this.storeService.isGuest());
-    } catch (err) {
-      console.error('Delete failed:', err);
-    }
-  }
+  ngOnInit() {}
 
   private initFormGroup(): void {
     this.formGroup = new FormGroup(
@@ -199,13 +192,19 @@ export class LoginComponent {
     } catch (error: any) {
       console.log(error, 'error :');
       this.storeService.isLoading.set(false);
+
+      if(error.message === "Firebase: Error (auth/invalid-credential)."){
+        this.showMessageNotification('Error', 'Incorrect email or password.');
+        return
+      }
+
       this.showMessageNotification('Error', JSON.stringify(error?.code));
     }
   }
 
   public onClickGuest(): void {
     this.storeService.isGuest.set(true);
-    this.firebaseService.createWallet('budget-1')
+    this.firebaseService.createUserWallet('budget-1')
     
     // The TransactionService will automatically handle wallet changes
     // based on the guest state, so we don't need to manually set the wallet

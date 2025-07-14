@@ -14,17 +14,21 @@ export const initialStateDropdown = {
 };
 
 export interface AddState {
+  formattedDate?: string;
+  month: number;
   desc: string;
   amount: number;
   date: any;
   type: string;
   identifier?: string;
+  createdAt?: string;
 }
 
 export const initialState: AddState = {
   desc: '',
   amount: 0,
   date: new Date(),
+  month: 0, 
   type: 'expense',
   identifier: "",
 };
@@ -40,6 +44,7 @@ export class TransactionService {
     date: new Date(), // default value, current date
     desc: '',
     amount: 0,
+    month: 0,
     identifier: "",
   };
 
@@ -48,6 +53,8 @@ export class TransactionService {
   private _stateAdd = new BehaviorSubject<AddState>(initialState);
   public _stateTransactions = new BehaviorSubject<any>(this.transactions);
   public _stateWallet = new BehaviorSubject<any>(this.wallet);
+  private guestTransactions: AddState[] = [];
+
 
   // Expose observables to allow components to subscribe to state changes
   stateAdd$ = this._stateAdd.asObservable();
@@ -106,22 +113,24 @@ export class TransactionService {
     return this._stateAdd.value;
   }
 
-  async getStateTransactions(optionValues: string) {
+  async getStateTransactions(optionValues: string, isGuest: boolean): Promise<AddState[]> {
+    if (isGuest) {
+      this._stateTransactions.next([...this.guestTransactions]);
+      return [...this.guestTransactions];
+    }
+
     try {
       const transaction = await this.firebaseService.getCollectionData(optionValues);
-      
-      // If wallet is empty, create it
+
       if (transaction.length === 0) {
-        const walletExists = await this.firebaseService.checkWalletExists(optionValues);
-        
+        const walletExists = await this.firebaseService.checkUserWalletExists(optionValues);
         if (!walletExists) {
-          console.log(`Creating new wallet: ${optionValues}`);
-          await this.firebaseService.createWallet(optionValues);
-          // Return empty array for new wallet
+          await this.firebaseService.createUserWallet(optionValues);
           return [];
         }
       }
-      
+
+      this._stateTransactions.next(transaction);
       return transaction;
     } catch (error) {
       console.error('Error getting transactions:', error);
@@ -129,7 +138,20 @@ export class TransactionService {
     }
   }
 
-  async setLatestTransactions(newData: AddState): Promise<void> {
+
+  async setLatestTransactions(newData: AddState, isGuest: boolean): Promise<void> {
+    if (isGuest) {
+      const id = Date.now().toString();
+      const guestTransaction = {
+        ...newData,
+        identifier: id,
+        createdAt: new Date().toISOString(), // ✅ Ensure consistent sorting
+      };
+      this.guestTransactions.push(guestTransaction);
+      this._stateTransactions.next([...this.guestTransactions]);
+      return;
+    }
+
     try {
       await this.firebaseService.addData(this._stateWallet.value, newData);
       const updatedList = await this.firebaseService.getCollectionData(this._stateWallet.value);
@@ -139,7 +161,20 @@ export class TransactionService {
     }
   }
 
-  async updateTransaction(id: string, newData: AddState): Promise<void> {
+  async updateTransaction(id: string, newData: AddState, isGuest: boolean): Promise<void> {
+    if (isGuest) {
+      const index = this.guestTransactions.findIndex(tx => tx.identifier === id);
+      if (index !== -1) {
+        this.guestTransactions[index] = {
+          ...newData,
+          identifier: id,
+          createdAt: new Date().toISOString(), // ✅ force update sort value
+        };
+        this._stateTransactions.next([...this.guestTransactions]); // trigger reactive update
+      }
+      return;
+    }
+
     try {
       await this.firebaseService.updateData(this._stateWallet.value, id, newData);
       const updatedList = await this.firebaseService.getCollectionData(this._stateWallet.value);
@@ -149,7 +184,13 @@ export class TransactionService {
     }
   }
 
-  async deleteTransaction(id: string): Promise<void> {
+  async deleteTransaction(id: string, isGuest: boolean): Promise<void> {
+    if (isGuest) {
+      this.guestTransactions = this.guestTransactions.filter(tx => tx.identifier !== id);
+      this._stateTransactions.next([...this.guestTransactions]);
+      return;
+    }
+
     try {
       await this.firebaseService.deleteData(this._stateWallet.value, id);
       const updatedList = await this.firebaseService.getCollectionData(this._stateWallet.value);

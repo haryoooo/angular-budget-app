@@ -82,7 +82,7 @@ export class WalletComponent implements OnInit {
     
     try {
       for (const option of this.options) {
-        const transactions = await this.stateService.getStateTransactions(option.id);
+        const transactions = await this.stateService.getStateTransactions(option.id, this.isGuest);
         
         if (transactions.length === 0) {
           this.emptyWallets.push(option.id);
@@ -137,13 +137,13 @@ export class WalletComponent implements OnInit {
     try {
       // If wallet is empty, create it first
       if (this.isWalletEmpty(this.selectedOption)) {
-        await this.firebaseService.createWallet(this.selectedOption);
+        
+        await this.firebaseService.createUserWallet(this.selectedOption);
         // Remove from empty wallets list
         this.emptyWallets = this.emptyWallets.filter(id => id !== this.selectedOption);
       }
       
       // Set the wallet
-      // const findTitle: any = this?.options?.find((el: { id: string; })=> el.id === this.selectedOption);
       this.stateService.setWallet(this.selectedOption);
       
       // Store in localStorage
@@ -196,7 +196,7 @@ export class WalletComponent implements OnInit {
       };
 
       // Create in Firebase
-      await this.firebaseService.createWallet(walletId);
+      await this.firebaseService.createUserWallet(walletId);
       await this.firebaseService.updateUserProfile('users', this.userId, newOption); // Adds to `wallets` array
 
       // Update local options
@@ -245,7 +245,7 @@ export class WalletComponent implements OnInit {
         }
         
         // Delete from Firebase (if it exists)
-        await this.firebaseService.deleteWallet(walletId);
+        await this.firebaseService.deleteUserWallet(walletId);
         
       } catch (error) {
         console.error('Error deleting wallet:', error);

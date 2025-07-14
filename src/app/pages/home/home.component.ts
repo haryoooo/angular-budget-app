@@ -4,7 +4,7 @@ import { ChangeDetectorRef, Component, effect } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 // Services
-import { TransactionService } from '@services/transaction.service';
+import { AddState, TransactionService } from '@services/transaction.service';
 import { StoreService } from '@services/store.service';
 
 // Components
@@ -33,6 +33,7 @@ export class HomeComponent implements OnInit {
   public transactions: any;
   public userProfile: any;
   public loading = true;
+  public isGuest = this.storeService.isGuest();
 
   constructor(
     public storeService: StoreService,
@@ -47,31 +48,71 @@ export class HomeComponent implements OnInit {
   // NOTE Init ---------------------------------------------------------------------
   // -------------------------------------------------------------------------------
 
-  public ngOnInit(): void {
-    // Initialize wallet immediately
+  ngOnInit(): void {
     this.initializeWallet();
 
-    // Subscribe to wallet state changes
+    // Subscribe to wallet changes
     this.stateService.stateWallet$.subscribe((walletId) => {
       this.loading = false;
-      
       if (walletId && walletId !== this.wallet) {
         this.wallet = walletId;
-        this.transactions = this.stateService.getStateTransactions(walletId);
-        this.getAllTransactions(walletId);
+
+        if (!this.isGuest) {
+          this.getAllTransactions(walletId);
+        }
       }
     });
 
-    // Subscribe to user profile changes
+    // ✅ Subscribe to guest transactions (only in guest mode)
+    if (this.isGuest) {
+      this.stateService.stateTransactions$.subscribe((guestTransactions) => {
+        this.loading = false;
+        this.allTransactions = [...guestTransactions].map(
+          (transaction: AddState) => ({
+            ...transaction,
+            formattedDate: transaction.date
+          })
+        );
+
+        this.sortTransactions();
+        this.cdr.detectChanges();
+      });
+    }
+
+    // Subscribe to profile
     this.authService.userProfile$.subscribe((profile) => {
       this.userProfile = profile;
+    });
+  }
+
+  private sortTransactions(): void {
+    this.allTransactions.sort((a: AddState, b: AddState) => 
+      {
+      const getTime = (t: any): number => {
+        if (t?.createdAt?.seconds) {
+          // Firestore Timestamp
+          return t.createdAt.seconds * 1000 + Math.floor(t.createdAt.nanoseconds / 1e6);
+        }
+
+        if (typeof t?.createdAt === 'string') {
+          return new Date(t.createdAt).getTime();
+        }
+
+        if (t?.updatedAt?.seconds) {
+          return t.updatedAt.seconds * 1000 + Math.floor(t.updatedAt.nanoseconds / 1e6);
+        }
+
+        return new Date(t.date).getTime(); // fallback
+      };
+
+      return getTime(b) - getTime(a); // Newest first
     });
   }
 
   private initializeWallet(): void {
     const isGuest = this.storeService.isGuest();
     this.wallet = isGuest ? 'budget-1' : this.stateService._stateWallet.value;
-    
+
     if (this.wallet) {
       this.getAllTransactions(this.wallet);
     }
@@ -81,9 +122,11 @@ export class HomeComponent implements OnInit {
     if (!walletId) {
       return;
     }
-    
+
     try {
-      let transactions = await this.firebaseService.getCollectionData(walletId);
+      let transactions = this.isGuest
+        ? this?.stateService?._stateTransactions?.value
+        : await this.firebaseService.getCollectionData(walletId);
       this.loading = false;
 
       // Add display format (optional)
@@ -92,10 +135,15 @@ export class HomeComponent implements OnInit {
       });
 
       // Sort by createdAt (or original date field if it includes full timestamp)
-      transactions.sort(
-        (a: any, b: any) =>
-          moment(b.createdAt || b.date).valueOf() - moment(a.createdAt || a.date).valueOf()
-      );
+      transactions.sort((a: any, b: any) => {
+        const aTime =
+          a.updatedAt.seconds * 1000 +
+          Math.floor(a.updatedAt.nanoseconds / 1e6);
+        const bTime =
+          b.updatedAt.seconds * 1000 +
+          Math.floor(b.updatedAt.nanoseconds / 1e6);
+        return bTime - aTime; // Newest first
+      });
 
       this.allTransactions = transactions;
     } catch (error) {
@@ -128,7 +176,7 @@ export class HomeComponent implements OnInit {
       : hour < 18
       ? 'Good Afternoon,'
       : 'Good Evening,';
-}
+  }
 
   // -------------------------------------------------------------------------------
   // NOTE Actions ------------------------------------------------------------------

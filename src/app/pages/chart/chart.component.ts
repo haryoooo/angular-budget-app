@@ -50,13 +50,14 @@ const initialStateOptions = [
 export class ChartComponent implements OnInit, AfterViewInit {
   public lineChart: any;
   public options: OptionsDropdown[] | undefined;
+  public isGuest = this.storeService.isGuest();
 
   public selectedOptions = this.stateService.getStateDropdown();
   public allSubsetCount: any = [];
   public allTransactions: any[] = [];
   public amountTransactions: number = 0;
   public wallet = this.stateService._stateWallet.value;
-  public transactions = this.stateService.getStateTransactions(this.wallet);
+  public transactions = this.stateService.getStateTransactions(this.wallet, this.isGuest);
 
   public isAscending = true;
   public isAnimating = false;
@@ -166,7 +167,7 @@ export class ChartComponent implements OnInit, AfterViewInit {
 
     const option = this.selectedOptions;
     const allTransactions = await this.stateService.getStateTransactions(
-      this.wallet
+      this.wallet, this.isGuest
     );
 
     const filterTransactions = allTransactions?.filter(
@@ -176,7 +177,7 @@ export class ChartComponent implements OnInit, AfterViewInit {
     const subsetData = new Array(12).fill(0);
 
     filterTransactions.forEach(el=>{
-      const monthIndex = el.month - 1
+      const monthIndex = el?.month - 1
 
       subsetData[monthIndex] += el.amount
     })

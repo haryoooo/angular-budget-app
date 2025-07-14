@@ -1,4 +1,4 @@
-// firebase.service.ts
+// firebase.service.ts - Updated for user-specific collections
 import { Injectable } from '@angular/core';
 import { environment } from '@env/environment';
 import { initializeApp } from 'firebase/app';
@@ -14,6 +14,10 @@ import {
   getDoc,
   updateDoc,
   arrayUnion,
+  query,
+  where,
+  orderBy,
+  limit,
 } from 'firebase/firestore';
 import { AddState } from './transaction.service';
 import formatFirestoreDate from '@helpers/formatFirestoreDate.helper';
@@ -23,6 +27,7 @@ import {
   signInWithEmailAndPassword,
   User,
   signOut,
+  onAuthStateChanged,
 } from 'firebase/auth';
 import moment from 'moment';
 
@@ -51,15 +56,22 @@ const auth = getAuth(app);
   providedIn: 'root',
 })
 export class FirebaseService {
-  setUserAuthorization(user: User, arg1: string) {
-    throw new Error('Method not implemented.');
+  private currentUser: User | null = null;
+
+  constructor() {
+    // Listen for auth state changes
+    onAuthStateChanged(auth, (user) => {
+      this.currentUser = user;
+    });
   }
-  setUserProfile(dataAuth: any) {
-    throw new Error('Method not implemented.');
+
+  // Get current user ID
+  private getCurrentUserId(): string {
+    if (!this.currentUser) {
+      throw new Error('User not authenticated');
+    }
+    return this.currentUser.uid;
   }
-  firebaseService: any;
-  getUserDocument: any;
-  constructor() {}
 
   // Client-side user creation
   async createUser(payload: any) {
@@ -93,7 +105,7 @@ export class FirebaseService {
     }
   }
 
-  // Client-side user creation
+  // Client-side user login
   async loginUser(email: string, password: string) {
     try {
       // Sign in with Firebase Auth
@@ -127,7 +139,6 @@ export class FirebaseService {
       const userDoc = await getDoc(doc(db, 'users', uid));
       if (userDoc.exists()) {
         const dataUser: any = userDoc.data();
-
         return dataUser;
       }
     } catch (error) {
@@ -146,69 +157,158 @@ export class FirebaseService {
       await updateDoc(docRef, {
         [arrayField]: arrayUnion(payload)
       });
-      // console.log(`Payload added to '${arrayField}' array in document: `, docRef.id);
     } catch (e) {
       console.error('Error updating document: ', e);
     }
   }
 
-  // Fetching data from a Firestore collection
-  async getCollectionData(collectionName: string) {
-    const colRef = collection(db, collectionName);
-    const snapshots = await getDocs(colRef);
-    const dataList = snapshots.docs.map((doc) => {
-      const data: any = doc.data();
+  // USER-SPECIFIC COLLECTION METHODS
 
-      return {
-        identifier: doc.id, // Extract document ID
-        ...data, // Spread other document fields
-        date: formatFirestoreDate(data.date), // Format Firestore timestamp
-      };
-    });
-
-    return dataList;
+  // Get user-specific collection reference
+  private getUserCollection(collectionName: string) {
+    const userId = this.getCurrentUserId();
+    return collection(db, 'users', userId, collectionName);
   }
 
-  async addData(collectionName: string, payload: AddState) {
+  // Fetching data from a user-specific Firestore collection
+  async getUserCollectionData(collectionName: string) {
     try {
-      const docRef = await addDoc(collection(db, collectionName), payload);
-      // console.log('Document written with ID: ', docRef.id);
-    } catch (e) {
-      console.error('Error adding document: ', e);
+      const colRef = this.getUserCollection(collectionName);
+      const snapshots = await getDocs(colRef);
+      const dataList = snapshots.docs.map((doc) => {
+        const data: any = doc.data();
+
+        return {
+          identifier: doc.id, // Extract document ID
+          ...data, // Spread other document fields
+          date: formatFirestoreDate(data.date), // Format Firestore timestamp
+        };
+      });
+
+      return dataList;
+    } catch (error) {
+      console.error('Error fetching user collection data:', error);
+      throw error;
     }
   }
 
-  async updateData(collectionName: string, docId: string, payload: AddState) {
-    try {      
-      const docRef = doc(db, collectionName, docId);
-      await setDoc(docRef, payload, { merge: false });
-      // console.log('Document written with ID: ', docRef.id);
+  // Add data to user-specific collection
+  async addUserData(collectionName: string, payload: AddState) {
+    try {
+      const colRef = this.getUserCollection(collectionName);
+      const docRef = await addDoc(colRef, {
+        ...payload,
+        userId: this.getCurrentUserId(), // Add userId for extra security
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+      console.log('Document written with ID: ', docRef.id);
+      return docRef.id;
     } catch (e) {
       console.error('Error adding document: ', e);
+      throw e;
     }
   }
 
-  async deleteData(collectionName: string, docId: string) {
+  // Update data in user-specific collection
+  async updateUserData(collectionName: string, docId: string, payload: AddState) {
     try {
-      const docRef = doc(db, collectionName, docId);
+      const userId = this.getCurrentUserId();
+      const docRef = doc(db, 'users', userId, collectionName, docId);
+      await setDoc(docRef, {
+        ...payload,
+        updatedAt: serverTimestamp(),
+      }, { merge: true });
+      console.log('Document updated with ID: ', docId);
+    } catch (e) {
+      console.error('Error updating document: ', e);
+      throw e;
+    }
+  }
+
+  // Delete data from user-specific collection
+  async deleteUserData(collectionName: string, docId: string) {
+    try {
+      const userId = this.getCurrentUserId();
+      const docRef = doc(db, 'users', userId, collectionName, docId);
       await deleteDoc(docRef);
-      // console.log('Document deleted with ID:', docId);
+      console.log('Document deleted with ID:', docId);
     } catch (e) {
       console.error('Error deleting document:', e);
+      throw e;
     }
   }
 
-  async createWallet(walletName: string): Promise<void> {
+  // Query user transactions by month
+  async getUserTransactionsByMonth(month: number, year: number = new Date().getFullYear()) {
     try {
-      // Create a new collection by adding an initial document
-      const colRef = collection(db, walletName);
+      const colRef = this.getUserCollection('transactions');
+      const q = query(
+        colRef,
+        where('month', '==', month),
+        where('year', '==', year),
+        orderBy('createdAt', 'desc')
+      );
+      
+      const snapshots = await getDocs(q);
+      const dataList = snapshots.docs.map((doc) => {
+        const data: any = doc.data();
+        return {
+          identifier: doc.id,
+          ...data,
+          date: formatFirestoreDate(data.date),
+        };
+      });
+
+      return dataList;
+    } catch (error) {
+      console.error('Error fetching user transactions by month:', error);
+      throw error;
+    }
+  }
+
+  // Query user transactions by type
+  async getUserTransactionsByType(type: 'income' | 'expense', limitCount?: number) {
+    try {
+      const colRef = this.getUserCollection('transactions');
+      let q = query(
+        colRef,
+        where('type', '==', type),
+        orderBy('createdAt', 'desc')
+      );
+      
+      if (limitCount) {
+        q = query(q, limit(limitCount));
+      }
+      
+      const snapshots = await getDocs(q);
+      const dataList = snapshots.docs.map((doc) => {
+        const data: any = doc.data();
+        return {
+          identifier: doc.id,
+          ...data,
+          date: formatFirestoreDate(data.date),
+        };
+      });
+
+      return dataList;
+    } catch (error) {
+      console.error('Error fetching user transactions by type:', error);
+      throw error;
+    }
+  }
+
+  // Create user-specific wallet
+  async createUserWallet(walletName: string): Promise<void> {
+    try {
+      const colRef = this.getUserCollection('wallets');
       const initialDoc = {
-        type: 'expense',
-        date: new Date(),
-        month: moment(new Date()).month() + 1,
-        desc: 'Initial wallet setup',
-        amount: 0,
-        createdAt: new Date(),
+        name: walletName,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        balance: 0,
+        currency: 'IDR', // Default currency
+        userId: this.getCurrentUserId(),
       };
 
       await addDoc(colRef, initialDoc);
@@ -219,10 +319,14 @@ export class FirebaseService {
     }
   }
 
-  async checkWalletExists(walletName: string): Promise<boolean> {
+  // Check if user wallet exists
+  async checkUserWalletExists(walletName: string): Promise<boolean> {
     try {
-      const colRef = collection(db, walletName);
-      const snapshot = await getDocs(colRef);
+      const colRef = this.getUserCollection('wallets');
+      console.log(colRef);
+      
+      const q = query(colRef, where('name', '==', walletName));
+      const snapshot = await getDocs(q);
       return !snapshot.empty;
     } catch (error) {
       console.error('Error checking wallet existence:', error);
@@ -230,19 +334,99 @@ export class FirebaseService {
     }
   }
 
-  async deleteWallet(walletId: string): Promise<void> {
-    // Delete the entire collection from Firebase
-    await this.firebaseService.deleteCollection(walletId);
+  // Delete user wallet
+  async deleteUserWallet(walletId: string): Promise<void> {
+    try {
+      await this.deleteUserData('wallets', walletId);
+    } catch (error) {
+      console.error('Error deleting wallet:', error);
+      throw error;
+    }
   }
 
-  async emptyBudgetCollection(walletId: string): Promise<void> {
-    const colRef = collection(db, walletId);
-    const snapshot = await getDocs(colRef);
+  // Empty user collection
+  async emptyUserCollection(collectionName: string): Promise<void> {
+    try {
+      const colRef = this.getUserCollection(collectionName);
+      const snapshot = await getDocs(colRef);
 
-    const deletePromises = snapshot.docs.map((docSnap) =>
-      deleteDoc(doc(db, walletId, docSnap.id))
-    );
+      const deletePromises = snapshot.docs.map((docSnap) =>
+        deleteDoc(doc(db, 'users', this.getCurrentUserId(), collectionName, docSnap.id))
+      );
 
-    await Promise.all(deletePromises);
+      await Promise.all(deletePromises);
+    } catch (error) {
+      console.error('Error emptying user collection:', error);
+      throw error;
+    }
+  }
+
+  // Get user statistics
+  async getUserStats() {
+    try {
+      const userId = this.getCurrentUserId();
+      const transactionsRef = collection(db, 'users', userId, 'transactions');
+      
+      const currentMonth = new Date().getMonth() + 1;
+      const currentYear = new Date().getFullYear();
+      
+      // Get current month transactions
+      const monthlyQuery = query(
+        transactionsRef,
+        where('month', '==', currentMonth),
+        where('year', '==', currentYear)
+      );
+      
+      const monthlySnapshot = await getDocs(monthlyQuery);
+      
+      let totalIncome = 0;
+      let totalExpense = 0;
+      let transactionCount = 0;
+      
+      monthlySnapshot?.docs?.forEach((doc) => {
+        const data = doc.data();
+        transactionCount++;
+        
+        if (data['type'] === 'income') {
+          totalIncome += data['amount'] || 0;
+        } else if (data['type'] === 'expense') {
+          totalExpense += data['amount'] || 0;
+        }
+      });
+      
+      return {
+        totalIncome,
+        totalExpense,
+        balance: totalIncome - totalExpense,
+        transactionCount,
+        month: currentMonth,
+        year: currentYear,
+      };
+    } catch (error) {
+      console.error('Error getting user stats:', error);
+      throw error;
+    }
+  }
+
+  // LEGACY METHODS (for backward compatibility)
+  // Keep these for any existing code that might still use them
+  async getCollectionData(collectionName: string) {
+    console.warn('getCollectionData is deprecated. Use getUserCollectionData instead.');
+    return this.getUserCollectionData(collectionName);
+  }
+
+  async addData(collectionName: string, payload: AddState) {
+    console.warn('addData is deprecated. Use addUserData instead.');
+    return this.addUserData(collectionName, payload);
+  }
+
+  async updateData(collectionName: string, docId: string, payload: AddState) {
+    console.warn('updateData is deprecated. Use updateUserData instead.');
+    return this.updateUserData(collectionName, docId, payload);
+  }
+
+  async deleteData(collectionName: string, docId: string) {
+    console.warn('deleteData is deprecated. Use deleteUserData instead.');
+    return this.deleteUserData(collectionName, docId);
   }
 }

@@ -92,6 +92,7 @@ export class UserComponent implements OnInit {
     // Wait for message to be visible for 2 seconds, then proceed with logout
     setTimeout(() => {
       localStorage.clear();
+      this.stateService._stateWallet.next("");
       this.navigateToPage("/");
     }, 500); // Message shows for 2 seconds
   }

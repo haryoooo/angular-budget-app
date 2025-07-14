@@ -73,7 +73,8 @@ canvas {
   border-radius: 12px;
 }
 
-.transactions-container:hover {
+.transactions-container:hover, 
+.transactions-container:active {
   background-color: #29756f;
   transform: scale(1.02);
   color: white;
