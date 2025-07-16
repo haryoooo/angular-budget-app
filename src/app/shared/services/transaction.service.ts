@@ -13,6 +13,16 @@ export const initialStateDropdown = {
   code: 'exp',
 };
 
+export interface Transaction {
+  identifier?: string;
+  type: string;
+  date: string;      // formatted with moment
+  month: number;
+  desc: string;
+  amount: number | string;
+  createdAt?: string;
+}
+
 export interface AddState {
   formattedDate?: string;
   month: number;

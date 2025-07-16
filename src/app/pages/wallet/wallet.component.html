@@ -1,4 +1,37 @@
 <app-page-layout>
+  <div
+    *ngIf="showDeleteModal && walletToDelete"
+    class="modal-overlay"
+    (click)="closeModal()"
+  >
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h4>Delete Wallet</h4>
+      </div>
+
+      <div class="modal-body">
+        <h6>Are you sure you want to delete this wallet?</h6>
+      </div>
+
+      <div class="modal-footer">
+        <button
+          [disabled]="isSubmitted"
+          class="btn-cancel"
+          (click)="closeModal()"
+        >
+          Cancel
+        </button>
+        <button
+          [disabled]="isSubmitted"
+          class="btn-confirm"
+          (click)="confirmDelete()"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div class="header-container">
     <div class="header__between">
       <div>
@@ -54,13 +87,13 @@
           <button 
             *ngIf="isWalletEmpty(option.id) && options.length > 1"
             class="btn-delete-wallet"
-            (click)="deleteWallet(option.id, $event)"
+            (click)="showDeleteWalletModal(option.id, $event)"
           >
             <img src="../../../assets/img/project/trash.png" alt="Delete" />
           </button>
           
           <!-- Checkmark for selected wallet -->
-          <div class="option-checkmark" *ngIf="selectedOption === option.id">
+          <div class="option-checkmark" *ngIf="selectedOption === option.id && !(isWalletEmpty(option.id) && options.length > 1)">
             <img
               src="../../../assets/img/project/navigation/checkmark.png"
               alt="selected"

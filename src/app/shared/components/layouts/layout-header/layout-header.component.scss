@@ -13,14 +13,16 @@
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
   z-index: 1000;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
+  /* Add height variable for consistent positioning */
+  height: 80px; /* Adjust based on your actual nav height */
 }
 
-/* Fixes the add button position */
+/* Fixed positioning using pixels instead of percentage */
 .nav-add-activity-btn {
-  position: absolute;
+  position: fixed;
   left: 50%;
-  bottom: 13%; /* Ensures proper positioning over nav */
-  transform: translate(-50%, 50%);
+  bottom: 60px; /* Fixed pixel value - adjust based on your nav height */
+  transform: translateX(-50%);
   width: 150px;
   display: flex;
   align-items: center;
@@ -39,9 +41,34 @@
   .nav-container {
     max-width: 100%;
     padding: 15px;
+    height: 70px; /* Slightly smaller on mobile */
   }
 
   .nav-add-activity-btn {
-    bottom: 13.5%;
+    bottom: 55px; /* Adjust accordingly */
+  }
+}
+
+/* Additional media queries for very small screens */
+@media (max-width: 480px) {
+  .nav-container {
+    height: 65px;
+    padding: 12px;
+  }
+
+  .nav-add-activity-btn {
+    bottom: 50px;
+    width: 140px;
+  }
+}
+
+/* For devices with safe areas (iPhone X and newer) */
+@media (max-width: 768px) {
+  .nav-container {
+    padding-bottom: calc(15px + env(safe-area-inset-bottom));
+  }
+
+  .nav-add-activity-btn {
+    bottom: calc(55px + env(safe-area-inset-bottom));
   }
 }

@@ -99,9 +99,10 @@ export class ChartComponent implements OnInit, AfterViewInit {
   // -------------------------------------------------------------------------------
   async getAllTransactions(option: string | undefined) {
     try {
-      let transactions = await this.firebaseService.getCollectionData(
-        this.wallet
-      );
+      let transactions = this.isGuest
+        ? this?.stateService?._stateTransactions?.value : await this.firebaseService.getCollectionData(
+          this.wallet
+        );
       const selectedOpts = option?.toLowerCase();
 
       transactions?.sort((a: any, b: any) => b.amount - a.amount);
@@ -176,7 +177,7 @@ export class ChartComponent implements OnInit, AfterViewInit {
 
     const subsetData = new Array(12).fill(0);
 
-    filterTransactions.forEach(el=>{
+    filterTransactions.forEach(el => {
       const monthIndex = el?.month - 1
 
       subsetData[monthIndex] += el.amount

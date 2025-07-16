@@ -61,7 +61,10 @@ $white: #fff;
 
   &::-webkit-scrollbar {
     width: 6px;
-    &-thumb { background: #ccc; border-radius: 3px; }
+    &-thumb {
+      background: #ccc;
+      border-radius: 3px;
+    }
   }
 }
 
@@ -86,7 +89,8 @@ $white: #fff;
     border-color: $primary;
   }
 
-  &.wallet-empty, &.add-wallet-option {
+  &.wallet-empty,
+  &.add-wallet-option {
     border-style: dashed;
     background: #fafafa;
   }
@@ -108,7 +112,10 @@ $white: #fff;
   position: relative;
   background: #f3f4f6;
 
-  img { width: 70%; height: auto; }
+  img {
+    width: 70%;
+    height: auto;
+  }
 }
 
 .new-wallet-badge {
@@ -145,11 +152,15 @@ $white: #fff;
   margin-top: 0.5rem;
   font-size: 0.75rem;
 
-  .transaction-count { color: #6b7280; }
+  .transaction-count {
+    color: #6b7280;
+  }
   .wallet-balance {
     color: #dc2626;
     font-weight: 600;
-    &.positive { color: #059669; }
+    &.positive {
+      color: #059669;
+    }
   }
 }
 
@@ -168,8 +179,13 @@ $white: #fff;
   border-radius: 6px;
   transition: all 0.3s ease;
 
-  &:hover { background: #fee2e2; }
-  img { width: 16px; height: 16px; }
+  &:hover {
+    background: #fee2e2;
+  }
+  img {
+    width: 16px;
+    height: 16px;
+  }
 }
 
 .option-checkmark {
@@ -180,7 +196,10 @@ $white: #fff;
   align-items: center;
   justify-content: center;
 
-  img { width: 20px; height: 20px; }
+  img {
+    width: 20px;
+    height: 20px;
+  }
 }
 
 // Loading
@@ -194,7 +213,10 @@ $white: #fff;
 
   .loading-spinner {
     margin-bottom: 1rem;
-    img { width: 30px; height: 30px; }
+    img {
+      width: 30px;
+      height: 30px;
+    }
   }
 }
 
@@ -220,7 +242,9 @@ $white: #fff;
     cursor: not-allowed;
   }
 
-  &.btn-full { width: 100%; }
+  &.btn-full {
+    width: 100%;
+  }
 }
 
 .btn-cancel {
@@ -260,6 +284,40 @@ $white: #fff;
   max-width: 400px;
   box-shadow: 0 20px 25px -5px rgba(66, 150, 144, 0.3);
   overflow: hidden;
+
+  .btn-cancel,
+  .btn-confirm {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: 25px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    border: none;
+  }
+
+  .btn-cancel {
+    background: #e5e7eb;
+    color: #374151;
+
+    &:hover:not(:disabled) {
+      background: #d1d5db;
+    }
+  }
+
+  .btn-confirm {
+    background: #ef4444;
+    color: white;
+
+    &:hover:not(:disabled) {
+      background: #dc2626;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
 }
 
 .modal-header {
@@ -269,7 +327,12 @@ $white: #fff;
   padding: 1.5rem;
   background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
 
-  h3 { margin: 0; color: $white; font-weight: 500; }
+  h4,
+  h3 {
+    margin: 0;
+    color: $white;
+    font-weight: 500;
+  }
 }
 
 .btn-close {
@@ -326,20 +389,44 @@ $white: #fff;
 
 // Responsive
 @media (max-width: 768px) {
-  .content-container { width: 95%; padding: 20px; }
-  .btn-next { font-size: 14px; padding: 12px; }
-  .option-item { padding: 12px; }
-  .modal-content { width: 90%; }
+  .content-container {
+    width: 95%;
+    padding: 20px;
+  }
+  .btn-next {
+    font-size: 14px;
+    padding: 12px;
+  }
+  .option-item {
+    padding: 12px;
+  }
+  .modal-content {
+    width: 90%;
+  }
 }
 
 @media (max-width: 480px) {
-  .header-container { height: 22vh; }
-  .content-container { width: 100%; top: 18%; min-height: calc(78vh - 100px); }
-  .connection-options { max-height: 45vh; }
-  .option-icon { width: 35px; height: 35px; }
-  .modal-footer { 
-    flex-direction: column; 
-    gap: 0.75rem; 
-    .btn-cancel, .btn-next { width: 100%; }
+  .header-container {
+    height: 22vh;
+  }
+  .content-container {
+    width: 100%;
+    top: 18%;
+    min-height: calc(78vh - 100px);
+  }
+  .connection-options {
+    max-height: 45vh;
+  }
+  .option-icon {
+    width: 35px;
+    height: 35px;
+  }
+  .modal-footer {
+    flex-direction: column;
+    gap: 0.75rem;
+    .btn-cancel,
+    .btn-next {
+      width: 100%;
+    }
   }
 }

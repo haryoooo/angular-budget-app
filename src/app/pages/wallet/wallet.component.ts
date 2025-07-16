@@ -15,11 +15,40 @@ import { TransactionService } from '@services/transaction.service';
 import { FirebaseService } from '@services/firebase.service';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '@services/auth.service';
+import { MessageService } from 'primeng/api';
 
+// Define interfaces
 interface Option {
   id: string;
   title: string;
   description: string;
+}
+
+interface Transaction {
+  type: string;
+  amount: number;
+  id?: string | number;
+  date: Date;
+  description?: string;
+  category?: string;
+}
+
+interface WalletStats {
+  count: number;
+  balance: number;
+}
+
+interface UserProfile {
+  uid: string;
+  email: string;
+  displayName?: string;
+  wallets: Option[];
+}
+
+interface AuthUser {
+  uid: string;
+  email: string;
+  displayName?: string;
 }
 
 @Component({
@@ -27,7 +56,16 @@ interface Option {
   templateUrl: './wallet.component.html',
   styleUrls: ['./wallet.component.scss'],
   standalone: true,
-  imports: [PageLayoutComponent, NgIf, ProgressBarComponent, NgClass, NgFor, FormsModule, CommonModule],
+  imports: [
+    PageLayoutComponent,
+    NgIf,
+    ProgressBarComponent,
+    NgClass,
+    NgFor,
+    FormsModule,
+    CommonModule,
+  ],
+  providers: [MessageService],
 })
 export class WalletComponent implements OnInit {
   public isGuest = this.storeService.isGuest();
@@ -41,13 +79,24 @@ export class WalletComponent implements OnInit {
   public creatingWallet = false;
   public newWalletName = '';
   public newWalletDescription = '';
-  public userProfile: any;
-  public userId: any;
-  
+  public userProfile: UserProfile | null = null;
+  public userId: string | null = null;
+  public isSubmitted = false;
+  public showDeleteModal = false;
+  public walletToDelete: string | null = null;
+
   // Track wallet stats and empty status
-  public walletStats: { [key: string]: { count: number; balance: number } } = {};
+  public walletStats: Record<string, WalletStats> = {};
   public emptyWallets: string[] = [];
-  public options: Option[] = this.isGuest ? [{id: 'budget-1', title: 'Budget 1', description: 'this is example wallet'}]  : [];
+  public options: Option[] = this.isGuest
+    ? [
+        {
+          id: 'budget-1',
+          title: 'Budget 1',
+          description: 'this is example wallet',
+        },
+      ]
+    : [];
 
   constructor(
     public router: Router,
@@ -55,46 +104,66 @@ export class WalletComponent implements OnInit {
     public storeService: StoreService,
     public firebaseService: FirebaseService,
     public authService: AuthService,
+    public messageService: MessageService
   ) {}
 
   public async ngOnInit(): Promise<void> {
     this.storeService.isLoading.set(false);
-    
-    this.wallet = this.isGuest ? 'budget-1' : this.stateService._stateWallet.value;
+
+    this.wallet = this.isGuest
+      ? 'budget-1'
+      : this.stateService._stateWallet.value;
     this.selectedOption = this.wallet;
 
-    this.authService.currentUser$.subscribe(state => {
-      this.userId = state?.uid;
+    this.authService.currentUser$.subscribe((state: AuthUser | null | any) => {
+      this.userId = state?.uid || null;
     });
 
     // Wait for user profile to load, then check wallets
-    this.authService.userProfile$.subscribe(async state => {
-      if (state?.wallets) {
-        this.options = state.wallets;
-        // Only check wallets after options are loaded
-        await this.checkAllWallets();
+    this.authService.userProfile$.subscribe(
+      async (state: UserProfile | null) => {
+        if (state?.wallets) {
+          this.userProfile = state;
+          this.options = state.wallets;
+          // Only check wallets after options are loaded
+          await this.checkAllWallets();
+        }
       }
+    );
+  }
+
+  showMessageNotification(sign: string, message: string): void {
+    this.messageService.add({
+      severity: sign.toLowerCase(),
+      summary: sign,
+      detail: message,
     });
   }
 
   async checkAllWallets(): Promise<void> {
     this.checkingWallets = true;
-    
+
     try {
       for (const option of this.options) {
-        const transactions = await this.stateService.getStateTransactions(option.id, this.isGuest);
-        
-        if (transactions.length === 0) {
+        const transactions: Transaction[] =
+          await this.stateService.getStateTransactions(option.id, this.isGuest);
+
+        if (transactions?.length === 0) {
           this.emptyWallets.push(option.id);
         } else {
           // Calculate wallet stats
-          const balance = transactions.reduce((sum: number, t: any) => {
-            return t.type === 'income' ? sum + t.amount : sum - t.amount;
-          }, 0);
-          
+          const balance = transactions.reduce(
+            (sum: number, transaction: Transaction) => {
+              return transaction.type === 'income'
+                ? sum + transaction.amount
+                : sum - transaction.amount;
+            },
+            0
+          );
+
           this.walletStats[option.id] = {
             count: transactions.length,
-            balance: balance
+            balance: balance,
           };
         }
       }
@@ -118,11 +187,13 @@ export class WalletComponent implements OnInit {
   }
 
   getWalletDescription(walletId: string): string {
-    const option = this.options.find(opt => opt.id === walletId);
+    const option = this.options.find((opt: Option) => opt.id === walletId);
     if (this.isWalletEmpty(walletId)) {
       return 'This wallet is empty - it will be created when selected';
     }
-    return option?.description || 'Connect to this wallet to organize your funds';
+    return (
+      option?.description || 'Connect to this wallet to organize your funds'
+    );
   }
 
   getIconSrc(optionId: string): string {
@@ -133,27 +204,27 @@ export class WalletComponent implements OnInit {
 
   async submitChangeWallet(): Promise<void> {
     this.loading = true;
-    
+
     try {
       // If wallet is empty, create it first
       if (this.isWalletEmpty(this.selectedOption)) {
-        
         await this.firebaseService.createUserWallet(this.selectedOption);
         // Remove from empty wallets list
-        this.emptyWallets = this.emptyWallets.filter(id => id !== this.selectedOption);
+        this.emptyWallets = this.emptyWallets.filter(
+          (id: string) => id !== this.selectedOption
+        );
       }
-      
+
       // Set the wallet
       this.stateService.setWallet(this.selectedOption);
-      
+
       // Store in localStorage
-      localStorage.setItem("type", this.selectedOption);
-      
-      setTimeout(() => { 
+      localStorage.setItem('type', this.selectedOption);
+
+      setTimeout(() => {
         this.router.navigate(['home']);
-        this.loading = false; 
+        this.loading = false;
       }, 1000);
-      
     } catch (error) {
       console.error('Error changing wallet:', error);
       this.loading = false;
@@ -172,6 +243,29 @@ export class WalletComponent implements OnInit {
     this.newWalletDescription = '';
   }
 
+  showDeleteWalletModal(walletId: string, event: Event): void {
+    event.stopPropagation();
+    this.walletToDelete = walletId;
+    this.showDeleteModal = true;
+  }
+
+  closeModal(): void {
+    this.showDeleteModal = false;
+    this.walletToDelete = null;
+  }
+
+  confirmDelete(): void {
+    if (!this.walletToDelete) return;
+    this.isSubmitted = true;
+
+    setTimeout(() => {
+      this.deleteWallet(this.walletToDelete!, new Event('manual'));
+      this.showDeleteModal = false;
+      this.isSubmitted = false;
+      this.walletToDelete = null;
+    }, 1000);
+  }
+
   async createNewWallet(): Promise<void> {
     if (!this.newWalletName.trim()) return;
 
@@ -182,7 +276,7 @@ export class WalletComponent implements OnInit {
       const walletId = this.generateWalletId(this.newWalletName);
 
       // Check if wallet already exists
-      const exists = this.options.some(opt => opt.id === walletId);
+      const exists = this.options.some((opt: Option) => opt.id === walletId);
       if (exists) {
         alert('A wallet with this name already exists');
         return;
@@ -192,15 +286,21 @@ export class WalletComponent implements OnInit {
       const newOption: Option = {
         id: walletId,
         title: this.newWalletName,
-        description: this.newWalletDescription || `Connect into ${this.newWalletName} to organize your funds`
+        description:
+          this.newWalletDescription ||
+          `Connect into ${this.newWalletName} to organize your funds`,
       };
 
       // Create in Firebase
       await this.firebaseService.createUserWallet(walletId);
-      await this.firebaseService.updateUserProfile('users', this.userId, newOption); // Adds to `wallets` array
 
-      // Update local options
-      this.options.push(newOption);
+      if (this.userId) {
+        await this.firebaseService.updateUserProfile(
+          'users',
+          this.userId,
+          newOption
+        ); // Adds to `wallets` array
+      }
 
       // ✅ Manually update userProfile$ so the component reacts
       const previousProfile = this.authService.userProfileSubject.value;
@@ -208,8 +308,8 @@ export class WalletComponent implements OnInit {
 
       this.authService.userProfileSubject.next({
         ...previousProfile,
-        wallets: updatedWallets
-      });
+        wallets: updatedWallets,
+      } as UserProfile);
 
       // Select the new wallet
       this.selectedOption = walletId;
@@ -219,7 +319,6 @@ export class WalletComponent implements OnInit {
 
       // Refresh wallet stats
       await this.checkAllWallets();
-
     } catch (error) {
       console.error('Error creating new wallet:', error);
       alert('Failed to create wallet. Please try again.');
@@ -228,33 +327,56 @@ export class WalletComponent implements OnInit {
     }
   }
 
-  async deleteWallet(walletId: string, event: Event): Promise<void> {
-    event.stopPropagation();
-    
-    if (confirm('Are you sure you want to delete this wallet?')) {
-      try {
-        // Remove from options
-        this.options = this.options.filter(opt => opt.id !== walletId);
-        
-        // Remove from empty wallets
-        this.emptyWallets = this.emptyWallets.filter(id => id !== walletId);
-        
-        // If this was the selected wallet, select first available
-        if (this.selectedOption === walletId) {
-          this.selectedOption = this.options[0]?.id || '';
-        }
-        
-        // Delete from Firebase (if it exists)
-        await this.firebaseService.deleteUserWallet(walletId);
-        
-      } catch (error) {
-        console.error('Error deleting wallet:', error);
+  async deleteWallet(walletId: string, event?: Event): Promise<void> {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    try {
+      // Remove from options
+      this.options = this.options.filter((opt: Option) => opt.id !== walletId);
+
+      // Remove from empty wallets
+      this.emptyWallets = this.emptyWallets.filter(
+        (id: string) => id !== walletId
+      );
+
+      // If this was the selected wallet, select first available
+      if (this.selectedOption === walletId) {
+        this.selectedOption = this.options[0]?.id || '';
       }
+
+      // Replace wallet from users
+      await this.firebaseService.replaceUserWallets(
+        'users',
+        this.userId!,
+        this.options
+      );
+
+      // ✅ Manually update userProfileSubject to reflect the deletion
+      const previousProfile = this.authService.userProfileSubject.value;
+      const updatedWallets = [...this.options];
+
+      this.authService.userProfileSubject.next({
+        ...previousProfile,
+        wallets: updatedWallets,
+      } as UserProfile);
+
+      this.stateService._stateWallet.next('');
+      localStorage.removeItem('type');
+
+      // Delete from Firebase
+      await this.firebaseService.deleteUserWallet(walletId);
+
+      this.showMessageNotification('Success', 'Success delete wallet');
+    } catch (error) {
+      console.error('Error deleting wallet:', error);
     }
   }
 
   private generateWalletId(name: string): string {
-    return name.toLowerCase()
+    return name
+      .toLowerCase()
       .replace(/[^a-z0-9]/g, '-')
       .replace(/-+/g, '-')
       .replace(/^-|-$/g, '');

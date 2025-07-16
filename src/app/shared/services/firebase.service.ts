@@ -146,6 +146,21 @@ export class FirebaseService {
     }
   }
 
+  async replaceUserWallets(
+    collectionName: string,
+    docId: string,
+    wallets: Option[]
+  ): Promise<void> {
+    try {
+      const docRef = doc(db, collectionName, docId);
+      await updateDoc(docRef, {
+        wallets: wallets,
+      });
+    } catch (e) {
+      console.error('Error replacing user wallets: ', e);
+    }
+  }
+
   async updateUserProfile(
     collectionName: string,
     docId: string,
@@ -155,7 +170,7 @@ export class FirebaseService {
     try {
       const docRef = doc(db, collectionName, docId);
       await updateDoc(docRef, {
-        [arrayField]: arrayUnion(payload)
+        [arrayField]: arrayUnion(payload),
       });
     } catch (e) {
       console.error('Error updating document: ', e);
@@ -202,7 +217,7 @@ export class FirebaseService {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
-      console.log('Document written with ID: ', docRef.id);
+      // console.log('Document written with ID: ', docRef.id);
       return docRef.id;
     } catch (e) {
       console.error('Error adding document: ', e);
@@ -211,15 +226,23 @@ export class FirebaseService {
   }
 
   // Update data in user-specific collection
-  async updateUserData(collectionName: string, docId: string, payload: AddState) {
+  async updateUserData(
+    collectionName: string,
+    docId: string,
+    payload: AddState
+  ) {
     try {
       const userId = this.getCurrentUserId();
       const docRef = doc(db, 'users', userId, collectionName, docId);
-      await setDoc(docRef, {
-        ...payload,
-        updatedAt: serverTimestamp(),
-      }, { merge: true });
-      console.log('Document updated with ID: ', docId);
+      await setDoc(
+        docRef,
+        {
+          ...payload,
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true }
+      );
+      // console.log('Document updated with ID: ', docId);
     } catch (e) {
       console.error('Error updating document: ', e);
       throw e;
@@ -232,7 +255,7 @@ export class FirebaseService {
       const userId = this.getCurrentUserId();
       const docRef = doc(db, 'users', userId, collectionName, docId);
       await deleteDoc(docRef);
-      console.log('Document deleted with ID:', docId);
+      // console.log('Document deleted with ID:', docId);
     } catch (e) {
       console.error('Error deleting document:', e);
       throw e;
@@ -240,7 +263,10 @@ export class FirebaseService {
   }
 
   // Query user transactions by month
-  async getUserTransactionsByMonth(month: number, year: number = new Date().getFullYear()) {
+  async getUserTransactionsByMonth(
+    month: number,
+    year: number = new Date().getFullYear()
+  ) {
     try {
       const colRef = this.getUserCollection('transactions');
       const q = query(
@@ -249,7 +275,7 @@ export class FirebaseService {
         where('year', '==', year),
         orderBy('createdAt', 'desc')
       );
-      
+
       const snapshots = await getDocs(q);
       const dataList = snapshots.docs.map((doc) => {
         const data: any = doc.data();
@@ -268,7 +294,10 @@ export class FirebaseService {
   }
 
   // Query user transactions by type
-  async getUserTransactionsByType(type: 'income' | 'expense', limitCount?: number) {
+  async getUserTransactionsByType(
+    type: 'income' | 'expense',
+    limitCount?: number
+  ) {
     try {
       const colRef = this.getUserCollection('transactions');
       let q = query(
@@ -276,11 +305,11 @@ export class FirebaseService {
         where('type', '==', type),
         orderBy('createdAt', 'desc')
       );
-      
+
       if (limitCount) {
         q = query(q, limit(limitCount));
       }
-      
+
       const snapshots = await getDocs(q);
       const dataList = snapshots.docs.map((doc) => {
         const data: any = doc.data();
@@ -323,8 +352,7 @@ export class FirebaseService {
   async checkUserWalletExists(walletName: string): Promise<boolean> {
     try {
       const colRef = this.getUserCollection('wallets');
-      console.log(colRef);
-      
+
       const q = query(colRef, where('name', '==', walletName));
       const snapshot = await getDocs(q);
       return !snapshot.empty;
@@ -351,7 +379,9 @@ export class FirebaseService {
       const snapshot = await getDocs(colRef);
 
       const deletePromises = snapshot.docs.map((docSnap) =>
-        deleteDoc(doc(db, 'users', this.getCurrentUserId(), collectionName, docSnap.id))
+        deleteDoc(
+          doc(db, 'users', this.getCurrentUserId(), collectionName, docSnap.id)
+        )
       );
 
       await Promise.all(deletePromises);
@@ -366,34 +396,34 @@ export class FirebaseService {
     try {
       const userId = this.getCurrentUserId();
       const transactionsRef = collection(db, 'users', userId, 'transactions');
-      
+
       const currentMonth = new Date().getMonth() + 1;
       const currentYear = new Date().getFullYear();
-      
+
       // Get current month transactions
       const monthlyQuery = query(
         transactionsRef,
         where('month', '==', currentMonth),
         where('year', '==', currentYear)
       );
-      
+
       const monthlySnapshot = await getDocs(monthlyQuery);
-      
+
       let totalIncome = 0;
       let totalExpense = 0;
       let transactionCount = 0;
-      
+
       monthlySnapshot?.docs?.forEach((doc) => {
         const data = doc.data();
         transactionCount++;
-        
+
         if (data['type'] === 'income') {
           totalIncome += data['amount'] || 0;
         } else if (data['type'] === 'expense') {
           totalExpense += data['amount'] || 0;
         }
       });
-      
+
       return {
         totalIncome,
         totalExpense,
@@ -411,7 +441,9 @@ export class FirebaseService {
   // LEGACY METHODS (for backward compatibility)
   // Keep these for any existing code that might still use them
   async getCollectionData(collectionName: string) {
-    console.warn('getCollectionData is deprecated. Use getUserCollectionData instead.');
+    console.warn(
+      'getCollectionData is deprecated. Use getUserCollectionData instead.'
+    );
     return this.getUserCollectionData(collectionName);
   }
 

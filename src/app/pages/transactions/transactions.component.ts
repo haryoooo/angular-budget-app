@@ -11,7 +11,7 @@ import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 
 // Services
 import { StoreService } from '@services/store.service';
-import { TransactionService } from '@services/transaction.service';
+import { AddState, TransactionService } from '@services/transaction.service';
 import { ToastModule } from 'primeng/toast';
 
 // Components
@@ -38,7 +38,7 @@ import { filter } from 'rxjs/operators';
   providers: [MessageService],
 })
 export class TransactionsComponent implements OnInit {
-  public stateTransaction: any = [];
+  public stateTransaction: AddState[] = [];
   public moment = moment;
   public stateAdd: any;
   public queryId = this.route.snapshot.queryParams['id'];
@@ -112,8 +112,6 @@ export class TransactionsComponent implements OnInit {
       // ✅ If guest, re-render stateTransaction on update
       if (this.isGuest) {
         this.stateService.stateTransactions$.subscribe((transactions) => {
-          console.log(transactions);
-          
           this.stateTransaction = transactions; // Update local state
           this.updateStateAdd(this.stateAdd);   // Re-pick correct transaction
           this.cdr.detectChanges();             // Trigger re-render
@@ -146,14 +144,14 @@ export class TransactionsComponent implements OnInit {
     }
   }
 
-  updateStateAdd(state: any) {
+  updateStateAdd(state: AddState) {
     const paramValue = this.queryId;
     const filterById = this.stateTransaction?.find(
       (el: any) => el?.identifier === paramValue
     );
 
     if (filterById?.identifier) {
-      const { id, ...filteredData } = filterById;
+      const { identifier, ...filteredData } = filterById;
 
       // ✅ Preserve createdAt
       this.stateAdd = {

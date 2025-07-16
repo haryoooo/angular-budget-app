@@ -178,6 +178,7 @@ export class LoginComponent {
   // Main login method
   public async login(email: string, password: string) {
     try {
+      localStorage.clear();
       this.storeService.isLoading.set(true);
 
       const users: any = await this.firebaseService.loginUser(email, password);
