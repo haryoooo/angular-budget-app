@@ -167,7 +167,7 @@ $white: #fff;
 .option-actions {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .btn-delete-wallet {
@@ -182,11 +182,22 @@ $white: #fff;
   &:hover {
     background: #fee2e2;
   }
+
   img {
     width: 16px;
     height: 16px;
   }
 }
+
+// New style that reuses everything except hover
+.btn-edit-wallet {
+  @extend .btn-delete-wallet;
+
+  &:hover {
+    background: #e8f5f2; // Your new hover color
+  }
+}
+
 
 .option-checkmark {
   color: $primary;

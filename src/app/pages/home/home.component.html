@@ -10,7 +10,7 @@
       <div class="header__between">
         <div class="text-white">
           <h6 class="font-weight-400">{{ getGreeting() }}</h6>
-          <h4>{{ userProfile?.fullname }}</h4>
+          <h4>{{ userProfile?.fullname || 'Guest' }}</h4>
         </div>
       </div>
 

@@ -85,6 +85,14 @@ export class WalletComponent implements OnInit {
   public showDeleteModal = false;
   public walletToDelete: string | null = null;
 
+  // Edit wallet properties
+  public showEditModal = false;
+  public editingWallet = false;
+  public editWalletId = '';
+  public editWalletName = '';
+  public editWalletDescription = '';
+  public walletToEdit: Option | null = null;
+
   // Track wallet stats and empty status
   public walletStats: Record<string, WalletStats> = {};
   public emptyWallets: string[] = [];
@@ -264,6 +272,81 @@ export class WalletComponent implements OnInit {
       this.isSubmitted = false;
       this.walletToDelete = null;
     }, 1000);
+  }
+
+  // Edit wallet methods
+  showEditWalletModal(walletId: string, event: Event): void {
+    event.stopPropagation();
+    
+    // Find the wallet to edit
+    this.walletToEdit = this.options.find(opt => opt.id === walletId) || null;
+    
+    if (this.walletToEdit) {
+      this.editWalletId = walletId;
+      this.editWalletName = this.walletToEdit.title;
+      this.editWalletDescription = this.walletToEdit.description || '';
+      this.showEditModal = true;
+    }
+  }
+
+  hideEditWalletModal(): void {
+    this.showEditModal = false;
+    this.editWalletId = '';
+    this.editWalletName = '';
+    this.editWalletDescription = '';
+    this.walletToEdit = null;
+  }
+
+  async updateWallet(): Promise<void> {
+    if (!this.editWalletName.trim() || !this.editWalletId) return;
+
+    this.editingWallet = true;
+    console.log(this.editWalletId);
+    
+    try {
+      // Update the wallet in the options array
+      const walletIndex = this.options.findIndex(opt => opt.id === this.editWalletId);
+      const currentWalletSameAsEdited = this.editWalletId === localStorage.getItem("type")
+      if (walletIndex !== -1) {
+        this.options[walletIndex] = {
+          ...this.options[walletIndex],
+          title: this.editWalletName,
+          description: this.editWalletDescription || `Connect into ${this.editWalletName} to organize your funds`
+        };
+
+        if(currentWalletSameAsEdited){
+          localStorage.removeItem("type")
+        }
+
+        // Update in Firebase
+        if (this.userId) {
+          await this.firebaseService.replaceUserWallets(
+            'users',
+            this.userId,
+            this.options
+          );
+        }
+
+        // ✅ Manually update userProfile$ so the component reacts
+        const previousProfile = this.authService.userProfileSubject.value;
+        
+        this.authService.userProfileSubject.next({
+          ...previousProfile,
+          wallets: [...this.options]
+        } as UserProfile);
+
+        // Hide modal
+        this.hideEditWalletModal();
+
+        // Show success message
+        this.showMessageNotification('Success', 'Wallet updated successfully');
+      }
+    } catch (error) {
+      console.error('Error updating wallet:', error);
+      this.showMessageNotification('Error', 'Failed to update wallet. Please try again.');
+    } finally {
+      this.editingWallet = false;
+    }
   }
 
   async createNewWallet(): Promise<void> {
