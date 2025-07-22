@@ -7,7 +7,7 @@ $white: #fff;
 .header-container {
   background: $primary;
   padding: 15px;
-  height: 25vh;
+  height: 24vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -440,7 +440,7 @@ $white: #fff;
 
 @media (max-width: 480px) {
   .header-container {
-    height: 22vh;
+    height: 20vh;
   }
   .content-container {
     width: 100%;

@@ -230,7 +230,6 @@ export class WalletComponent implements OnInit {
       }
 
       const setWalletId: any = this.options?.find(el=> generateIdFormat(el?.title) === id)?.title;
-      console.log(this.selectedOption, this.options, "id : ");
       
       // Set the wallet
       this.stateService.setWallet(setWalletId);
