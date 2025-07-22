@@ -29,7 +29,7 @@ $white: #fff;
   text-align: center;
 }
 
-// Content
+// Content - Fixed to extend to bottom navbar
 .content-container {
   display: flex;
   flex-direction: column;
@@ -45,8 +45,13 @@ $white: #fff;
   border-radius: 16px 16px 0 0;
   box-shadow: 0 8px 24px rgba(149, 157, 165, 0.2);
   z-index: 100;
-  min-height: calc(80vh - 100px);
+  // Fixed height calculation to reach bottom navbar
+  height: calc(100vh - 20vh - 60px); // 100vh - header height - navbar height
+  min-height: calc(100vh - 20vh - 60px);
+  max-height: calc(100vh - 20vh - 60px);
   justify-content: space-between;
+  overflow: hidden; // Prevent container overflow
+  box-sizing: border-box;
 }
 
 // Options
@@ -54,10 +59,11 @@ $white: #fff;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  max-height: 50vh;
+  flex: 1 1 auto; // Allow it to grow and shrink
   overflow-y: auto;
   padding-right: 5px;
   margin: 1rem 0;
+  min-height: 200px; // Minimum height for content
 
   &::-webkit-scrollbar {
     width: 6px;
@@ -77,6 +83,8 @@ $white: #fff;
   border: 2px solid #e5e7eb;
   border-radius: 12px;
   transition: all 0.3s ease;
+  flex-shrink: 0; // Prevent items from shrinking
+  margin-top: 5px;
 
   &:hover {
     background: #e0f0ec;
@@ -198,7 +206,6 @@ $white: #fff;
   }
 }
 
-
 .option-checkmark {
   color: $primary;
   width: 24px;
@@ -221,6 +228,8 @@ $white: #fff;
   justify-content: center;
   padding: 3rem 1rem;
   color: #6b7280;
+  flex: 1; // Take up available space
+  min-height: 300px; // Minimum height for proper centering
 
   .loading-spinner {
     margin-bottom: 1rem;
@@ -231,7 +240,7 @@ $white: #fff;
   }
 }
 
-// Buttons
+// Buttons - Ensure button is always visible
 .btn-next {
   border: none;
   cursor: pointer;
@@ -242,6 +251,9 @@ $white: #fff;
   color: $white;
   padding: 15px;
   margin-top: auto;
+  flex-shrink: 0; // Never allow the button to shrink
+  position: relative;
+  z-index: 10; // Ensure it stays on top
 
   &:hover:not(:disabled) {
     transform: translateY(-1px);
@@ -403,13 +415,23 @@ $white: #fff;
   .content-container {
     width: 95%;
     padding: 20px;
+    height: calc(100vh - 22vh - 60px); // Adjusted for tablet
+    min-height: calc(100vh - 22vh - 60px);
+    max-height: calc(100vh - 22vh - 60px);
   }
+  
   .btn-next {
     font-size: 14px;
     padding: 12px;
   }
   .option-item {
     padding: 12px;
+
+    .option-details {
+      .option-title {
+        font-size: 16px
+      }
+    }
   }
   .modal-content {
     width: 90%;
@@ -423,14 +445,31 @@ $white: #fff;
   .content-container {
     width: 100%;
     top: 18%;
-    min-height: calc(78vh - 100px);
+    height: calc(100vh - 18vh - 70px); // Account for mobile navbar
+    min-height: calc(100vh - 18vh - 70px);
+    max-height: calc(100vh - 18vh - 70px);
+    padding: 15px; // Reduce padding on mobile
   }
+  
   .connection-options {
-    max-height: 45vh;
+    margin: 0.5rem 0; // Reduce margin
   }
+  
+  .option-item {
+    .option-details {
+      .option-title {
+        font-size: 16px
+      }
+    }
+  }
+  
   .option-icon {
     width: 35px;
     height: 35px;
+  }
+  .btn-next {
+    padding: 12px;
+    font-size: 14px;
   }
   .modal-footer {
     flex-direction: column;
@@ -439,5 +478,20 @@ $white: #fff;
     .btn-next {
       width: 100%;
     }
+  }
+
+  .btn-confirm {
+    width: 100%;
+  }
+}
+
+// Extra small screens
+@media (max-width: 360px) {
+  .content-container {
+    top: 16%;
+    height: calc(100vh - 16vh - 70px);
+    min-height: calc(100vh - 16vh - 70px);
+    max-height: calc(100vh - 16vh - 70px);
+    padding: 12px;
   }
 }

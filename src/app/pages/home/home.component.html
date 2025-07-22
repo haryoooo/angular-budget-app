@@ -1,5 +1,6 @@
 <app-page-layout>
-  <div>
+  <!-- Main container with flex layout -->
+  <div class="container">
     <!-- Header Container -->
     <div class="header-container">
       <img
@@ -9,41 +10,43 @@
       />
       <div class="header__between">
         <div class="text-white">
-          <h6 class="font-weight-400">{{ getGreeting() }}</h6>
-          <h4>{{ userProfile?.fullname || 'Guest' }}</h4>
+          <div class="greeting-section">
+            <h6 class="font-weight-400">{{ getGreeting() }}</h6>
+            <h4>{{ userProfile?.fullname || 'Guest' }}</h4>
+          </div>
         </div>
       </div>
 
+      <!-- Balance Card -->
       <div class="card-balance">
         <div class="card-balance-container">
           <div>
             <div class="header-balance">
               Total Balance - {{ this.wallet }}
-              <!-- <span class="cursor-pointer">
-                <img src="../../../assets/img/project/chevron-down.png" />
-              </span> -->
             </div>
             <h4 *ngIf="loading">
               Rp
-              <span class="h-10"
-                ><img src="../../../assets/img/favicon/beatloader.svg"
-              /></span>
+              <span class="h-10">
+                <img src="../../../assets/img/favicon/beatloader.svg" alt="loading" />
+              </span>
             </h4>
             <h4 *ngIf="!loading">Rp {{ calculateTransactions("balance") }}</h4>
           </div>
           <div>
             <div>
-              <!-- <img src="../../../assets/img/project/more.png" /> -->
+              <!-- Additional controls can go here -->
             </div>
           </div>
         </div>
 
+        <!-- Income and Expenses Section -->
         <div class="card-balance-container">
+          <!-- Income -->
           <div>
             <div class="container-income-outcome">
               <div class="container-text">
                 <div>
-                  <img src="../../../assets/img/project/arrow-down.png" />
+                  <img src="../../../assets/img/project/arrow-down.png" alt="income" />
                 </div>
                 <div>
                   <h6>Income</h6>
@@ -51,19 +54,20 @@
               </div>
               <h5 *ngIf="loading">
                 Rp
-                <span class="h-10"
-                  ><img src="../../../assets/img/favicon/beatloader.svg"
-                /></span>
+                <span class="h-10">
+                  <img src="../../../assets/img/favicon/beatloader.svg" alt="loading" />
+                </span>
               </h5>
               <h5 *ngIf="!loading">Rp {{ calculateTransactions("income") }}</h5>
             </div>
           </div>
 
+          <!-- Expenses -->
           <div>
             <div class="container-income-outcome">
               <div class="container-text">
                 <div>
-                  <img src="../../../assets/img/project/arrow-up.png" />
+                  <img src="../../../assets/img/project/arrow-up.png" alt="expense" />
                 </div>
                 <div>
                   <h6>Expenses</h6>
@@ -71,9 +75,9 @@
               </div>
               <h5 *ngIf="loading">
                 Rp
-                <span class="h-10"
-                  ><img src="../../../assets/img/favicon/beatloader.svg"
-                /></span>
+                <span class="h-10">
+                  <img src="../../../assets/img/favicon/beatloader.svg" alt="loading" />
+                </span>
               </h5>
               <h5 *ngIf="!loading">
                 Rp {{ calculateTransactions("expense") }}
@@ -84,26 +88,29 @@
       </div>
     </div>
 
-    <div class="transactions-desc-container mt-20">
+    <!-- Transactions Header -->
+    <div class="transactions-desc-container">
       <div class="transactions-all">Transactions History</div>
-      <div class="transactions-see-all">See All</div>
+      <div class="transactions-see-all cursor-pointer"></div>
     </div>
 
+    <!-- Loading State -->
     <div *ngIf="loading" class="header__center">
       <h6>Load Transactions...</h6>
     </div>
 
+    <!-- Transactions List - THIS WAS THE MAIN ISSUE - Now properly scrollable -->
     <div *ngIf="!loading" class="transactions-wrapper">
       <div
         *ngFor="let transaction of allTransactions"
         class="transactions-container"
-        (click)="navigateTo('home/transactions', transaction.identifier)"
+        (click)="navigateTo('home/transactions', transaction?.identifier)"
       >
         <div class="transactions-all">
           <div class="transactions-text">
             <h5>{{ transaction.desc }}</h5>
             <h6>
-              {{ transaction.date }}
+              {{ formatDate(transaction.lastUpdate) }}
             </h6>
           </div>
         </div>
@@ -118,7 +125,13 @@
           {{ getFormattedAmount(transaction.amount) }}
         </div>
       </div>
+      
+      <!-- Empty state when no transactions -->
+      <div *ngIf="allTransactions?.length === 0 && !loading" class="empty-state">
+        <div>
+          <p>No transactions yet</p>
+        </div>
+      </div>
     </div>
-    <!-- </ng-container> -->
   </div>
 </app-page-layout>

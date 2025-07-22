@@ -2,6 +2,7 @@ import { effect, Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { FirebaseService } from './firebase.service';
 import { StoreService } from './store.service';
+import generateIdFormat from '@helpers/generateIdFormat.helper';
 
 export interface OptionsDropdown {
   name: string;
@@ -32,6 +33,7 @@ export interface AddState {
   type: string;
   identifier?: string;
   createdAt?: string;
+  lastUpdate?: any;
 }
 
 export const initialState: AddState = {
@@ -41,6 +43,7 @@ export const initialState: AddState = {
   month: 0, 
   type: 'expense',
   identifier: "",
+  lastUpdate: "",
 };
 
 @Injectable({
@@ -79,7 +82,7 @@ export class TransactionService {
     // React to guest state changes using effect
     effect(() => {
       const isGuest = this.storeService.isGuest();
-      const newWallet = isGuest ? 'budget-1' : localStorage.getItem("type");
+      const newWallet = isGuest ? 'Budget 1' : localStorage.getItem("type");
       
       if (newWallet && newWallet !== this.wallet) {
         this.wallet = newWallet;
@@ -90,7 +93,7 @@ export class TransactionService {
 
   private initializeWallet(): void {
     const isGuest = this.storeService.isGuest();
-    this.wallet = isGuest ? 'budget-1' : localStorage.getItem("type") || '';
+    this.wallet = isGuest ? 'Budget 1' : localStorage.getItem("type") || '';
     if (this.wallet) {
       this.setWallet(this.wallet);
     }
@@ -150,6 +153,8 @@ export class TransactionService {
 
 
   async setLatestTransactions(newData: AddState, isGuest: boolean): Promise<void> {
+    const id = generateIdFormat(this._stateWallet.value);
+
     if (isGuest) {
       const id = Date.now().toString();
       const guestTransaction = {
@@ -161,10 +166,10 @@ export class TransactionService {
       this._stateTransactions.next([...this.guestTransactions]);
       return;
     }
-
+    console.log(this._stateWallet.value, "transactions : ");
     try {
-      await this.firebaseService.addData(this._stateWallet.value, newData);
-      const updatedList = await this.firebaseService.getCollectionData(this._stateWallet.value);
+      await this.firebaseService.addData(id, newData);
+      const updatedList = await this.firebaseService.getCollectionData(id);
       this._stateTransactions.next(updatedList);
     } catch (err) {
       console.error('Failed to add transaction', err);
@@ -172,6 +177,8 @@ export class TransactionService {
   }
 
   async updateTransaction(id: string, newData: AddState, isGuest: boolean): Promise<void> {
+    const walletId = generateIdFormat(this._stateWallet.value);
+    
     if (isGuest) {
       const index = this.guestTransactions.findIndex(tx => tx.identifier === id);
       if (index !== -1) {
@@ -186,8 +193,8 @@ export class TransactionService {
     }
 
     try {
-      await this.firebaseService.updateData(this._stateWallet.value, id, newData);
-      const updatedList = await this.firebaseService.getCollectionData(this._stateWallet.value);
+      await this.firebaseService.updateData(walletId, id, newData);
+      const updatedList = await this.firebaseService.getCollectionData(walletId);
       this._stateTransactions.next(updatedList);
     } catch (err) {
       console.error('Failed to update transaction', err);
@@ -195,6 +202,8 @@ export class TransactionService {
   }
 
   async deleteTransaction(id: string, isGuest: boolean): Promise<void> {
+    const walletId = generateIdFormat(this._stateWallet.value);
+
     if (isGuest) {
       this.guestTransactions = this.guestTransactions.filter(tx => tx.identifier !== id);
       this._stateTransactions.next([...this.guestTransactions]);
@@ -202,8 +211,8 @@ export class TransactionService {
     }
 
     try {
-      await this.firebaseService.deleteData(this._stateWallet.value, id);
-      const updatedList = await this.firebaseService.getCollectionData(this._stateWallet.value);
+      await this.firebaseService.deleteData(walletId, id);
+      const updatedList = await this.firebaseService.getCollectionData(walletId);
       this._stateTransactions.next(updatedList);
     } catch (err) {
       console.error('Failed to delete transaction', err);

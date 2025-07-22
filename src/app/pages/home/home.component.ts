@@ -17,6 +17,7 @@ import { FirebaseService } from '@services/firebase.service';
 import { calculateTransaction } from '@helpers/transactionSum.helper';
 import formatTransactionDate from '@helpers/formatTransactionDate.helper';
 import { AuthService } from '@services/auth.service';
+import generateIdFormat from '@helpers/generateIdFormat.helper';
 
 @Component({
   selector: 'app-home',
@@ -26,7 +27,7 @@ import { AuthService } from '@services/auth.service';
   imports: [PageLayoutComponent, NgIf, ProgressBarComponent, NgFor, NgClass],
 })
 export class HomeComponent implements OnInit {
-  public allTransactions: any[] = [];
+  public allTransactions: AddState[] | void | any = [];
   public moment = moment;
   public greeting: string = '';
   public wallet: string = '';
@@ -53,12 +54,16 @@ export class HomeComponent implements OnInit {
 
     // Subscribe to wallet changes
     this.stateService.stateWallet$.subscribe((walletId) => {
+      const id = generateIdFormat(walletId);
+      console.log(id, walletId);
+      
+      
       this.loading = false;
       if (walletId && walletId !== this.wallet) {
         this.wallet = walletId;
 
         if (!this.isGuest) {
-          this.getAllTransactions(walletId);
+          this.getAllTransactions(id);
         }
       }
     });
@@ -74,7 +79,7 @@ export class HomeComponent implements OnInit {
           })
         );
 
-        this.sortTransactions();
+        this.sortTransactions(this.allTransactions);
         this.cdr.detectChanges();
       });
     }
@@ -85,40 +90,33 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  private sortTransactions(): void {
-    this.allTransactions.sort((a: AddState, b: AddState) => 
-      {
-      const getTime = (t: any): number => {
-        if (t?.createdAt?.seconds) {
-          // Firestore Timestamp
-          return t.createdAt.seconds * 1000 + Math.floor(t.createdAt.nanoseconds / 1e6);
-        }
+  public sortTransactions(allTransactions: AddState[]): AddState[] {
+    const tempTransactions = [...allTransactions];
 
-        if (typeof t?.createdAt === 'string') {
-          return new Date(t.createdAt).getTime();
-        }
-
-        if (t?.updatedAt?.seconds) {
-          return t.updatedAt.seconds * 1000 + Math.floor(t.updatedAt.nanoseconds / 1e6);
-        }
-
-        return new Date(t.date).getTime(); // fallback
-      };
-
-      return getTime(b) - getTime(a); // Newest first
+    tempTransactions.sort((a: AddState, b: AddState) => {
+      return new Date(b.lastUpdate).getTime() - new Date(a.lastUpdate).getTime();
     });
+    
+    return tempTransactions; // Return the sorted array
+  }
+
+  public formatDate(date: string): string {
+    return moment(date).format('dddd, MMMM D, YYYY h:mm A');
   }
 
   private initializeWallet(): void {
+    const id = generateIdFormat(this.stateService._stateWallet.value);
     const isGuest = this.storeService.isGuest();
-    this.wallet = isGuest ? 'budget-1' : this.stateService._stateWallet.value;
+    this.wallet = isGuest ? 'Budget 1' : this.stateService._stateWallet.value;
 
     if (this.wallet) {
-      this.getAllTransactions(this.wallet);
+      this.getAllTransactions(id);
     }
   }
 
   async getAllTransactions(walletId: string) {
+    const id = generateIdFormat(this.stateService._stateWallet.value);
+
     if (!walletId) {
       return;
     }
@@ -126,7 +124,7 @@ export class HomeComponent implements OnInit {
     try {
       let transactions = this.isGuest
         ? this?.stateService?._stateTransactions?.value
-        : await this.firebaseService.getCollectionData(walletId);
+        : await this.firebaseService.getCollectionData(id);
       this.loading = false;
 
       // Add display format (optional)
@@ -134,18 +132,7 @@ export class HomeComponent implements OnInit {
         transaction.formattedDate = formatTransactionDate(transaction.date);
       });
 
-      // Sort by createdAt (or original date field if it includes full timestamp)
-      transactions.sort((a: any, b: any) => {
-        const aTime =
-          a.updatedAt.seconds * 1000 +
-          Math.floor(a.updatedAt.nanoseconds / 1e6);
-        const bTime =
-          b.updatedAt.seconds * 1000 +
-          Math.floor(b.updatedAt.nanoseconds / 1e6);
-        return bTime - aTime; // Newest first
-      });
-
-      this.allTransactions = transactions;
+      this.allTransactions = this.sortTransactions(transactions);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {

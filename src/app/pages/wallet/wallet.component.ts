@@ -16,6 +16,7 @@ import { FirebaseService } from '@services/firebase.service';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '@services/auth.service';
 import { MessageService } from 'primeng/api';
+import generateIdFormat from '@helpers/generateIdFormat.helper';
 
 // Define interfaces
 interface Option {
@@ -119,9 +120,11 @@ export class WalletComponent implements OnInit {
     this.storeService.isLoading.set(false);
 
     this.wallet = this.isGuest
-      ? 'budget-1'
+      ? 'Budget 1'
       : this.stateService._stateWallet.value;
     this.selectedOption = this.wallet;
+    console.log(this.wallet, "wallet : ");
+    
 
     this.authService.currentUser$.subscribe((state: AuthUser | null | any) => {
       this.userId = state?.uid || null;
@@ -187,6 +190,8 @@ export class WalletComponent implements OnInit {
   }
 
   selectOption(optionId: string): void {
+    console.log(optionId, "id : ");
+    
     this.selectedOption = optionId;
   }
 
@@ -211,23 +216,27 @@ export class WalletComponent implements OnInit {
   }
 
   async submitChangeWallet(): Promise<void> {
+    const id = generateIdFormat(this.selectedOption);
     this.loading = true;
 
     try {
       // If wallet is empty, create it first
       if (this.isWalletEmpty(this.selectedOption)) {
-        await this.firebaseService.createUserWallet(this.selectedOption);
+        await this.firebaseService.createUserWallet(id);
         // Remove from empty wallets list
         this.emptyWallets = this.emptyWallets.filter(
           (id: string) => id !== this.selectedOption
         );
       }
 
+      const setWalletId: any = this.options?.find(el=> generateIdFormat(el?.title) === id)?.title;
+      console.log(this.selectedOption, this.options, "id : ");
+      
       // Set the wallet
-      this.stateService.setWallet(this.selectedOption);
+      this.stateService.setWallet(setWalletId);
 
       // Store in localStorage
-      localStorage.setItem('type', this.selectedOption);
+      localStorage.setItem('type', setWalletId);
 
       setTimeout(() => {
         this.router.navigate(['home']);
@@ -301,7 +310,6 @@ export class WalletComponent implements OnInit {
     if (!this.editWalletName.trim() || !this.editWalletId) return;
 
     this.editingWallet = true;
-    console.log(this.editWalletId);
     
     try {
       // Update the wallet in the options array
@@ -310,6 +318,7 @@ export class WalletComponent implements OnInit {
       if (walletIndex !== -1) {
         this.options[walletIndex] = {
           ...this.options[walletIndex],
+          id: generateIdFormat(this.editWalletName),
           title: this.editWalletName,
           description: this.editWalletDescription || `Connect into ${this.editWalletName} to organize your funds`
         };
@@ -356,7 +365,7 @@ export class WalletComponent implements OnInit {
 
     try {
       // Generate wallet ID from name
-      const walletId = this.generateWalletId(this.newWalletName);
+      const walletId = generateIdFormat(this.newWalletName);
 
       // Check if wallet already exists
       const exists = this.options.some((opt: Option) => opt.id === walletId);
@@ -455,14 +464,6 @@ export class WalletComponent implements OnInit {
     } catch (error) {
       console.error('Error deleting wallet:', error);
     }
-  }
-
-  private generateWalletId(name: string): string {
-    return name
-      .toLowerCase()
-      .replace(/[^a-z0-9]/g, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-|-$/g, '');
   }
 
   navigateTo(url: string): void {

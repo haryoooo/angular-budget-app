@@ -22,6 +22,7 @@ import { formatMoney, parseMoney } from '@helpers/moneyFormatter.helper';
 import { FirebaseService } from '@services/firebase.service';
 import { MessageService } from 'primeng/api';
 import { filter } from 'rxjs/operators';
+import generateIdFormat from '@helpers/generateIdFormat.helper';
 
 @Component({
   selector: 'app-transactions',
@@ -42,7 +43,7 @@ export class TransactionsComponent implements OnInit {
   public moment = moment;
   public stateAdd: any;
   public queryId = this.route.snapshot.queryParams['id'];
-  public wallet = this.stateService._stateWallet.value;
+  public wallet = generateIdFormat(this.stateService._stateWallet.value);
   public isGuest = this.storeService.isGuest();
 
   public isModalOpen = false;
@@ -156,12 +157,12 @@ export class TransactionsComponent implements OnInit {
       // ✅ Preserve createdAt
       this.stateAdd = {
         ...filteredData,
-        createdAt: filterById.createdAt ?? new Date().toISOString(),
+        createdAt: filterById.createdAt ?? moment().format('YYYY-MM-DD HH:mm:ss'),
       };
     } else {
       this.stateAdd = {
         ...state,
-        createdAt: state.createdAt ?? new Date().toISOString(),
+        createdAt: state.createdAt ?? moment().format('YYYY-MM-DD HH:mm:ss'),
       };
     }
 
@@ -186,6 +187,7 @@ export class TransactionsComponent implements OnInit {
   updateName(event: Event): void {
     this.stateAdd = {
       ...this.stateAdd,
+      lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss'),
       desc: (event.target as HTMLInputElement).value,
     };
     this.cdr.detectChanges();
@@ -194,13 +196,14 @@ export class TransactionsComponent implements OnInit {
   updateNameWallet(event: Event): void {
     this.stateAdd = {
       ...this.stateAdd,
+      lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss'),
       desc: (event.target as HTMLInputElement).value,
     };
     this.cdr.detectChanges();
   }
 
   updateType(selectedType: string): void {
-    this.stateAdd = { ...this.stateAdd, type: selectedType };
+    this.stateAdd = { ...this.stateAdd, type: selectedType, lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss'), };
     this.cdr.detectChanges();
   }
 
@@ -221,7 +224,7 @@ export class TransactionsComponent implements OnInit {
       typeof parsedAmount === 'bigint' ? parsedAmount.toString() : parsedAmount;
 
     // Update state with unformatted value
-    this.stateAdd = { ...this.stateAdd, amount };
+    this.stateAdd = { ...this.stateAdd, amount, lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss'), };
 
     // Manually update input field with formatted value
     input.value = formatMoney(amount);
@@ -234,6 +237,7 @@ export class TransactionsComponent implements OnInit {
 
     this.stateAdd = {
       ...this.stateAdd,
+      lastUpdate: moment(inputDate).format('YYYY-MM-DD HH:mm:ss'),
       date: moment(inputDate, 'YYYY-MM-DD').format('dddd, MMMM D, YYYY'), // Store formatted date without time
       month: moment(inputDate).month() + 1
     };
@@ -274,11 +278,14 @@ export class TransactionsComponent implements OnInit {
       month: moment(this.stateAdd.date).month() + 1,
       desc: this.stateAdd.desc,
       amount: this.stateAdd.amount,
-      createdAt: this.now.toISOString(),
+      createdAt: moment().format('YYYY-MM-DD HH:mm:ss'),
+      lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss'),
     };
 
     this.isSubmitted = true;
     this.showMessageNotification('Success', messageSuccess);
+    
+    console.log(this.stateAdd);
 
     if (paramValueEdit) {
       await this.stateService.updateTransaction(paramValueEdit, this.stateAdd, this.isGuest);

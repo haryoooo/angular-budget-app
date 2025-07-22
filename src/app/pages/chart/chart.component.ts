@@ -25,6 +25,7 @@ import { PageLayoutComponent } from '@layouts/page-layout/page-layout.component'
 import Chart from 'chart.js/auto'; // Import Chart.js
 import { formatMoney } from '@helpers/moneyFormatter.helper';
 import * as moment from 'moment';
+import generateIdFormat from '@helpers/generateIdFormat.helper';
 
 const initialStateOptions = [
   { name: 'Expense', code: 'exp' },
@@ -56,7 +57,7 @@ export class ChartComponent implements OnInit, AfterViewInit {
   public allSubsetCount: any = [];
   public allTransactions: any[] = [];
   public amountTransactions: number = 0;
-  public wallet = this.stateService._stateWallet.value;
+  public wallet = generateIdFormat(this.stateService._stateWallet.value);
   public transactions = this.stateService.getStateTransactions(this.wallet, this.isGuest);
 
   public isAscending = true;

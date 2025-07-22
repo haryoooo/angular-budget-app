@@ -121,13 +121,15 @@
       </div>
       <div>
         <h5 class="text-label">DATE</h5>
-        <input
-          class="input-content"
-          type="date"
-          alt="date"
-          [value]="stateAdd.date | date : 'yyyy-MM-dd'"
-          (input)="updateDate($event)"
-        />
+        <div>
+          <input
+            class="input-content"
+            type="date"
+            alt="date"
+            [value]="stateAdd.lastUpdate | date : 'yyyy-MM-dd'"
+            (input)="updateDate($event)"
+          />
+        </div>
       </div>
     </div>
 

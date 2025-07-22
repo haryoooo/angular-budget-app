@@ -45,10 +45,12 @@
   <div class="content-container">
     <!-- Loading state for wallet check -->
     <div *ngIf="checkingWallets" class="loading-wallets text-center">
-      <div class="loading-spinner">
-        <img src="../../../assets/img/favicon/beatloader.svg" alt="Loading..." />
+      <div>
+        <div class="loading-spinner">
+          <img src="../../../assets/img/favicon/beatloader.svg" alt="Loading..." />
+        </div>
+        <h6 class="mt-3">Checking available wallets...</h6>
       </div>
-      <h6 class="mt-3">Checking available wallets...</h6>
     </div>
 
     <!-- Wallet options -->
@@ -56,14 +58,14 @@
       <div
         *ngFor="let option of options"
         class="option-item"
-        [class.selected]="selectedOption === option.id"
-        [class.wallet-empty]="isWalletEmpty(option.id)"
-        (click)="selectOption(option.id)"
+        [class.selected]="selectedOption === option.title"
+        [class.wallet-empty]="isWalletEmpty(option.title)"
+        (click)="selectOption(option.title)"
       >
-        <div class="option-icon {{ option.id }}-icon">
-          <img [src]="getIconSrc(option.id)" [alt]="option.id" />
+        <div class="option-icon {{ option.title }}-icon">
+          <img [src]="getIconSrc(option.title)" [alt]="option.title" />
           <!-- Show indicator if wallet is empty/new -->
-          <span *ngIf="isWalletEmpty(option.id)" class="new-wallet-badge">New</span>
+          <span *ngIf="isWalletEmpty(option.title)" class="new-wallet-badge">New</span>
         </div>
         
         <div class="option-details">
