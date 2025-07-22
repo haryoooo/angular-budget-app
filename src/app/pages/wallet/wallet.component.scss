@@ -7,7 +7,7 @@ $white: #fff;
 .header-container {
   background: $primary;
   padding: 15px;
-  height: 23vh;
+  height: 25vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -46,9 +46,9 @@ $white: #fff;
   box-shadow: 0 8px 24px rgba(149, 157, 165, 0.2);
   z-index: 100;
   // Fixed height calculation to reach bottom navbar
-  height: calc(100vh - 20vh - 60px); // 100vh - header height - navbar height
-  min-height: calc(100vh - 20vh - 60px);
-  max-height: calc(100vh - 20vh - 60px);
+  height: calc(100vh - 20vh - 100px); // 100vh - header height - navbar height
+  min-height: calc(100vh - 20vh - 100px);
+  max-height: calc(100vh - 20vh - 100px);
   justify-content: space-between;
   overflow: hidden; // Prevent container overflow
   box-sizing: border-box;
@@ -415,9 +415,9 @@ $white: #fff;
   .content-container {
     width: 95%;
     padding: 20px;
-    height: calc(100vh - 22vh - 60px); // Adjusted for tablet
-    min-height: calc(100vh - 22vh - 60px);
-    max-height: calc(100vh - 22vh - 60px);
+    height: calc(100vh - 22vh - 100px); // Adjusted for tablet
+    min-height: calc(100vh - 22vh - 100px);
+    max-height: calc(100vh - 22vh - 100px);
   }
   
   .btn-next {
@@ -440,14 +440,14 @@ $white: #fff;
 
 @media (max-width: 480px) {
   .header-container {
-    height: 18vh;
+    height: 22vh;
   }
   .content-container {
     width: 100%;
     top: 18%;
-    height: calc(100vh - 18vh - 70px); // Account for mobile navbar
-    min-height: calc(100vh - 18vh - 70px);
-    max-height: calc(100vh - 18vh - 70px);
+    height: calc(100vh - 18vh - 110px); // Account for mobile navbar
+    min-height: calc(100vh - 18vh - 110px);
+    max-height: calc(100vh - 18vh - 110px);
     padding: 15px; // Reduce padding on mobile
   }
   
@@ -489,9 +489,9 @@ $white: #fff;
 @media (max-width: 360px) {
   .content-container {
     top: 16%;
-    height: calc(100vh - 16vh - 70px);
-    min-height: calc(100vh - 16vh - 70px);
-    max-height: calc(100vh - 16vh - 70px);
+    height: calc(100vh - 16vh - 110px);
+    min-height: calc(100vh - 16vh - 110px);
+    max-height: calc(100vh - 16vh - 110px);
     padding: 12px;
   }
 }
