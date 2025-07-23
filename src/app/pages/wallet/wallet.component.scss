@@ -253,7 +253,7 @@ $white: #fff;
   flex-shrink: 0; // Never allow the button to shrink
   position: relative;
   z-index: 10; // Ensure it stays on top
-  margin: 0 0 10% 0;
+  margin: 10% 0 10% 0;
 
   &:hover:not(:disabled) {
     transform: translateY(-1px);
@@ -445,9 +445,9 @@ $white: #fff;
   .content-container {
     width: 100%;
     top: 18%;
-    height: calc(100vh - 18vh - 70px); // Account for mobile navbar
-    min-height: calc(100vh - 18vh - 70px);
-    max-height: calc(100vh - 18vh - 70px);
+    height: calc(100vh - 18vh - 90px); // Account for mobile navbar
+    min-height: calc(100vh - 18vh - 90px);
+    max-height: calc(100vh - 18vh - 90px);
     padding: 15px; // Reduce padding on mobile
   }
   
@@ -489,9 +489,9 @@ $white: #fff;
 @media (max-width: 360px) {
   .content-container {
     top: 16%;
-    height: calc(100vh - 16vh - 70px);
-    min-height: calc(100vh - 16vh - 70px);
-    max-height: calc(100vh - 16vh - 70px);
+    height: calc(100vh - 16vh - 90px);
+    min-height: calc(100vh - 16vh - 90px);
+    max-height: calc(100vh - 16vh - 90px);
     padding: 12px;
   }
 }
