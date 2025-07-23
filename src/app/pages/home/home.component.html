@@ -127,9 +127,11 @@
       </div>
       
       <!-- Empty state when no transactions -->
-      <div *ngIf="allTransactions?.length === 0 && !loading" class="empty-state">
-        <div>
-          <p>No transactions yet</p>
+      <div class="main-wrapper-or-page-layout">
+        <div *ngIf="allTransactions?.length === 0 && !loading" class="empty-state">
+          <div>
+            <p>No transactions yet</p>
+          </div>
         </div>
       </div>
     </div>

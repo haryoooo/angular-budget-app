@@ -3,6 +3,20 @@
   --safe-area-inset-bottom: env(safe-area-inset-bottom);
 }
 
+/* Force light mode styles */
+html, body {
+  background-color: white !important;
+  color: black !important;
+}
+
+/* Prevent dark mode overrides */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: white !important;
+    color: black !important;
+  }
+}
+
 .scrollable-container {
   // height: 100vh;
   display: block;
