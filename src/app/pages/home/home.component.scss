@@ -464,17 +464,10 @@ $border-light: #e2e8f0;
   }
 }
 
-/* The container where .empty-state lives */
-.main-wrapper-or-page-layout {
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 /* Your existing empty state */
 .empty-state {
   text-align: center;
+  margin-top: 50px;
 }
 
 @media (max-width: 480px) {

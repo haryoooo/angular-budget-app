@@ -55,8 +55,6 @@ export class HomeComponent implements OnInit {
     // Subscribe to wallet changes
     this.stateService.stateWallet$.subscribe((walletId) => {
       const id = generateIdFormat(walletId);
-      console.log(id, walletId);
-      
       
       this.loading = false;
       if (walletId && walletId !== this.wallet) {
@@ -101,7 +99,7 @@ export class HomeComponent implements OnInit {
   }
 
   public formatDate(date: string): string {
-    return moment(date).format('dddd, MMMM D, YYYY h:mm A');
+    return moment(date).format('dddd, MMMM D, YYYY');
   }
 
   private initializeWallet(): void {
