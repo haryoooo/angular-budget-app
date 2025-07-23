@@ -88,6 +88,7 @@
           <!-- Edit button for empty wallets -->
           <button 
             class="btn-edit-wallet"
+            *ngIf="!isGuest"
             (click)="showEditWalletModal(option.id, $event)"
           >
             <img src="../../../assets/img/project/pen-solid-dark.svg" alt="Edit" />
@@ -95,6 +96,7 @@
           <!-- Delete button for empty wallets -->
           <button 
             class="btn-delete-wallet"
+            *ngIf="!isGuest"
             (click)="showDeleteWalletModal(option.id, $event)"
           >
             <img src="../../../assets/img/project/trash.png" alt="Delete" />

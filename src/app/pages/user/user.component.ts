@@ -93,6 +93,7 @@ export class UserComponent implements OnInit {
     setTimeout(() => {
       localStorage.clear();
       this.stateService._stateWallet.next("");
+      this.stateService._stateTransactions.next([]);
       this.navigateToPage("/");
     }, 500); // Message shows for 2 seconds
   }
