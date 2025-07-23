@@ -87,7 +87,6 @@
         <div class="option-actions">
           <!-- Edit button for empty wallets -->
           <button 
-            *ngIf="isWalletEmpty(option.id) && options.length > 1"
             class="btn-edit-wallet"
             (click)="showEditWalletModal(option.id, $event)"
           >
@@ -95,7 +94,6 @@
           </button>
           <!-- Delete button for empty wallets -->
           <button 
-            *ngIf="isWalletEmpty(option.id) && options.length > 1"
             class="btn-delete-wallet"
             (click)="showDeleteWalletModal(option.id, $event)"
           >
@@ -103,12 +101,12 @@
           </button>
           
           <!-- Checkmark for selected wallet -->
-          <div class="option-checkmark" *ngIf="selectedOption === option.id && !(isWalletEmpty(option.id) && options.length > 1)">
+          <!-- <div class="option-checkmark" *ngIf="selectedOption === option.id && !(isWalletEmpty(option.id) && options.length > 1)">
             <img
               src="../../../assets/img/project/navigation/checkmark.png"
               alt="selected"
             />
-          </div>
+          </div> -->
         </div>
       </div>
 
@@ -136,7 +134,7 @@
         </span>
       </span>
       <span class="my-3" *ngIf="!loading">
-        {{ isWalletEmpty(selectedOption) ? 'Create & Select Wallet' : 'Change Wallet' }}
+        {{ 'Change Wallet' }}
       </span>
     </button>
   </div>

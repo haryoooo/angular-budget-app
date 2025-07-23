@@ -1,5 +1,5 @@
 // Variables
-$primary: #429690;
+$primary: #388c87;
 $primary-dark: #3a7a75;
 $white: #fff;
 
@@ -8,9 +8,6 @@ $white: #fff;
   background: $primary;
   padding: 15px;
   height: 25vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   border-radius: 0 0 1rem 1rem;
 }
 
@@ -20,6 +17,11 @@ $white: #fff;
   align-items: center;
   width: 100%;
   padding: 10px;
+  margin-top: 10%;
+   
+    h4 {
+      font-size: 20px;
+    }
 }
 
 .text-white {
@@ -35,7 +37,7 @@ $white: #fff;
   flex-direction: column;
   gap: 12px;
   position: absolute;
-  top: 20%;
+  top: 0%;
   left: 50%;
   transform: translateX(-50%);
   width: 90%;

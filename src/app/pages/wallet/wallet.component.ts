@@ -190,8 +190,6 @@ export class WalletComponent implements OnInit {
   }
 
   selectOption(optionId: string): void {
-    console.log(optionId, "id : ");
-    
     this.selectedOption = optionId;
   }
 
