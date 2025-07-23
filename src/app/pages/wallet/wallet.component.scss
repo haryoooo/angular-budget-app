@@ -253,7 +253,7 @@ $white: #fff;
   flex-shrink: 0; // Never allow the button to shrink
   position: relative;
   z-index: 10; // Ensure it stays on top
-  margin: 10% 0 10% 0;
+  margin: 5% 0 10% 0;
 
   &:hover:not(:disabled) {
     transform: translateY(-1px);
