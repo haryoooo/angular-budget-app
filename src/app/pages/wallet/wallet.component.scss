@@ -46,9 +46,9 @@ $white: #fff;
   box-shadow: 0 8px 24px rgba(149, 157, 165, 0.2);
   z-index: 100;
   // Fixed height calculation to reach bottom navbar
-  height: calc(100vh - 20vh - 110px); // 100vh - header height - navbar height
-  min-height: calc(100vh - 20vh - 110px);
-  max-height: calc(100vh - 20vh - 110px);
+  height: calc(100vh - 20vh - 130px); // 100vh - header height - navbar height
+  min-height: calc(100vh - 20vh - 130px);
+  max-height: calc(100vh - 20vh - 130px);
   justify-content: space-between;
   overflow: hidden; // Prevent container overflow
   box-sizing: border-box;
@@ -415,9 +415,9 @@ $white: #fff;
   .content-container {
     width: 95%;
     padding: 20px;
-    height: calc(100vh - 22vh - 110px); // Adjusted for tablet
-    min-height: calc(100vh - 22vh - 110px);
-    max-height: calc(100vh - 22vh - 110px);
+    height: calc(100vh - 22vh - 130px); // Adjusted for tablet
+    min-height: calc(100vh - 22vh - 130px);
+    max-height: calc(100vh - 22vh - 130px);
   }
   
   .btn-next {
@@ -445,9 +445,9 @@ $white: #fff;
   .content-container {
     width: 100%;
     top: 18%;
-    height: calc(100vh - 18vh - 120px); // Account for mobile navbar
-    min-height: calc(100vh - 18vh - 120px);
-    max-height: calc(100vh - 18vh - 120px);
+    height: calc(100vh - 18vh - 140px); // Account for mobile navbar
+    min-height: calc(100vh - 18vh - 140px);
+    max-height: calc(100vh - 18vh - 140px);
     padding: 15px; // Reduce padding on mobile
   }
   
@@ -489,9 +489,9 @@ $white: #fff;
 @media (max-width: 360px) {
   .content-container {
     top: 16%;
-    height: calc(100vh - 16vh - 120px);
-    min-height: calc(100vh - 16vh - 120px);
-    max-height: calc(100vh - 16vh - 120px);
+    height: calc(100vh - 16vh - 140px);
+    min-height: calc(100vh - 16vh - 140px);
+    max-height: calc(100vh - 16vh - 140px);
     padding: 12px;
   }
 }
