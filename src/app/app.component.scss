@@ -5,6 +5,7 @@
 
 /* Force light mode styles */
 html, body {
+  touch-action: manipulation;
   background-color: white !important;
   color: black !important;
 }

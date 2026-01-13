@@ -52,7 +52,7 @@
         id="email" 
         formControlName="email" 
         [placeholder]="'LOGIN.EMAIL_PLACEHOLDER' | translate"
-        [ngClass]="{'error': email?.invalid && email?.touched }">
+        [ngClass]="{'error': email?.touched && (email?.errors?.['required'] || (email?.errors?.['email'] && currentPath === '/auth/signup'))}">
       <div class="error-message" *ngIf="email?.invalid && email?.touched">
         <span *ngIf="email?.errors?.['required']">{{ 'LOGIN.EMAIL_REQUIRED' | translate }}</span>
         <span *ngIf="email?.errors?.['email'] && currentPath === '/auth/signup'">{{ 'LOGIN.EMAIL_INVALID' | translate }}</span>
@@ -67,7 +67,7 @@
           id="password" 
           formControlName="password" 
           [placeholder]="'LOGIN.PASSWORD_PLACEHOLDER' | translate"
-          [ngClass]="{'error': password?.invalid && password?.touched}">
+          [ngClass]="{'error': password?.touched && (password?.errors?.['required'] || (password?.errors?.['pattern'] && currentPath === '/auth/signup'))}">
         <button 
           type="button" 
           class="toggle-password" 
@@ -78,7 +78,7 @@
       </div>
       <div class="error-message" *ngIf="password?.invalid && password?.touched">
         <span *ngIf="password?.errors?.['required']">{{ 'LOGIN.PASSWORD_REQUIRED' | translate }}</span>
-        <span *ngIf="password?.touched && password?.errors?.['pattern']">{{ 'LOGIN.PASSWORD_RULES' | translate }}</span>
+        <span *ngIf="password?.touched && password?.errors?.['pattern'] && currentPath === '/auth/signup'">{{ 'LOGIN.PASSWORD_RULES' | translate }}</span>
       </div>
     </div>
 

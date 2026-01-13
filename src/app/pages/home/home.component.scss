@@ -75,6 +75,12 @@ $border-light: #e2e8f0;
   padding: 20px 20px 0;
   color: $white;
 
+  .header__top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
   .greeting-section {
     margin-bottom: 30px;
     padding-top: 40px;
@@ -91,6 +97,34 @@ $border-light: #e2e8f0;
       font-weight: 600;
       margin: 0;
     }
+  }
+
+  .logout-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    padding: 10px;
+    margin-top: 40px;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+
+    &:active {
+      animation: pulse 0.3s ease;
+    }
+
+    img {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
   }
 }
 
@@ -119,6 +153,9 @@ $border-light: #e2e8f0;
 .card-balance-container {
   &:first-child {
     margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
 
     .header-balance {
       font-size: 0.95rem;
@@ -156,6 +193,41 @@ $border-light: #e2e8f0;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
+  }
+}
+
+// Visibility Toggle Button
+.visibility-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-visibility-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  img {
+    filter: brightness(0) invert(1);
+    opacity: 0.9;
   }
 }
 
@@ -281,9 +353,9 @@ $border-light: #e2e8f0;
       color: $primary-dark;
     }
 
-    &::after {
-      content: 'See all';
-    }
+    // &::after {
+    //   content: 'See all';
+    // }
   }
 }
 

@@ -163,6 +163,24 @@ export class HomeComponent implements OnInit {
       : 'Good Evening,';
   }
 
+  get isAmountVisible(): boolean {
+    return this.storeService.isAmountVisible();
+  }
+
+  toggleAmountVisibility(): void {
+    this.storeService.isAmountVisible.set(!this.storeService.isAmountVisible());
+  }
+
+  getMaskedAmount(): string {
+    return '••••••••';
+  }
+
+  onLogout(): void {
+    this.storeService.isGuest.set(false);
+    localStorage.clear();
+    this.router.navigate(['/auth/login']);
+  }
+
   // -------------------------------------------------------------------------------
   // NOTE Actions ------------------------------------------------------------------
   // -------------------------------------------------------------------------------

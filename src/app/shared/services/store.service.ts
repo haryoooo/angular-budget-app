@@ -18,6 +18,7 @@ export class StoreService
   public isLoading = signal(false);
   public isGuest = signal(false);
   public pageTitle = signal(environment.appName);
+  public isAmountVisible = signal(true);
 
   constructor
   (

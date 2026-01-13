@@ -154,11 +154,11 @@ export class LoginComponent {
       const email = this.formGroup.controls.email.getRawValue();
       const password = this.formGroup.controls.password.getRawValue();
 
+      // For login, only check required fields (not pattern validation)
       if (
         !email ||
         !password ||
-        this.formGroup.controls.email.invalid ||
-        this.formGroup.controls.password.invalid
+        this.formGroup.controls.email.errors?.['required']
       ) {
         this.markFormGroupTouched();
         return;

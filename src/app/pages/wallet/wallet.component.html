@@ -35,7 +35,7 @@
   <div class="header-container">
     <div class="header__between">
       <div>
-        <h4 class="text-white">Change Wallet</h4>
+        <h4 class="text-white">{{ isGuest ? 'Example Wallet' : 'Change Wallet' }}</h4>
       </div>
       <div class="header-actions">
       </div>
@@ -43,8 +43,18 @@
   </div>
 
   <div class="content-container">
+    <!-- Initial loading state -->
+    <div *ngIf="initialLoading" class="loading-wallets text-center">
+      <div>
+        <div class="loading-spinner">
+          <img src="../../../assets/img/favicon/beatloader.svg" alt="Loading..." />
+        </div>
+        <h6 class="mt-3">Loading wallets...</h6>
+      </div>
+    </div>
+
     <!-- Loading state for wallet check -->
-    <div *ngIf="checkingWallets" class="loading-wallets text-center">
+    <div *ngIf="!initialLoading && checkingWallets" class="loading-wallets text-center">
       <div>
         <div class="loading-spinner">
           <img src="../../../assets/img/favicon/beatloader.svg" alt="Loading..." />
@@ -54,7 +64,7 @@
     </div>
 
     <!-- Wallet options -->
-    <div class="connection-options" *ngIf="!checkingWallets">
+    <div class="connection-options" *ngIf="!initialLoading && !checkingWallets">
       <div
         *ngFor="let option of options"
         class="option-item"
@@ -79,7 +89,7 @@
               {{ walletStats[option.id].count }} transactions
             </span>
             <span class="wallet-balance" [class.positive]="walletStats[option.id].balance > 0">
-              Rp.{{ walletStats[option.id].balance | number:'1.2-2' }}
+              Rp.{{ isAmountVisible ? (walletStats[option.id].balance | number:'1.2-2') : getMaskedAmount() }}
             </span>
           </div>
         </div>
@@ -136,7 +146,7 @@
         </span>
       </span>
       <span class="my-3" *ngIf="!loading">
-        {{ 'Change Wallet' }}
+        {{ isGuest ? 'Example Wallet' : 'Change Wallet' }}
       </span>
     </button>
   </div>

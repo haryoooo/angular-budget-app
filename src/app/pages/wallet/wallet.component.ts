@@ -71,11 +71,20 @@ interface AuthUser {
 export class WalletComponent implements OnInit {
   public isGuest = this.storeService.isGuest();
 
+  get isAmountVisible(): boolean {
+    return this.storeService.isAmountVisible();
+  }
+
+  getMaskedAmount(): string {
+    return '••••••••';
+  }
+
   public wallet!: string;
   public selectedOption!: string;
   public activeTab: string = 'accounts';
   public loading = false;
   public checkingWallets = false;
+  public initialLoading = true;
   public showAddModal = false;
   public creatingWallet = false;
   public newWalletName = '';
@@ -124,7 +133,11 @@ export class WalletComponent implements OnInit {
       : this.stateService._stateWallet.value;
     this.selectedOption = this.wallet;
     console.log(this.wallet, "wallet : ");
-    
+
+    // For guests, data is already available
+    if (this.isGuest) {
+      this.initialLoading = false;
+    }
 
     this.authService.currentUser$.subscribe((state: AuthUser | null | any) => {
       this.userId = state?.uid || null;
@@ -136,6 +149,7 @@ export class WalletComponent implements OnInit {
         if (state?.wallets) {
           this.userProfile = state;
           this.options = state.wallets;
+          this.initialLoading = false;
           // Only check wallets after options are loaded
           await this.checkAllWallets();
         }
