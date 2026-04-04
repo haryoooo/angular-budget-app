@@ -34,6 +34,7 @@ export class LayoutHeaderComponent implements OnInit {
   private isGuest = this.storeService.isGuest();
   public appName: string = environment.appName;
   public isMenuCollapsed: boolean = true;
+  public addMenuOpen = false;
 
   constructor(private router: Router, private storeService: StoreService) {}
 
@@ -87,11 +88,40 @@ export class LayoutHeaderComponent implements OnInit {
   }
 
   public isShowed(): boolean {
-    if(this.router.url.includes('transaction')){
-      return false
+    if (this.router.url.includes('transaction')) {
+      return false;
+    }
+    if (this.router.url.includes('receipt-scan')) {
+      return false;
     }
 
-    return true
+    return true;
+  }
+
+  public showFloatingAdd(): boolean {
+    return (
+      this.isActive({ alt: 'home' }) &&
+      !this.router.url.includes('receipt-scan')
+    );
+  }
+
+  public toggleAddMenu(event: Event): void {
+    event.stopPropagation();
+    this.addMenuOpen = !this.addMenuOpen;
+  }
+
+  public closeAddMenu(): void {
+    this.addMenuOpen = false;
+  }
+
+  public goManual(): void {
+    this.closeAddMenu();
+    this.navigateTo('home/transactions');
+  }
+
+  public goReceiptScan(): void {
+    this.closeAddMenu();
+    this.navigateTo('home/receipt-scan');
   }
 
   public navigateTo(url: string): void {

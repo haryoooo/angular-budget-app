@@ -10,12 +10,23 @@
   </div>
 </div>
 
-<div class="nav-add-activity-btn" *ngIf="isActive({ alt: 'home' })" (click)="navigateTo('home/transactions')" >
+<div class="nav-add-activity-btn" *ngIf="showFloatingAdd()" (click)="toggleAddMenu($event)">
   <img
-    src="../../../../../assets/img/project/navigation/add-btn.png" 
+    src="../../../../../assets/img/project/navigation/add-btn.png"
     alt="add-activity"
-    style="cursor: pointer;"  
+    style="cursor: pointer;"
   />
+</div>
+
+<div
+  class="add-menu-backdrop"
+  *ngIf="addMenuOpen"
+  (click)="closeAddMenu()"
+  aria-hidden="true"
+></div>
+<div class="add-menu-panel" *ngIf="addMenuOpen" (click)="$event.stopPropagation()">
+  <button type="button" class="add-menu-item" (click)="goManual()">Manual input</button>
+  <button type="button" class="add-menu-item" (click)="goReceiptScan()">Scan receipt</button>
 </div>
 <!-- NOTE Content -->
 <ng-content></ng-content>

@@ -218,4 +218,12 @@ export class TransactionService {
       console.error('Failed to delete transaction', err);
     }
   }
+
+  /** Clears guest in-memory transactions and wallet state (e.g. guest logout). */
+  clearGuestSessionData(): void {
+    this.guestTransactions = [];
+    this.wallet = '';
+    this._stateWallet.next('');
+    this._stateTransactions.next([]);
+  }
 }

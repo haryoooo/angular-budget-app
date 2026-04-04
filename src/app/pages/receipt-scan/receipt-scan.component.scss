@@ -1,0 +1,424 @@
+$primary: #3e7c78;
+$bg-white: #fff;
+$radius-lg: 16px;
+$shadow-default: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+
+:host {
+  display: block;
+  position: relative;
+  min-height: 100%;
+}
+
+// Same shell as Add Transaction (transactions.component.scss): header band + centered card.
+.header-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+
+  .header {
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: 100%;
+    height: 100%;
+  }
+
+  .header__between {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    max-width: 1200px;
+    padding: 10px;
+  }
+
+  .header-spacer {
+    width: 24px;
+  }
+}
+
+// Overlap matches Add Transaction (absolute top: 62% + translate -50%, -50%) without breaking scroll.
+.content-container.receipt-scan {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  left: auto;
+  top: auto;
+  transform: none;
+  width: 100%;
+  max-width: 500px;
+  min-width: 500px;
+  margin: -124px auto 32px;
+  background-color: $bg-white;
+  border: 1px solid $bg-white;
+  padding: 20px;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-default;
+  gap: 10px;
+  line-height: 24px;
+  z-index: 2;
+
+  @media (max-width: 768px), (max-width: 480px) {
+    min-width: 100%;
+    margin: -108px auto 24px;
+  }
+}
+
+.intro {
+  font-size: 14px;
+  color: #444;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.ocr-debug {
+  margin-top: 12px;
+}
+
+.ocr-debug-hint {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 8px;
+  line-height: 1.45;
+}
+
+pre.ocr-raw {
+  max-height: 180px;
+  font-size: 11px;
+  margin-bottom: 12px;
+}
+
+.pick-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-pick {
+  display: block;
+  text-align: center;
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  margin: 0;
+
+  &.primary {
+    background: $primary;
+    color: #fff;
+  }
+
+  &.secondary {
+    background: #f0f4f3;
+    color: #1a1a1a;
+    border: 1px solid #dde8e6;
+  }
+}
+
+.processing {
+  margin-top: 8px;
+}
+
+.progress-track {
+  height: 8px;
+  background: #e8eceb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: $primary;
+  transition: width 0.2s ease;
+}
+
+.progress-text {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #555;
+}
+
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+
+  h5 {
+    margin: 0;
+    font-size: 16px;
+  }
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: $primary;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.receipt-compare {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 12px;
+
+  @media (min-width: 720px) {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.receipt-compare__col {
+  flex: 1;
+  min-width: 0;
+
+  &--wide {
+    flex: 1.2;
+  }
+}
+
+.receipt-compare__label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.receipt-paper {
+  border-radius: 4px;
+  border: 1px solid #d8d8d8;
+  background: #fafafa;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.receipt-paper--photo {
+  padding: 10px;
+  background: #2a2a2a;
+
+  img {
+    display: block;
+    width: 100%;
+    max-height: 380px;
+    object-fit: contain;
+    border-radius: 2px;
+  }
+}
+
+.receipt-paper--digital {
+  padding: 14px 12px 16px;
+  background: #f6f6f4;
+  font-family: ui-monospace, 'Cascadia Code', 'Consolas', 'Liberation Mono', monospace;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #111;
+}
+
+.receipt-rule {
+  border: none;
+  border-top: 1px dashed #bbb;
+  margin: 8px 0;
+}
+
+.receipt-row {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1.2fr) minmax(4.5rem, 1fr) 2rem;
+  gap: 8px 10px;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.receipt-cell {
+  margin: 0;
+  min-width: 0;
+}
+
+.receipt-cell--qty {
+  text-align: left;
+}
+
+.receipt-cell--amt {
+  text-align: right;
+}
+
+.receipt-cell--del {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.receipt-row-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #888;
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+
+  &:hover {
+    color: #c62828;
+    background: rgba(198, 40, 40, 0.08);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $primary;
+    outline-offset: 2px;
+  }
+}
+
+.receipt-empty {
+  margin: 12px 0 8px;
+  font-size: 13px;
+  color: #555;
+  line-height: 1.45;
+  font-family: inherit;
+}
+
+.receipt-input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  padding: 2px 4px;
+  border-radius: 4px;
+
+  &:focus {
+    outline: 1px solid $primary;
+    background: rgba(255, 255, 255, 0.85);
+  }
+
+  &--qty {
+    text-align: left;
+    max-width: 3rem;
+  }
+
+  &--name {
+    text-align: left;
+    min-width: 0;
+    overflow-x: auto;
+    text-overflow: clip;
+  }
+
+  &--amt {
+    text-align: right;
+    min-width: 4.5rem;
+  }
+}
+
+.receipt-subtotal {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1.2fr) minmax(4.5rem, 1fr);
+  gap: 8px 10px;
+  align-items: baseline;
+  margin-top: 10px;
+  padding-top: 8px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.receipt-subtotal__gap {
+  display: block;
+}
+
+.receipt-subtotal__label {
+  text-align: left;
+}
+
+.receipt-subtotal__val {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.receipt-footnote {
+  font-size: 12px;
+  color: #666;
+  margin: 0 0 12px;
+  line-height: 1.4;
+}
+
+.json-toggle {
+  width: 100%;
+  margin: 8px 0;
+  padding: 10px;
+  background: #f7f9f8;
+  border: 1px dashed #c5d5d2;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #333;
+}
+
+.json-block {
+  font-size: 11px;
+  background: #1e1e1e;
+  color: #d4d4d4;
+  padding: 12px;
+  border-radius: 8px;
+  overflow-x: auto;
+  max-height: 220px;
+}
+
+.btn-submit {
+  width: 100%;
+  margin-top: 16px;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: $primary;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: #3e7c78 0px 2px 6px;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+@media (max-width: 480px) {
+  .content-container.receipt-scan {
+    padding: 16px;
+  }
+}
+
+:host ::ng-deep .custom-toast {
+  z-index: 99999 !important;
+}
+
+:host ::ng-deep .p-toast-message {
+  padding: 6px 12px !important;
+  margin: 0 20px;
+  font-size: 13px !important;
+}

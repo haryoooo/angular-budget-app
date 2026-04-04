@@ -78,7 +78,7 @@ $border-light: #e2e8f0;
   .header__top-row {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
   }
 
   .greeting-section {
@@ -104,8 +104,9 @@ $border-light: #e2e8f0;
     border: none;
     cursor: pointer;
     transition: transform 0.2s ease;
-    padding: 10px;
-    margin-top: 40px;
+    padding: 6px;
+    margin-top: 0;
+    flex-shrink: 0;
 
     &:hover {
       transform: scale(1.1);
