@@ -22,6 +22,11 @@ export const routes: Routes = [
     canActivate: [authGuards],
   },
   {
+    path: 'home/receipt-scan',
+    loadComponent: () => import('./pages/receipt-scan/receipt-scan.component').then(m => m.ReceiptScanComponent),
+    canActivate: [authGuards],
+  },
+  {
     path: 'chart',
     loadComponent: () => import('./pages/chart/chart.component').then(m => m.ChartComponent),
     canActivate: [authGuards],

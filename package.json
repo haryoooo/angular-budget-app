@@ -35,6 +35,7 @@
     "ngx-spinner": "^18.0.0",
     "primeng": "^17.18.11",
     "rxjs": "~7.8.1",
+    "tesseract.js": "^5.1.1",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.4"
   },

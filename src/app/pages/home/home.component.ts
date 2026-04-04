@@ -177,7 +177,9 @@ export class HomeComponent implements OnInit {
 
   onLogout(): void {
     this.storeService.isGuest.set(false);
+    this.stateService.clearGuestSessionData();
     localStorage.clear();
+    sessionStorage.clear();
     this.router.navigate(['/auth/login']);
   }
 

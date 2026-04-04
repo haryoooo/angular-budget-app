@@ -85,17 +85,21 @@ export class UserComponent implements OnInit {
   }
 
   public async logout() {
-    await this.firebaseService.logoutUser();
-    
+    try {
+      await this.firebaseService.logoutUser();
+    } catch {
+      // No Firebase session (e.g. guest) — still clear app state below
+    }
+
     this.showMessageNotification('Success', 'Logout Success');
-    
-    // Wait for message to be visible for 2 seconds, then proceed with logout
+
     setTimeout(() => {
+      this.storeService.isGuest.set(false);
+      this.stateService.clearGuestSessionData();
       localStorage.clear();
-      this.stateService._stateWallet.next("");
-      this.stateService._stateTransactions.next([]);
-      this.navigateToPage("/");
-    }, 500); // Message shows for 2 seconds
+      sessionStorage.clear();
+      this.navigateToPage('/');
+    }, 500);
   }
 
   ngOnInit(): void {

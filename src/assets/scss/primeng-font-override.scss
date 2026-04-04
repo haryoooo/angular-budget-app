@@ -1,0 +1,21 @@
+// PrimeNG Lara/Aura themes reference ./fonts/… inside theme.css. The CLI often rewrites
+// those URLs incorrectly (browser requests /Inter-roman.var.woff2 and gets index.html → OTS error).
+// Load real files from /assets/primeng-fonts/ (copied in angular.json).
+
+@font-face {
+  font-family: 'Inter var';
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: normal;
+  font-named-instance: 'Regular';
+  src: url('/assets/primeng-fonts/Inter-roman.var.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Inter var';
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: italic;
+  font-named-instance: 'Italic';
+  src: url('/assets/primeng-fonts/Inter-italic.var.woff2') format('woff2');
+}

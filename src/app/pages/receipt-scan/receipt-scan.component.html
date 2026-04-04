@@ -1,0 +1,160 @@
+<app-page-layout>
+  <p-toast position="top-center" styleClass="custom-toast" />
+
+  <div class="header-container">
+    <img
+      class="header"
+      src="../../../assets/img/project/header-bg.png"
+      alt="bg-header"
+    />
+    <div class="header__between">
+      <div class="cursor-pointer" (click)="goBack()">
+        <img src="../../../assets/img/project/chevron-left.png" alt="Back" />
+      </div>
+      <div>
+        <h4 class="text-white">Scan receipt</h4>
+      </div>
+      <div class="header-spacer"></div>
+    </div>
+  </div>
+
+  <div class="content-container receipt-scan">
+    <p class="intro">
+      The image is converted to high-contrast black &amp; white before reading text (better for
+      thermal struk). <strong>On-device OCR is not perfect</strong>—names and numbers can be wrong;
+      always fix the table below before saving. Each row is one product: qty, name, and amount for
+      that line. Amounts come from numbers Tesseract reads; if only one price is found for several
+      lines, it is applied to the last line only (it is not the whole receipt total). Fill missing
+      amounts by hand to match your struk.
+    </p>
+
+    <div class="pick-actions" *ngIf="!processing && editableItems.length === 0 && !scanJson">
+      <label class="btn-pick primary">
+        <input
+          type="file"
+          accept="image/*"
+          capture="environment"
+          hidden
+          (change)="onPickImage($event)"
+        />
+        Take photo
+      </label>
+      <label class="btn-pick secondary">
+        <input type="file" accept="image/*" hidden (change)="onPickImage($event)" />
+        Upload from library
+      </label>
+    </div>
+
+    <div
+      class="ocr-debug"
+      *ngIf="scanJson && !editableItems.length && !processing && scanJson.rawText"
+    >
+      <p class="ocr-debug-hint">
+        If parsing failed, check the text Tesseract read (often one long line is now split into
+        items automatically). Try another photo or lighting if this is empty or garbled.
+      </p>
+      <pre class="json-block ocr-raw">{{ scanJson.rawText }}</pre>
+      <button type="button" class="btn-pick secondary" (click)="clearScan()">Try another image</button>
+    </div>
+
+    <div class="processing" *ngIf="processing">
+      <div class="progress-track">
+        <div class="progress-fill" [style.width.%]="progress"></div>
+      </div>
+      <p class="progress-text">{{ progressLabel || 'Working…' }}</p>
+    </div>
+
+    <div class="results results--struk" *ngIf="scanJson && !processing">
+      <div class="results-header">
+        <h5>Receipt preview</h5>
+        <button type="button" class="link-btn" (click)="clearScan()">Scan again</button>
+      </div>
+
+      <div class="receipt-compare">
+        <div class="receipt-compare__col" *ngIf="receiptPhotoUrl">
+          <span class="receipt-compare__label">Your photo</span>
+          <div class="receipt-paper receipt-paper--photo">
+            <img [src]="receiptPhotoUrl" alt="Scanned receipt" />
+          </div>
+        </div>
+        <div class="receipt-compare__col receipt-compare__col--wide">
+          <span class="receipt-compare__label">Editable copy (same layout as struk)</span>
+          <div class="receipt-paper receipt-paper--digital">
+            <ng-container *ngIf="editableItems.length; else noEditableLines">
+              <div class="receipt-rule" aria-hidden="true"></div>
+              <div
+                class="receipt-row"
+                *ngFor="let row of editableItems; let i = index"
+              >
+                <div class="receipt-cell receipt-cell--qty">
+                  <input
+                    type="number"
+                    min="1"
+                    class="receipt-input receipt-input--qty"
+                    [attr.aria-label]="'Qty row ' + (i + 1)"
+                    [value]="row.qty"
+                    (input)="updateItemQty(i, $event)"
+                  />
+                </div>
+                <div class="receipt-cell receipt-cell--name">
+                  <input
+                    type="text"
+                    class="receipt-input receipt-input--name"
+                    [attr.aria-label]="'Item row ' + (i + 1)"
+                    [value]="row.name"
+                    (input)="updateItemName(i, $event)"
+                  />
+                </div>
+                <div class="receipt-cell receipt-cell--amt">
+                  <input
+                    type="text"
+                    inputmode="numeric"
+                    class="receipt-input receipt-input--amt"
+                    [attr.aria-label]="'Line amount row ' + (i + 1)"
+                    [value]="formatReceiptAmount(row.lineTotal)"
+                    (input)="updateItemLineTotal(i, $event)"
+                  />
+                </div>
+                <div class="receipt-cell receipt-cell--del">
+                  <button
+                    type="button"
+                    class="receipt-row-delete"
+                    (click)="removeItem(i)"
+                    [attr.aria-label]="'Remove line ' + (i + 1)"
+                    title="Remove line"
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+              <div class="receipt-rule" aria-hidden="true"></div>
+            </ng-container>
+            <ng-template #noEditableLines>
+              <p class="receipt-empty">
+                No lines left. Use <strong>Scan again</strong> above to start over.
+              </p>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+
+      <p class="receipt-footnote">
+        Amounts use comma thousands like the printer. Edit any field to match your struk exactly.
+      </p>
+
+      <button type="button" class="json-toggle" (click)="showRawJson = !showRawJson">
+        {{ showRawJson ? 'Hide' : 'Show' }} JSON
+      </button>
+      <pre class="json-block" *ngIf="showRawJson">{{ getJsonPreview() }}</pre>
+
+      <button
+        type="button"
+        class="btn-submit"
+        [disabled]="processing || editableItems.length === 0"
+        (click)="addTransactions()"
+      >
+        Add as expenses ({{ editableItems.length }} lines)
+      </button>
+    </div>
+  </div>
+</app-page-layout>
