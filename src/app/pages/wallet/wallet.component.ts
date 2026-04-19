@@ -234,7 +234,11 @@ export class WalletComponent implements OnInit {
     try {
       // If wallet is empty, create it first
       if (this.isWalletEmpty(this.selectedOption)) {
-        await this.firebaseService.createUserWallet(id);
+        const opt = this.options.find((el) => el.id === this.selectedOption);
+        await this.firebaseService.createUserWallet(
+          this.selectedOption,
+          opt?.title
+        );
         // Remove from empty wallets list
         this.emptyWallets = this.emptyWallets.filter(
           (id: string) => id !== this.selectedOption
@@ -394,8 +398,8 @@ export class WalletComponent implements OnInit {
           `Connect into ${this.newWalletName} to organize your funds`,
       };
 
-      // Create in Firebase
-      await this.firebaseService.createUserWallet(walletId);
+      // Create in Firebase (deterministic wallet doc id + display name)
+      await this.firebaseService.createUserWallet(walletId, this.newWalletName);
 
       if (this.userId) {
         await this.firebaseService.updateUserProfile(

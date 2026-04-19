@@ -6,6 +6,7 @@ import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 
 // Services
 import { StoreService } from '@services/store.service';
+import { TransactionService } from '@services/transaction.service';
 
 // Components
 import { ToastComponent } from '@blocks/toast/toast.component';
@@ -26,11 +27,14 @@ export class AppComponent implements OnInit {
   public setUserAuthorization: any = this.authService.setUserAuthorization;
   public setUserProfile: any = this.authService.setUserProfile;
 
+  private static readonly AUTH_UID_KEY = 'budgetAppActiveAuthUid';
+
   constructor(
     public storeService: StoreService,
     public authService: AuthService,
     public firebaseService: FirebaseService,
-    private router: Router
+    private router: Router,
+    private transactionService: TransactionService
   ) {}
 
   // -------------------------------------------------------------------------------
@@ -48,11 +52,21 @@ export class AppComponent implements OnInit {
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
+        const previousUid = sessionStorage.getItem(AppComponent.AUTH_UID_KEY);
+        if (previousUid && previousUid !== user.uid) {
+          localStorage.removeItem('type');
+          this.transactionService.setWallet('');
+        }
+        sessionStorage.setItem(AppComponent.AUTH_UID_KEY, user.uid);
+
         const profile = await this.firebaseService.loadUserProfile(user.uid);
 
         this.authService.setUserAuthorization(user, 'authenticated');
         this.authService.setUserProfile(profile);
       } else {
+        sessionStorage.removeItem(AppComponent.AUTH_UID_KEY);
+        localStorage.removeItem('type');
+        this.transactionService.setWallet('');
         this.authService.setUserAuthorization(null, 'unauthenticated');
         this.authService.setUserProfile(null);
       }

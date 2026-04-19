@@ -18,6 +18,9 @@ import {
   where,
   orderBy,
   limit,
+  CollectionReference,
+  DocumentReference,
+  QuerySnapshot,
 } from 'firebase/firestore';
 import { AddState } from './transaction.service';
 import formatFirestoreDate from '@helpers/formatFirestoreDate.helper';
@@ -179,45 +182,80 @@ export class FirebaseService {
 
   // USER-SPECIFIC COLLECTION METHODS
 
-  // Get user-specific collection reference
+  // Get user-specific collection reference (top-level under user, e.g. legacy "transactions")
   private getUserCollection(collectionName: string) {
     const userId = this.getCurrentUserId();
     return collection(db, 'users', userId, collectionName);
   }
 
-  // Fetching data from a user-specific Firestore collection
-  async getUserCollectionData(collectionName: string) {
+  /** Wallet document: users/{uid}/wallets/{walletId} */
+  private walletDocRef(walletId: string): DocumentReference {
+    const userId = this.getCurrentUserId();
+    return doc(db, 'users', userId, 'wallets', walletId);
+  }
+
+  /** Transactions for a wallet: users/{uid}/wallets/{walletId}/transactions */
+  private walletTransactionsCollection(walletId: string): CollectionReference {
+    const userId = this.getCurrentUserId();
+    return collection(db, 'users', userId, 'wallets', walletId, 'transactions');
+  }
+
+  /** Legacy path before nesting: users/{uid}/{walletId}/... */
+  private legacyWalletTransactionsCollection(walletId: string): CollectionReference {
+    const userId = this.getCurrentUserId();
+    return collection(db, 'users', userId, walletId);
+  }
+
+  private mapTransactionDocs(snapshots: QuerySnapshot): any[] {
+    return snapshots.docs.map((d) => {
+      const data: any = d.data();
+      return {
+        identifier: d.id,
+        ...data,
+        date: formatFirestoreDate(data.date),
+      };
+    });
+  }
+
+  /**
+   * Reads transactions for a wallet: prefers users/{uid}/wallets/{walletId}/transactions,
+   * falls back to legacy flat users/{uid}/{walletId}/ for existing data.
+   */
+  async getUserCollectionData(walletId: string) {
     try {
-      const colRef = this.getUserCollection(collectionName);
-      const snapshots = await getDocs(colRef);
-      const dataList = snapshots.docs.map((doc) => {
-        const data: any = doc.data();
+      const nestedRef = this.walletTransactionsCollection(walletId);
+      const nestedSnap = await getDocs(nestedRef);
+      const nested = this.mapTransactionDocs(nestedSnap);
+      if (nested.length > 0) {
+        return nested;
+      }
 
-        return {
-          identifier: doc.id, // Extract document ID
-          ...data, // Spread other document fields
-          date: formatFirestoreDate(data.date), // Format Firestore timestamp
-        };
-      });
-
-      return dataList;
+      const legacyRef = this.legacyWalletTransactionsCollection(walletId);
+      const legacySnap = await getDocs(legacyRef);
+      return this.mapTransactionDocs(legacySnap);
     } catch (error) {
       console.error('Error fetching user collection data:', error);
       throw error;
     }
   }
 
-  // Add data to user-specific collection
-  async addUserData(collectionName: string, payload: AddState) {
+  private async deleteAllDocumentsInCollection(
+    colRef: CollectionReference
+  ): Promise<void> {
+    const snapshot = await getDocs(colRef);
+    await Promise.all(snapshot.docs.map((d) => deleteDoc(d.ref)));
+  }
+
+  // Add transaction under users/{uid}/wallets/{walletId}/transactions
+  async addUserData(walletId: string, payload: AddState) {
     try {
-      const colRef = this.getUserCollection(collectionName);
+      const colRef = this.walletTransactionsCollection(walletId);
       const docRef = await addDoc(colRef, {
         ...payload,
-        userId: this.getCurrentUserId(), // Add userId for extra security
+        userId: this.getCurrentUserId(),
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
-      // console.log('Document written with ID: ', docRef.id);
       return docRef.id;
     } catch (e) {
       console.error('Error adding document: ', e);
@@ -225,37 +263,65 @@ export class FirebaseService {
     }
   }
 
-  // Update data in user-specific collection
-  async updateUserData(
-    collectionName: string,
-    docId: string,
-    payload: AddState
-  ) {
+  async updateUserData(walletId: string, docId: string, payload: AddState) {
     try {
       const userId = this.getCurrentUserId();
-      const docRef = doc(db, 'users', userId, collectionName, docId);
-      await setDoc(
-        docRef,
-        {
-          ...payload,
-          updatedAt: serverTimestamp(),
-        },
-        { merge: true }
+      const nestedRef = doc(
+        db,
+        'users',
+        userId,
+        'wallets',
+        walletId,
+        'transactions',
+        docId
       );
-      // console.log('Document updated with ID: ', docId);
+      const legacyRef = doc(db, 'users', userId, walletId, docId);
+      const [nestedSnap, legacySnap] = await Promise.all([
+        getDoc(nestedRef),
+        getDoc(legacyRef),
+      ]);
+
+      const updatePayload = {
+        ...payload,
+        updatedAt: serverTimestamp(),
+      };
+
+      if (nestedSnap.exists()) {
+        await setDoc(nestedRef, updatePayload, { merge: true });
+      } else if (legacySnap.exists()) {
+        await setDoc(legacyRef, updatePayload, { merge: true });
+      } else {
+        await setDoc(nestedRef, updatePayload, { merge: true });
+      }
     } catch (e) {
       console.error('Error updating document: ', e);
       throw e;
     }
   }
 
-  // Delete data from user-specific collection
-  async deleteUserData(collectionName: string, docId: string) {
+  async deleteUserData(walletId: string, docId: string) {
     try {
       const userId = this.getCurrentUserId();
-      const docRef = doc(db, 'users', userId, collectionName, docId);
-      await deleteDoc(docRef);
-      // console.log('Document deleted with ID:', docId);
+      const nestedRef = doc(
+        db,
+        'users',
+        userId,
+        'wallets',
+        walletId,
+        'transactions',
+        docId
+      );
+      const legacyRef = doc(db, 'users', userId, walletId, docId);
+      const [nestedSnap, legacySnap] = await Promise.all([
+        getDoc(nestedRef),
+        getDoc(legacyRef),
+      ]);
+      if (nestedSnap.exists()) {
+        await deleteDoc(nestedRef);
+      }
+      if (legacySnap.exists()) {
+        await deleteDoc(legacyRef);
+      }
     } catch (e) {
       console.error('Error deleting document:', e);
       throw e;
@@ -327,34 +393,37 @@ export class FirebaseService {
     }
   }
 
-  // Create user-specific wallet
-  async createUserWallet(walletName: string): Promise<void> {
+  /**
+   * Creates wallet metadata at users/{uid}/wallets/{walletId} using a deterministic id
+   * (same slug as in the user profile). Avoids random addDoc IDs that broke deletes.
+   */
+  async createUserWallet(walletId: string, displayName?: string): Promise<void> {
     try {
-      const colRef = this.getUserCollection('wallets');
-      const initialDoc = {
-        name: walletName,
+      await setDoc(this.walletDocRef(walletId), {
+        slug: walletId,
+        name: displayName ?? walletId,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         balance: 0,
-        currency: 'IDR', // Default currency
+        currency: 'IDR',
         userId: this.getCurrentUserId(),
-      };
-
-      await addDoc(colRef, initialDoc);
-      console.log(`Wallet ${walletName} created successfully`);
+      });
     } catch (error) {
       console.error('Error creating wallet:', error);
       throw error;
     }
   }
 
-  // Check if user wallet exists
-  async checkUserWalletExists(walletName: string): Promise<boolean> {
+  async checkUserWalletExists(walletId: string): Promise<boolean> {
     try {
-      const colRef = this.getUserCollection('wallets');
-
-      const q = query(colRef, where('name', '==', walletName));
-      const snapshot = await getDocs(q);
+      const primary = await getDoc(this.walletDocRef(walletId));
+      if (primary.exists()) {
+        return true;
+      }
+      const colRef = collection(db, 'users', this.getCurrentUserId(), 'wallets');
+      const snapshot = await getDocs(
+        query(colRef, where('name', '==', walletId))
+      );
       return !snapshot.empty;
     } catch (error) {
       console.error('Error checking wallet existence:', error);
@@ -362,10 +431,27 @@ export class FirebaseService {
     }
   }
 
-  // Delete user wallet
+  /** Deletes wallet metadata and all transactions (nested + legacy flat collection). */
   async deleteUserWallet(walletId: string): Promise<void> {
     try {
-      await this.deleteUserData('wallets', walletId);
+      const userId = this.getCurrentUserId();
+
+      await this.deleteAllDocumentsInCollection(
+        this.walletTransactionsCollection(walletId)
+      );
+      await this.deleteAllDocumentsInCollection(
+        this.legacyWalletTransactionsCollection(walletId)
+      );
+
+      await deleteDoc(this.walletDocRef(walletId)).catch(() => undefined);
+
+      const walletsCol = collection(db, 'users', userId, 'wallets');
+      const orphanSnap = await getDocs(
+        query(walletsCol, where('name', '==', walletId))
+      );
+      await Promise.all(
+        orphanSnap.docs.map((d) => deleteDoc(d.ref))
+      );
     } catch (error) {
       console.error('Error deleting wallet:', error);
       throw error;
