@@ -56,17 +56,17 @@ export class UserComponent implements OnInit {
   menuItems = [
     {
       title: 'Account info',
-      icon: '../../../assets/img/project/navigation/user.png',
+      icon: '../../../assets/img/project/navigation/user.svg',
       route: '/account-info',
     },
     {
       title: 'Personal profile',
-      icon: '../../../assets/img/project/navigation/users.png',
+      icon: '../../../assets/img/project/navigation/users.svg',
       route: '/personal-profile',
     },
     {
       title: 'Login and security',
-      icon: '../../../assets/img/project/navigation/shield-checkered.png',
+      icon: '../../../assets/img/project/navigation/shield-checkered.svg',
       route: '/login-security',
     },
   ];

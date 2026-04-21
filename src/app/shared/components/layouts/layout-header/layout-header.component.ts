@@ -41,19 +41,19 @@ export class LayoutHeaderComponent implements OnInit {
   // Navigation items for the bottom navigation bar
   public navItems = [
     {
-      src: '../../../../../assets/img/project/navigation/home.png',
+      src: '../../../../../assets/img/project/navigation/home.svg',
       alt: 'home',
     },
     {
-      src: '../../../../../assets/img/project/navigation/chart.png',
+      src: '../../../../../assets/img/project/navigation/chart.svg',
       alt: 'chart',
     },
     {
-      src: '../../../../../assets/img/project/navigation/wallet.png',
+      src: '../../../../../assets/img/project/navigation/wallet.svg',
       alt: 'wallet',
     },
     {
-      src: '../../../../../assets/img/project/navigation/user.png',
+      src: '../../../../../assets/img/project/navigation/user.svg',
       alt: 'user',
     },
   ];
@@ -79,7 +79,7 @@ export class LayoutHeaderComponent implements OnInit {
   public ngOnActive(navItems: any): any {
     return {
       ...navItems,
-      src: `${navItems.src?.slice(0, 45)}${navItems?.alt}-fill.png`,
+      src: `${navItems.src?.slice(0, 45)}${navItems?.alt}-fill.svg`,
     };
   }
 

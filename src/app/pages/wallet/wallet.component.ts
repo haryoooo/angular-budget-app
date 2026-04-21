@@ -223,8 +223,8 @@ export class WalletComponent implements OnInit {
 
   getIconSrc(optionId: string): string {
     return this.selectedOption === optionId
-      ? '../../../assets/img/project/navigation/wallet-fill.png'
-      : '../../../assets/img/project/navigation/wallet.png';
+      ? '../../../assets/img/project/navigation/wallet-fill.svg'
+      : '../../../assets/img/project/navigation/wallet.svg';
   }
 
   async submitChangeWallet(): Promise<void> {
