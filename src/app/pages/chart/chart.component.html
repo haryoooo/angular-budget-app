@@ -65,7 +65,7 @@
             <div class="transactions-text">
               <h5>{{ transaction.desc }}</h5>
               <h6>
-                {{ transaction.date }}
+                {{ moment(transaction.date).format('dddd, MMMM D, YYYY') }}
               </h6>
             </div>
           </div>
