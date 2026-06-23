@@ -85,10 +85,10 @@ export class TransactionsComponent implements OnInit {
     this.showMessageNotification('Success', 'Success delete transaction');
     this.isSubmitted = true;
 
-    setTimeout(() => {
-      this.deleteTransaction();
-      this.returnHome();
+    setTimeout(async () => {
+      await this.deleteTransaction();
       this.isSubmitted = false;
+      this.returnHome();
     }, 1000);
   }
 
@@ -187,7 +187,6 @@ export class TransactionsComponent implements OnInit {
   updateName(event: Event): void {
     this.stateAdd = {
       ...this.stateAdd,
-      lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss'),
       desc: (event.target as HTMLInputElement).value,
     };
     this.cdr.detectChanges();
@@ -196,14 +195,13 @@ export class TransactionsComponent implements OnInit {
   updateNameWallet(event: Event): void {
     this.stateAdd = {
       ...this.stateAdd,
-      lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss'),
       desc: (event.target as HTMLInputElement).value,
     };
     this.cdr.detectChanges();
   }
 
   updateType(selectedType: string): void {
-    this.stateAdd = { ...this.stateAdd, type: selectedType, lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss'), };
+    this.stateAdd = { ...this.stateAdd, type: selectedType };
     this.cdr.detectChanges();
   }
 
@@ -223,8 +221,7 @@ export class TransactionsComponent implements OnInit {
     const amount =
       typeof parsedAmount === 'bigint' ? parsedAmount.toString() : parsedAmount;
 
-    // Update state with unformatted value
-    this.stateAdd = { ...this.stateAdd, amount, lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss'), };
+    this.stateAdd = { ...this.stateAdd, amount };
 
     // Manually update input field with formatted value
     input.value = formatMoney(amount);
@@ -237,12 +234,21 @@ export class TransactionsComponent implements OnInit {
 
     this.stateAdd = {
       ...this.stateAdd,
-      lastUpdate: moment(inputDate).format('YYYY-MM-DD HH:mm:ss'),
-      date: moment(inputDate, 'YYYY-MM-DD').format('dddd, MMMM D, YYYY'), // Store formatted date without time
-      month: moment(inputDate).month() + 1
+      date: moment(inputDate, 'YYYY-MM-DD').format('dddd, MMMM D, YYYY'),
+      month: moment(inputDate).month() + 1,
     };
 
     this.cdr.detectChanges();
+  }
+
+  get transactionDateForInput(): string {
+    const date = this.stateAdd?.date;
+    if (!date) return '';
+    if (date instanceof Date) return moment(date).format('YYYY-MM-DD');
+    const parsed = moment(date, 'dddd, MMMM D, YYYY', true);
+    if (parsed.isValid()) return parsed.format('YYYY-MM-DD');
+    const fallback = moment(date);
+    return fallback.isValid() ? fallback.format('YYYY-MM-DD') : '';
   }
 
   clearAmount(): void {
@@ -288,7 +294,12 @@ export class TransactionsComponent implements OnInit {
     console.log(this.stateAdd);
 
     if (paramValueEdit) {
-      await this.stateService.updateTransaction(paramValueEdit, this.stateAdd, this.isGuest);
+      const editPayload: AddState = {
+        ...this.stateAdd,
+        lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss'),
+        month: moment(this.stateAdd.date, 'dddd, MMMM D, YYYY').month() + 1,
+      };
+      await this.stateService.updateTransaction(paramValueEdit, editPayload, this.isGuest);
     } else {
       await this.stateService.setLatestTransactions(newTransaction, this.isGuest);
     }

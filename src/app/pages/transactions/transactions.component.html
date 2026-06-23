@@ -123,10 +123,10 @@
         <h5 class="text-label">DATE</h5>
         <div>
           <input
-            class="input-content"
+            class="input-content input-content--date"
             type="date"
             alt="date"
-            [value]="stateAdd.lastUpdate | date : 'yyyy-MM-dd'"
+            [value]="transactionDateForInput"
             (input)="updateDate($event)"
           />
         </div>

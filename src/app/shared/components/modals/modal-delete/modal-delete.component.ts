@@ -9,7 +9,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 export class ModalDeleteComponent {
   @Input() isModalOpen: boolean = false;
   @Input() isSubmitted: boolean = false;
-  @Input() queryId: any = this.route.snapshot.queryParams['id'];
+  @Input() queryId: any;
 
   @Output() openModal = new EventEmitter<void>();
   @Output() closeModal = new EventEmitter<void>();
