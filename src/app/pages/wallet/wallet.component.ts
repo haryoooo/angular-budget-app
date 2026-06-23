@@ -169,27 +169,26 @@ export class WalletComponent implements OnInit {
     this.checkingWallets = true;
 
     try {
-      for (const option of this.options) {
-        const transactions: Transaction[] =
-          await this.stateService.getStateTransactions(option.id, this.isGuest);
+      const results = await Promise.all(
+        this.options.map(async (option) => {
+          const transactions: Transaction[] =
+            await this.stateService.getStateTransactions(option.id, this.isGuest);
+          return { option, transactions };
+        })
+      );
 
-        if (transactions?.length === 0) {
+      for (const { option, transactions } of results) {
+        if (!transactions?.length) {
           this.emptyWallets.push(option.id);
         } else {
-          // Calculate wallet stats
           const balance = transactions.reduce(
-            (sum: number, transaction: Transaction) => {
-              return transaction.type === 'income'
+            (sum: number, transaction: Transaction) =>
+              transaction.type === 'income'
                 ? sum + transaction.amount
-                : sum - transaction.amount;
-            },
+                : sum - transaction.amount,
             0
           );
-
-          this.walletStats[option.id] = {
-            count: transactions.length,
-            balance: balance,
-          };
+          this.walletStats[option.id] = { count: transactions.length, balance };
         }
       }
     } catch (error) {
@@ -246,19 +245,17 @@ export class WalletComponent implements OnInit {
       }
 
       const setWalletId: any = this.options?.find(el=> generateIdFormat(el?.title) === id)?.title;
-      
+
       // Set the wallet
       this.stateService.setWallet(setWalletId);
 
       // Store in localStorage
       localStorage.setItem('type', setWalletId);
 
-      setTimeout(() => {
-        this.router.navigate(['home']);
-        this.loading = false;
-      }, 1000);
+      this.router.navigate(['home']);
     } catch (error) {
       console.error('Error changing wallet:', error);
+    } finally {
       this.loading = false;
     }
   }
