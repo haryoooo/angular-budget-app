@@ -51,6 +51,7 @@ export class TransactionsComponent implements OnInit {
   public isAnimating = false;
 
   public loading = false;
+  public pageLoading = !!this.queryId;
   public now = moment();
 
   constructor(
@@ -104,11 +105,20 @@ export class TransactionsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // No wallet selected yet - nothing to load/save against, send the user to pick/create one
+    if (!this.isGuest && !this.wallet) {
+      this.showMessageNotification('Error', 'Please select or create a wallet first');
+      this.router.navigate(['wallet']);
+      return;
+    }
+
     this.getDataTransaction(this.wallet).then(() => {
       // Existing subscription for stateAdd
       this.stateService.stateAdd$.subscribe((state) => {
         this.updateStateAdd(state);
       });
+
+      this.pageLoading = false;
 
       // ✅ If guest, re-render stateTransaction on update
       if (this.isGuest) {

@@ -45,6 +45,13 @@ export class ReceiptScanComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    // No wallet selected yet - nothing to save the scanned receipt against
+    if (!this.isGuest && !this.transactionService._stateWallet.value) {
+      this.toast('warn', 'No wallet selected', 'Please select or create a wallet first.');
+      this.router.navigateByUrl('/wallet', { replaceUrl: true });
+      return;
+    }
+
     setTimeout(() => this.storeService.isLoading.set(false), 300);
   }
 

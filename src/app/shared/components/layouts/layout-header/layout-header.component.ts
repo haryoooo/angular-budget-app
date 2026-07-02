@@ -14,6 +14,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { environment } from '@env/environment';
 import { NgFor, NgIf } from '@angular/common';
 import { StoreService } from '@services/store.service';
+import { TransactionService } from '@services/transaction.service';
 
 @Component({
   selector: 'app-layout-header',
@@ -36,7 +37,11 @@ export class LayoutHeaderComponent implements OnInit {
   public isMenuCollapsed: boolean = true;
   public addMenuOpen = false;
 
-  constructor(private router: Router, private storeService: StoreService) {}
+  constructor(
+    private router: Router,
+    private storeService: StoreService,
+    private transactionService: TransactionService
+  ) {}
 
   // Navigation items for the bottom navigation bar
   public navItems = [
@@ -114,14 +119,18 @@ export class LayoutHeaderComponent implements OnInit {
     this.addMenuOpen = false;
   }
 
+  private hasWalletSelected(): boolean {
+    return this.isGuest || !!this.transactionService._stateWallet.value;
+  }
+
   public goManual(): void {
     this.closeAddMenu();
-    this.navigateTo('home/transactions');
+    this.navigateTo(this.hasWalletSelected() ? 'home/transactions' : 'wallet');
   }
 
   public goReceiptScan(): void {
     this.closeAddMenu();
-    this.navigateTo('home/receipt-scan');
+    this.navigateTo(this.hasWalletSelected() ? 'home/receipt-scan' : 'wallet');
   }
 
   public navigateTo(url: string): void {

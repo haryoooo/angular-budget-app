@@ -71,78 +71,90 @@
   </div>
 
   <div class="content-container">
-    <div class="content-transactions">
+    <!-- Loading state while fetching transaction data to edit -->
+    <div *ngIf="pageLoading" class="loading-page text-center">
       <div>
-        <h5 class="text-label">NAME</h5>
-        <input
-          class="input-content"
-          type="text"
-          alt="desc"
-          [value]="stateAdd.desc"
-          (input)="updateName($event)"
-        />
-      </div>
-      <div>
-        <h5 class="text-label">TYPE</h5>
-        <label class="option-type">
-          <input
-            class="radio-input"
-            type="radio"
-            alt="radio-type-expense"
-            [checked]="stateAdd.type === 'expense'"
-            (change)="updateType('expense')"
-          />
-          Expense
-        </label>
-        <label class="ml-2 option-type">
-          <input
-            class="radio-input"
-            type="radio"
-            alt="radio-type-income"
-            [checked]="stateAdd.type === 'income'"
-            (change)="updateType('income')"
-          />
-          Income
-        </label>
-      </div>
-      <div class="amount-container">
-        <h5 class="text-label">AMOUNT</h5>
-        <div class="input-wrapper">
-          <span class="currency-symbol">Rp.</span>
-          <input
-            class="input-content-amount"
-            type="text"
-            alt="amount"
-            [value]="getFormattedAmount()"
-            (input)="updateAmount($event)"
-          />
-          <span class="clear-button" (click)="clearAmount()">Clear</span>
+        <div class="loading-spinner">
+          <img src="../../../assets/img/favicon/beatloader.svg" alt="Loading..." />
         </div>
-      </div>
-      <div>
-        <h5 class="text-label">DATE</h5>
-        <div>
-          <input
-            class="input-content input-content--date"
-            type="date"
-            alt="date"
-            [value]="transactionDateForInput"
-            (input)="updateDate($event)"
-          />
-        </div>
+        <h6 class="mt-3">Loading transaction...</h6>
       </div>
     </div>
 
-    <button
-      [disabled]="!isFormValid()"
-      class="btn-submit"
-      (click)="submitTransaction()"
-    >
-      <span *ngIf="loading" class="h-10"
-        ><img src="../../../assets/img/favicon/beatloader.svg"
-      /></span>
-      <span *ngIf="!loading">Submit</span>
-    </button>
+    <ng-container *ngIf="!pageLoading">
+      <div class="content-transactions">
+        <div>
+          <h5 class="text-label">NAME</h5>
+          <input
+            class="input-content"
+            type="text"
+            alt="desc"
+            [value]="stateAdd.desc"
+            (input)="updateName($event)"
+          />
+        </div>
+        <div>
+          <h5 class="text-label">TYPE</h5>
+          <label class="option-type">
+            <input
+              class="radio-input"
+              type="radio"
+              alt="radio-type-expense"
+              [checked]="stateAdd.type === 'expense'"
+              (change)="updateType('expense')"
+            />
+            Expense
+          </label>
+          <label class="ml-2 option-type">
+            <input
+              class="radio-input"
+              type="radio"
+              alt="radio-type-income"
+              [checked]="stateAdd.type === 'income'"
+              (change)="updateType('income')"
+            />
+            Income
+          </label>
+        </div>
+        <div class="amount-container">
+          <h5 class="text-label">AMOUNT</h5>
+          <div class="input-wrapper">
+            <span class="currency-symbol">Rp.</span>
+            <input
+              class="input-content-amount"
+              type="text"
+              alt="amount"
+              [value]="getFormattedAmount()"
+              (input)="updateAmount($event)"
+            />
+            <span class="clear-button" (click)="clearAmount()">Clear</span>
+          </div>
+        </div>
+        <div>
+          <h5 class="text-label">DATE</h5>
+          <div>
+            <input
+              class="input-content input-content--date"
+              type="date"
+              alt="date"
+              [value]="transactionDateForInput"
+              (input)="updateDate($event)"
+            />
+          </div>
+        </div>
+      </div>
+
+      <button
+        [disabled]="!isFormValid()"
+        class="btn-submit"
+        (click)="submitTransaction()"
+      >
+        <span *ngIf="loading" class="h-10"
+          ><img src="../../../assets/img/favicon/beatloader.svg"
+        /></span>
+        <span *ngIf="!loading">Submit</span>
+      </button>
+    </ng-container>
   </div>
   <!-- </ng-container> -->
 </app-page-layout>

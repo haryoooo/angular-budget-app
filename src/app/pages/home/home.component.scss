@@ -27,15 +27,6 @@ $border-light: #e2e8f0;
   }
 }
 
-@mixin loading-spinner {
-  width: 20px;
-  height: 20px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top: 2px solid $white;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
 // Header Container
 .header-container {
   position: relative;
@@ -309,16 +300,10 @@ $border-light: #e2e8f0;
   height: 1.5em;
 
   img {
-    @include loading-spinner;
     height: 1.5em;
     width: auto;
     vertical-align: middle;
   }
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
 }
 
 // Main content - FIXED LAYOUT

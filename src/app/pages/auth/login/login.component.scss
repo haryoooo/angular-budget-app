@@ -21,7 +21,16 @@ $border: #E5E7EB;
   text-align: center;
   margin-bottom: 40px;
   padding-top: 60px;
-  .logo { color: $white; }
+
+  .logo {
+    color: $white;
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin: 0;
+    }
+  }
 }
 
 .login-form {
@@ -34,10 +43,10 @@ $border: #E5E7EB;
   width: 100%;
 
   h2 {
-    font-size: 1.8rem;
+    font-size: 1.3rem;
     font-weight: 600;
     color: $primary;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
   }
 
   p {
@@ -213,8 +222,12 @@ $border: #E5E7EB;
 // Responsive
 @media (max-width: 480px) {
   .login-container { padding: 15px; }
-  .login-header { padding-top: 40px; margin-bottom: 30px; }
-  .login-form { padding: 25px 20px; h2 { font-size: 1.5rem; } }
+  .login-header {
+    padding-top: 40px;
+    margin-bottom: 30px;
+    .logo h1 { font-size: 1.4rem; }
+  }
+  .login-form { padding: 25px 20px; h2 { font-size: 1.15rem; } }
 }
 
 :host ::ng-deep .custom-toast { z-index: 99999 !important; }

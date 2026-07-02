@@ -54,10 +54,15 @@ export class HomeComponent implements OnInit {
 
     // Subscribe to wallet changes
     this.stateService.stateWallet$.subscribe((walletId) => {
+      // Nothing to fetch when no wallet is selected yet
+      if (!walletId) {
+        this.loading = false;
+        return;
+      }
+
       const id = generateIdFormat(walletId);
-      
-      this.loading = false;
-      if (walletId && walletId !== this.wallet) {
+
+      if (walletId !== this.wallet) {
         this.wallet = walletId;
 
         if (!this.isGuest) {
@@ -109,6 +114,9 @@ export class HomeComponent implements OnInit {
 
     if (this.wallet) {
       this.getAllTransactions(id);
+    } else {
+      // No wallet selected yet - nothing to load
+      this.loading = false;
     }
   }
 
